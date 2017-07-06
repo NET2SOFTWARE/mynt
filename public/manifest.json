@@ -1,0 +1,17 @@
+{
+  "short_name": "MYNT",
+  "name": "MYNT E-money",
+  "icons": [
+    {
+      "src": "http://net.dev/img/mynt.png",
+      "type": "http://net.dev/img/mynt.png",
+      "sizes": "192x192"
+    }
+  ],
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
+  "display": "standalone",
+  "display": "browser",
+  "orientation": "portrait",
+  "start_url": "/home"
+}
