@@ -64,7 +64,9 @@ class Member extends Model
      */
     public function setPhoneAttribute($value)
     {
-        $this->attributes['phone'] = str_is('0*', $value) ? '62'. substr($value, 1) : $value;
+        //$this->attributes['phone'] = str_is('0*', $value) ? '62'. substr($value, 1) : $value;
+                return $this->attributes['phone'] = '62'.strtolower($value);
+
     }
 
     /**

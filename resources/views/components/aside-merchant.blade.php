@@ -22,9 +22,8 @@
     <nav class="list-group medium mb-3">
         <a href="{{ route('merchant.accounting') }}" class="list-group-item list-group-item-action py-2{{ $active == 'accounting' ? ' active' : ''}}">Account Sheet</a>
         <a href="{{ route('merchant.transaction.account') }}" class="list-group-item list-group-item-action py-2{{ $active == 'transaction' ? ' active' : ''}}">Transaction</a>
-        {{--<a href="{{ route('merchant.summary.product') }}" class="list-group-item list-group-item-action py-2{{ $active == 'summary' ? ' active' : ''}}">Summary Transaction</a>--}}
-        {{--<a href="{{ route('merchant.accessibility.notification') }}" class="list-group-item list-group-item-action py-2{{ $active == 'accessibility' ? ' active' : ''}}">Accessibility</a>--}}
-        <a href="{{ route('construction') }}" class="list-group-item list-group-item-action py-2{{ $active == 'summary' ? ' active' : ''}}">Summary Transaction</a>
-        <a href="{{ route('construction') }}" class="list-group-item list-group-item-action py-2{{ $active == 'accessibility' ? ' active' : ''}}">Accessibility</a>
+        <a href="{{ route('merchant.summary.product') }}" class="list-group-item list-group-item-action py-2{{ $active == 'summary' ? ' active' : ''}}">Summary Transaction</a>
+        <a href="{{ route('merchant.accessibility.notification') }}" class="list-group-item list-group-item-action py-2{{ $active == 'accessibility' ? ' active' : ''}}">Accessibility</a>
+        <a href="{{ route('merchant.management.account') }}" class="list-group-item list-group-item-action py-2{{ $active == 'management' ? ' active' : ''}}">Account Management</a>
     </nav>
 </aside>

@@ -12,7 +12,8 @@
         "laravel/framework": "5.4.*",
         "laravel/passport": "^2.0",
         "laravel/tinker": "~1.0",
-        "mews/captcha": "^2.1"
+        "mews/captcha": "^2.1",
+        "phpseclib/phpseclib": "~2.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

@@ -42,7 +42,7 @@
                     </section>
                     <section class="card-block">
                         <section class="row">
-                            <section class="col-md-6 offset-md-3 mt-3">
+                            <section class="col-md-12 px-5">
                                 @if (session('warning'))
                                     <section class="alert alert-success">{{ session('warning') }}</section>
                                     <br/>
@@ -52,23 +52,7 @@
                                 @endif
                                 <form class="card card-block p-4" action="{{ route('member.management.bank.store') }}" method="POST" accept-charset="utf-8" role="form">
                                     {{ csrf_field() }}
-                                    <section class="form-group{{ $errors->has('bank') ? ' has-danger' : '' }}">
-                                        <label for="bank">Bank</label>
-                                        <select id="bank" name="bank" class="custom-select w-100">
-                                            <option selected disabled>Choose bank</option>
-                                            @foreach($banks as $bank)
-                                                <option value="{{ $bank->id }}"{{ collect(Auth::user()->members->first()['banks'])->contains('id', $bank->id) ? ' selected' : '' }}>{{ $bank->bank_code.'&nbsp;&nbsp;&nbsp;'.strtoupper($bank->bank_name) }}</option>
-                                            @endforeach
-                                        </select>
-                                        <small class="form-text small text-muted d-flex justify-content-between" id="bankHelp">Please choose one bank. <span class="text-grey">Required</span></small>
-                                        @if ($errors->has('bank'))<span class="form-control-feedback">{{ $errors->first('bank') }}</span>@endif
-                                    </section>
-                                    <section class="form-group{{ $errors->has('bank_account_name') ? ' has-danger' : '' }}">
-                                        <label for="bank_account_name">Bank account number</label>
-                                        <input id="bank_account_name" type="text" name="bank_account_name" class="form-control" @if(count(Auth::user()->members->first()['banks']) >= 1) value="{{ Auth::user()->members->first()['banks'][0]['pivot']['account_number'] }}" @else value="{{ old('bank_code') }}" @endif placeholder="000000000000" aria-describedby="bankCodeHelp">
-                                        <small class="form-text small text-muted d-flex justify-content-between" id="bankCodeHelp">Please entry your bank account number. Numeric only <span class="text-grey">Required</span></small>
-                                        @if ($errors->has('bank_account_name'))<span class="form-control-feedback">{{ $errors->first('bank_account_name') }}</span>@endif
-                                    </section>
+                                    @include('forms.bank-register')
                                     <section class="form-group mt-4 mb-0">
                                         <button type="submit" class="btn btn-sm btn-block btn-primary">{{ (count(Auth::user()->members->first()['banks']) >= 1) ? 'Update bank account' : 'Register my bank account' }}</button>
                                     </section>

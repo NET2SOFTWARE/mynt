@@ -24,5 +24,6 @@
         <a href="{{ route('company.transaction.account') }}" class="list-group-item list-group-item-action py-2{{ $active == 'transaction' ? ' active' : ''}}">Transaction</a>
         <a href="{{ route('company.list.member') }}" class="list-group-item list-group-item-action py-2{{ $active == 'list_group' ? ' active' : ''}}">List Group Account</a>
         <a href="{{ route('company.accessibility.notification') }}" class="list-group-item list-group-item-action py-2{{ $active == 'accessibility' ? ' active' : ''}}">Accessibility</a>
+        <a href="{{ route('company.management.account') }}" class="list-group-item list-group-item-action py-2{{ $active == 'management' ? ' active' : ''}}">Management Account</a>
     </nav>
 </aside>
