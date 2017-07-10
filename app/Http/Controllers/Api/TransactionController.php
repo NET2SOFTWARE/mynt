@@ -553,4 +553,11 @@ class TransactionController extends Controller
             ? response()->json(compact('transactions'), 200)
             : response()->view('pages.'.$request->input('page'), compact('transactions'), 200);
     }
+
+    public function report(Request $request)
+    {
+        $data = [];
+
+        return response()->view('pages.report-tracing', compact('data'), 200);
+    }
 }

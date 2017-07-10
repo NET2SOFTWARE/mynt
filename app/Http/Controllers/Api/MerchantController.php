@@ -752,4 +752,10 @@ class MerchantController extends Controller
             : response()->view('pages.merchant-detail-transactions', compact('merchant', 'transactions'), 200);
     }
 
+    public function report(Request $request)
+    {
+        $data = [];
+
+        return response()->view('pages.report-merchant', compact('data'), 200);
+    }
 }

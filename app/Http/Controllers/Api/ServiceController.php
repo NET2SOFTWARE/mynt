@@ -234,4 +234,11 @@ class ServiceController extends Controller
                 ->with(compact('service'))
                 ->with('success', 'Service data was updated successfully.');
     }
+
+    public function report(Request $request)
+    {
+        $data = [];
+
+        return response()->view('pages.report-service', compact('data'), 200);
+    }
 }

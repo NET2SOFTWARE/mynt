@@ -1,6 +1,7 @@
 <?php
 
 Route::get('/', function () {return view('welcome');});
+            Route::post('/',            'Api\ProductPurchaseController@store')->name('product.purchase.store');
 
 Route::get('/login/member/company',     'Auth\LoginController@showLoginMemberCompanyForm')->name('login.member.company');
 Route::post('/login/member/company',    'Auth\LoginController@loginMemberCompany')->name('post.login.member.company');
@@ -244,7 +245,7 @@ Route::middleware(['auth:admin'])->group(function (){
         Route::get('/deactivate',       'Api\ProductController@deactivatePage')->name('product.deactivate.index');
         Route::get('/deactivate/{id}',  'Api\ProductController@deactivateProcess')->name('product.deactivate.process');
 
-        Route::get('/{id}',             'Api\ProductController@show')->name('product.show');
+        # Route::get('/{id}',             'Api\ProductController@show')->name('product.show');
         Route::get('/{id}/edit',        'Api\ProductController@edit')->name('product.edit');
         Route::post('/',                'Api\ProductController@store')->name('product.store');
         Route::post('/sort',            'Api\ProductController@sort')->name('product.sort');
@@ -253,21 +254,52 @@ Route::middleware(['auth:admin'])->group(function (){
         Route::patch('/{id}',           'Api\ProductController@update')->name('product.update');
         Route::delete('/{id}',          'Api\ProductController@destroy')->name('product.delete');
 
-        Route::prefix('/map/price')->group(function (){
-            Route::get('/',         'Api\ProductController@mappingPricePage')->name('product.mapping_price.index');
-            Route::get('/create',   'Api\ProductController@createMappingPricePage')->name('product.mapping_price.create');
-            Route::post('/',        'Api\ProductController@storeMappingPrice')->name('product.mapping_price.store');
+        Route::prefix('/pricing/purchase')->group(function (){
+            Route::get('/',             'Api\ProductPurchaseController@index')->name('product.purchase.index'); 
+            Route::get('/create',       'Api\ProductPurchaseController@create')->name('product.purchase.create');
+            Route::post('/',            'Api\ProductPurchaseController@store')->name('product.purchase.store');
+            Route::post('/sort',        'Api\ProductPurchaseController@sort')->name('product.purchase.sort');
+            Route::get('/{id}/edit',    'Api\ProductPurchaseController@edit')->name('product.purchase.edit');
+            Route::put('/{id}',         'Api\ProductPurchaseController@update')->name('product.purchase.update');
+            Route::patch('/{id}',       'Api\ProductPurchaseController@update')->name('product.purchase.update');
+            Route::delete('/{id}',      'Api\ProductPurchaseController@destroy')->name('product.purchase.delete');
         });
 
-        Route::prefix('/map/tax-fee')->group(function (){
-            Route::get('/',             'Api\MappingProductController@index')->name('mapping_product.index');
-            Route::get('/create',       'Api\MappingProductController@create')->name('mapping_product.create');
-            Route::get('/{id}/edit',    'Api\MappingProductController@edit')->name('mapping_product.edit');
-            Route::post('/',            'Api\MappingProductController@store')->name('mapping_product.store');
-            Route::post('/sort',        'Api\MappingProductController@sort')->name('mapping_product.sort.index');
-            Route::put('/{id}',         'Api\MappingProductController@update')->name('mapping_product.update');
-            Route::patch('/{id}',       'Api\MappingProductController@update')->name('mapping_product.update');
-            Route::delete('/{id}',      'Api\MappingProductController@destroy')->name('mapping_product.delete');
+        Route::prefix('/pricing/sales')->group(function (){
+            Route::get('/',             'Api\ProductSalesController@index')->name('product.sales.index'); 
+            Route::get('/create',       'Api\ProductSalesController@create')->name('product.sales.create');
+            Route::post('/',            'Api\ProductSalesController@store')->name('product.sales.store');
+            Route::post('/sort',        'Api\ProductSalesController@sort')->name('product.sales.sort');
+            Route::get('/{id}/edit',    'Api\ProductSalesController@edit')->name('product.sales.edit');
+            Route::put('/{id}',         'Api\ProductSalesController@update')->name('product.sales.update');
+            Route::patch('/{id}',       'Api\ProductSalesController@update')->name('product.sales.update');
+            Route::delete('/{id}',      'Api\ProductSalesController@destroy')->name('product.sales.delete');
+        });
+
+        Route::prefix('/charges')->group(function (){
+            Route::get('/',             'Api\ProductChargeController@index')->name('product.charge.index'); 
+            Route::get('/create',       'Api\ProductChargeController@create')->name('product.charge.create');
+            Route::post('/',            'Api\ProductChargeController@store')->name('product.charge.store');
+            Route::post('/sort',        'Api\ProductChargeController@sort')->name('product.charge.sort');
+            Route::get('/{id}/edit',    'Api\ProductChargeController@edit')->name('product.charge.edit');
+            Route::put('/{id}',         'Api\ProductChargeController@update')->name('product.charge.update');
+            Route::patch('/{id}',       'Api\ProductChargeController@update')->name('product.charge.update');
+            Route::delete('/{id}',      'Api\ProductChargeController@destroy')->name('product.charge.delete');
+        });
+
+        Route::prefix('/fees')->group(function (){
+            Route::get('/',             'Api\ProductFeeController@all')->name('product.fee.all'); 
+            Route::post('/sort',        'Api\ProductFeeController@sortAll')->name('product.fee.sort.all');
+            Route::prefix('/{product_id}')->group(function (){
+                Route::get('/',             'Api\ProductFeeController@index')->name('product.fee.index'); 
+                Route::get('/create',       'Api\ProductFeeController@create')->name('product.fee.create');
+                Route::post('/',            'Api\ProductFeeController@store')->name('product.fee.store');
+                Route::post('/sort',        'Api\ProductFeeController@sort')->name('product.fee.sort');
+                Route::get('/{id}/edit',    'Api\ProductFeeController@edit')->name('product.fee.edit');
+                Route::put('/{id}',         'Api\ProductFeeController@update')->name('product.fee.update');
+                Route::patch('/{id}',       'Api\ProductFeeController@update')->name('product.fee.update');
+                Route::delete('/{id}',      'Api\ProductFeeController@destroy')->name('product.fee.delete');
+            });
         });
     });
 
@@ -413,5 +445,11 @@ Route::middleware(['auth:admin'])->group(function (){
 
     Route::prefix('report')->group(function (){
         Route::get('/general/ledger',   'Api\GeneralPassbookController@index')->name('general.ledger.index');
+        Route::get('/company',          'Api\CompanyController@report')->name('report.company.index');
+        Route::get('/merchant',         'Api\MerchantController@report')->name('report.merchant.index');
+        Route::get('/account',          'Api\AccountController@report')->name('report.account.index');
+        Route::get('/service',          'Api\ServiceController@report')->name('report.service.index');
+        Route::get('/product',          'Api\ProductController@report')->name('report.product.index');
+        Route::get('/tracing',          'Api\TransactionController@report')->name('report.tracing.index');
     });
 });

@@ -14,37 +14,37 @@
                 <section class="header-content justify-content-between align-items-baseline">
                     <section>
                         <p class="medium lh-1-5 mb-0">
-							<a href="{{ route('mapping_fee.all') }}" class="btn btn-sm btn-secondary small-caps mr-1 py-0">
+							<a href="{{ route('product.fee.all') }}" class="btn btn-sm btn-secondary small-caps mr-1 py-0">
 								<span class="glyphicon glyphicon-arrow-left"></span> back
 							</a>
-                        	MANAGE FEES
+                        	MANAGE PRODUCT FEES
                         </p>
                     </section>
                     <section class="d-flex justify-content-between align-content-st align-items-baseline">
-	                    @if ($mapping_charge->amount - $mapping_fees->sum('amount') > 0)
+	                    @if ($product->charge - $rows->sum('fee') > 0)
                         <section class="d-flex justify-content-between align-content-start">
                             <section class="btn-group btn-group-sm mr-3">
-                                <a href="{{ route('mapping_fee.create', [$mapping_charge->id]) }}" class="btn btn-secondary">New</a>
+                                <a href="{{ route('product.fee.create', [$product->id]) }}" class="btn btn-secondary">New</a>
                             </section>
                         </section>
                         @endif
                         <section class="d-flex justify-content-between align-content-start">
                             <section class="btn-group btn-group-sm">
-                                <a href="{{ route('mapping_fee.index', [$mapping_charge->id]) }}" class="btn btn-secondary">Refresh</a>
+                                <a href="{{ route('product.fee.index', [$product->id]) }}" class="btn btn-secondary">Refresh</a>
                             </section>
                         </section>
                         <form action="#" method="POST" class="input-group input-group-sm ml-3" role="form">
                             {{ csrf_field() }}
                             <section class="input-group input-group-sm">
-                                <input id="search" name="search" type="search" class="form-control" placeholder="Search by fee receiver type, name or account" style="width:240px!important;" />
+                                <input id="search" name="search" type="search" class="form-control" placeholder="Search ..." style="width:240px!important;" />
                                 <span class="input-group-btn">
                                 <button class="btn btn-secondary" type="submit">Find</button>
                                 </span>
                             </section>
                         </form>
                         <section class="btn-group btn-group-sm ml-3">
-                            <a href="{{ $mapping_fees->previousPageUrl() }}" class="btn btn-secondary {{ ($mapping_fees->previousPageUrl() != null) ?: ' disabled' }}">Previous</a>
-                            <a href="{{ $mapping_fees->nextPageUrl() }}" class="btn btn-secondary {{ ($mapping_fees->hasMorePages() == true) ?: ' disabled' }}">Next</a>
+                            <a href="{{ $rows->previousPageUrl() }}" class="btn btn-secondary {{ ($rows->previousPageUrl() != null) ?: ' disabled' }}">Previous</a>
+                            <a href="{{ $rows->nextPageUrl() }}" class="btn btn-secondary {{ ($rows->hasMorePages() == true) ?: ' disabled' }}">Next</a>
                         </section>
                     </section>
                 </section>
@@ -55,7 +55,7 @@
                 				<thead>
                 					<tr>
                 						<th colspan="4" class="px-3 py-2 text-white rounded-top" style="background: rgba(0,0,0,.7)">
-                							<b>MAPPING CHARGE INFO</b>
+                							<b>MAPPING PRODUCT CHARGE INFO</b>
                 						</th>
                 					</tr>
                 				</thead>
@@ -66,33 +66,54 @@
 									<tr>
 										<td class="px-3 py-2 small-caps">fee sharing status</td>
 										<td class="px-3 py-2 small-caps" style="border-right: 1px solid #e9eaec;">
-											@if ($mapping_charge->amount - $mapping_fees->sum('amount') == 0)
+											@if ($product->charge - $rows->sum('fee') == 0)
 											<span class="badge badge-info">complete</span>
-											@else
-											<span class="badge badge-danger">incomplete</span>
+											@elseif ($product->charge > $rows->sum('fee'))
+                                            <span class="badge badge-danger">incomplete</span>
+                                            @else
+											<span class="badge badge-warning">overlimit</span>
 											@endif
 										</td>
-										<td class="px-3 py-2 small-caps">service</td>
-										<td class="px-3 py-2 small-caps"><code>{{ strtoupper($mapping_charge->service()->first()['name']) }}</code></td>
+										<td class="px-3 py-2 small-caps">product name</td>
+										<td class="px-3 py-2">{{ $product->product_sales()->first()->product_purchase()->first()->products()->first()->name }}</td>
 									</tr>
+                                    <tr>
+                                        <td class="px-3 py-2 small-caps">supplier</td>
+                                        <td class="px-3 py-2" style="border-right: 1px solid #e9eaec;">
+                                            <span class="badge badge-default">
+                                                {{ $product->product_sales()->first()->product_purchase()->first()->companies()->first()->name }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 small-caps">
+                                            purchase price
+                                        </td>
+                                        <td class="px-3 py-2 small-caps">
+                                            {{ sprintf('Rp %s', number_format($product->product_sales()->first()->product_purchase()->first()->price)) }}
+                                        </td>
+                                    </tr>
 									<tr>
-										<td class="px-3 py-2 small-caps">charge</td>
-										<td class="px-3 py-2 small-caps" style="border-right: 1px solid #e9eaec;"><span class="badge badge-default">{{ strtolower($mapping_charge->charge()->first()['name']) }}</span></td>
-										<td class="px-3 py-2 small-caps">
-											{{ $mapping_charge->account_type()->first()['name'] }}
-										</td>
-										<td class="px-3 py-2 small-caps">
+										<td class="px-3 py-2 small-caps">merchant</td>
+										<td class="px-3 py-2" style="border-right: 1px solid #e9eaec;">
 											<span class="badge badge-default">
-												{{ strtolower($mapping_charge->account()->first()->companies()->first()['name']) }}
-												{{ strtolower($mapping_charge->account()->first()->merchants()->first()['name']) }}
+                                                {{ $product->product_sales()->first()->merchants()->first()->name }}
 											</span>
+                                        </td>
+                                        <td class="px-3 py-2 small-caps">
+                                            sales price
+                                        </td>
+                                        <td class="px-3 py-2 small-caps">
+                                            {{ sprintf('Rp %s', number_format($product->product_sales()->first()->price)) }}
 										</td>
 									</tr>
 									<tr>
-										<td class="px-3 py-2 small-caps">amount</td>
-										<td class="px-3 py-2" style="border-right: 1px solid #e9eaec;">{{ sprintf('Rp %s', number_format($mapping_charge->amount)) }}</td>
+										<td class="px-3 py-2 small-caps">charge amount</td>
+										<td class="px-3 py-2" style="border-right: 1px solid #e9eaec;">
+                                            {{ sprintf('Rp %s', number_format($product->charge)) }}
+                                        </td>
 										<td class="px-3 py-2 small-caps">remaining amount</td>
-										<td class="px-3 py-2">{{ sprintf('Rp %s', number_format($mapping_charge->amount - $mapping_fees->sum('amount'))) }}</td>
+										<td class="px-3 py-2">
+                                            {{ sprintf('Rp %s', number_format($product->charge - $rows->sum('fee'))) }}
+                                        </td>
 									</tr>
                 				</tbody>
 							</table>
@@ -112,7 +133,7 @@
 	                        </tr>
                         </thead>
                         <tbody>
-                        @foreach($mapping_fees as $fee)
+                        @foreach($rows as $fee)
                             <tr>
 								<td>
 									<span class="badge badge-default small-caps">
@@ -124,20 +145,20 @@
 									{{ $fee->account()->first()->merchants()->first()['name'] }}
 								</td>
 								<td>{{ $fee->account()->first()['number'] }}</td>
-								<td>{{ sprintf('Rp %s', number_format($fee->amount)) }}</td>
+								<td>{{ sprintf('Rp %s', number_format($fee->fee)) }}</td>
 								<td>{{ $fee->created_at->format('j F Y') }}</td>
                                 <td class="text-right">
                                     <div class="btn-group btn-group-sm" role="group" aria-label="Tools">
-                                        {{-- <a href="{{ route('mapping_fee.edit', [$mapping_charge->id, $fee->id]) }}"
+                                        {{-- <a href="{{ route('product.fee.edit', [$product->id, $fee->id]) }}"
                                             class="btn btn-secondary py-0 small-caps">
                                             edit
                                         </a> --}}
                                         <a href="#" 
                                         	class="btn btn-secondary py-0 small-caps"
-                                        	onclick="event.preventDefault();document.getElementById('mapping_fee-delete-{{ $fee->id }}').submit();">
+                                        	onclick="event.preventDefault();document.getElementById('product.fee-delete-{{ $fee->id }}').submit();">
                                         	delete
                                         </a>
-                                        <form id="mapping_fee-delete-{{ $fee->id }}" action="{{ route('mapping_fee.delete', [$fee->id]) }}" method="POST" class="sr-only">
+                                        <form id="product.fee-delete-{{ $fee->id }}" action="{{ route('product.fee.delete', [$product->id, $fee->id]) }}" method="POST" class="sr-only">
                                             {{ csrf_field() }}
                                             {{ method_field('delete') }}
                                         </form>

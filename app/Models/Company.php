@@ -207,6 +207,14 @@ class Company extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function product_purchase()
+    {
+        return $this->hasMany(ProductPurchase::class);
+    }
+
+    /**
      * @return array
      */
     public function getAllUserIds()

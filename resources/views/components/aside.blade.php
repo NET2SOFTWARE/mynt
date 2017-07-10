@@ -75,10 +75,10 @@
         <section id="collapseProduct" class="collapse {{ in_array(Request::segment(1), ['product','mapping_product']) ? 'show' : '' }}" aria-labelledby="collapseProduct">
             <nav class="nav flex-column">
                 <a class="nav-link according-sub-item {{ Request::url() == route('product.index') ? 'active' : '' }}" href="{{ route('product.index') }}">All</a>
-                {{-- <a class="nav-link according-sub-item" href="{{ route('construction') }}">Setting Price</a> --}}
-                <a class="nav-link according-sub-item {{ Request::url() == route('product.mapping_price.index') ? 'active' : '' }}" href="{{ route('product.mapping_price.index') }}">Mapping Price</a>
-                {{-- <a class="nav-link according-sub-item" href="{{ route('construction') }}">Setting Tax & Fee</a> --}}
-                <a class="nav-link according-sub-item {{ Request::url() == route('mapping_product.index') ? 'active' : '' }}" href="{{ route('mapping_product.index') }}">Mapping Tax & Fee</a>
+                <a class="nav-link according-sub-item {{ Request::url() == route('product.purchase.index') ? 'active' : '' }}" href="{{ route('product.purchase.index') }}">Setting Purchase Price</a>
+                <a class="nav-link according-sub-item {{ Request::url() == route('product.sales.index') ? 'active' : '' }}" href="{{ route('product.sales.index') }}">Setting Sales Price</a>
+                <a class="nav-link according-sub-item {{ Request::url() == route('product.charge.index') ? 'active' : '' }}" href="{{ route('product.charge.index') }}">Setting Charge</a>
+                <a class="nav-link according-sub-item {{ Request::url() == route('product.fee.all') ? 'active' : '' }}" href="{{ route('product.fee.all') }}">Mapping Fee</a>
                 <a class="nav-link according-sub-item {{ Request::url() == route('product.deactivate.index') ? 'active' : '' }}" href="{{ route('product.deactivate.index') }}">Deactivate Product</a>
             </nav>
         </section>
@@ -160,15 +160,15 @@
         <a class="collapsed according-item" data-toggle="collapse" data-parent="#accordion" href="#collapseReportManagement" aria-expanded="false" aria-controls="collapseReportManagement">
             Report Management
         </a>
-        <section id="collapseReportManagement" class="collapse" aria-labelledby="collapseReportManagement">
+        <section id="collapseReportManagement" class="collapse {{ Request::segment(1) == 'report' ? 'show' : '' }}" aria-labelledby="collapseReportManagement">
             <nav class="nav flex-column">
                 <a class="nav-link according-sub-item {{ Request::url() == route('general.ledger.index') ? 'active' : '' }}" href="{{ route('general.ledger.index') }}">General Ledger</a>
-                <a class="nav-link according-sub-item" href="{{ route('construction') }}">Report Company</a>
-                <a class="nav-link according-sub-item" href="{{ route('construction') }}">Report Merchant</a>
-                <a class="nav-link according-sub-item" href="{{ route('construction') }}">Report Account</a>
-                <a class="nav-link according-sub-item" href="{{ route('construction') }}">Report Service</a>
-                <a class="nav-link according-sub-item" href="{{ route('construction') }}">Report Product</a>
-                <a class="nav-link according-sub-item" href="{{ route('construction') }}">Transaction Tracing</a>
+                <a class="nav-link according-sub-item {{ Request::url() == route('report.company.index') ? 'active' : '' }}" href="{{ route('report.company.index') }}">Report Company</a>
+                <a class="nav-link according-sub-item {{ Request::url() == route('report.merchant.index') ? 'active' : '' }}" href="{{ route('report.merchant.index') }}">Report Merchant</a>
+                <a class="nav-link according-sub-item {{ Request::url() == route('report.account.index') ? 'active' : '' }}" href="{{ route('report.account.index') }}">Report Account</a>
+                <a class="nav-link according-sub-item {{ Request::url() == route('report.service.index') ? 'active' : '' }}" href="{{ route('report.service.index') }}">Report Service</a>
+                <a class="nav-link according-sub-item {{ Request::url() == route('report.product.index') ? 'active' : '' }}" href="{{ route('report.product.index') }}">Report Product</a>
+                <a class="nav-link according-sub-item {{ Request::url() == route('report.tracing.index') ? 'active' : '' }}" href="{{ route('report.tracing.index') }}">Transaction Tracing</a>
             </nav>
         </section>
     </section>

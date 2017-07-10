@@ -11,7 +11,6 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}">
     <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link href="{{ asset('css/all.32f284e3bfdac4c187576560f9216b1d.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/dropzone.min.css') }}" rel="stylesheet">
     <style type="text/css">
         .multiselect-native-select .btn-group,
         .multiselect-native-select .btn-group button.multiselect {
@@ -48,8 +47,6 @@
     <script src="{{ asset('js/tether.min.js') }}"></script>
     <script src="{{ asset('js/app.cf855400ba521f241761.js') }}"></script>
     <script src="{{ asset('js/bootstrap-multiselect.js') }}"></script>
-    <script src="{{ asset('js/jquery.serialize-object.min.js') }}"></script>
-    <script src="{{ asset('js/dropzone.min.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
     <script>
         $(document).ready(function() {

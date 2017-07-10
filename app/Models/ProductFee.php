@@ -4,29 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class MappingProduct extends Model
+class ProductFee extends Model
 {
-    /**
-     * @var string
-     */
-    protected $table = 'mapping_product_tax_fee';
+    protected $table = 'product_charge_fees';
 
-    /**
-     * @var array
-     */
     protected $fillable = [
-    	'product_id',
+    	'product_charge_id',
     	'account_id',
-    	'tax',
     	'fee',
     ];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function product()
+    public function product_charge()
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(ProductCharge::class, 'product_charge_id');
     }
 
     /**
