@@ -105,8 +105,10 @@ class MappingFeeController extends Controller
     {
     	$validator = Validator::make($request->all(), [
             'mapping_charge_id' => 'required|numeric',
-            'account_id'        => 'required|numeric',
-            'amount'            => 'required|numeric',
+            'account_id'        => 'required|array',
+            'account_id.*'      => 'required|numeric',
+            'amount'            => 'required|array',
+            'amount.*'          => 'required|numeric',
         ]);
 
         if ($validator->fails())
@@ -119,34 +121,36 @@ class MappingFeeController extends Controller
                     ->withInput($request->all());
         }
 
-        $mapping_fee = MappingFee::firstOrNew([
-              'mapping_charge_id' => $request->input('mapping_charge_id')
-            , 'account_id' => $request->input('account_id')
-        ], []);
+        foreach ($request->input('account_id') as $key => $account_id) {
+            $mapping_fee = MappingFee::firstOrNew([
+                  'mapping_charge_id' => $request->input('mapping_charge_id')
+                , 'account_id' => $account_id
+            ], []);
 
-        if (! is_null($mapping_fee->id))
-        {
-            return ($request->ajax() || $request->isJson())
-                ? abort(500, config('code.500'))
-                : redirect()->back()
-                    ->with('warning', 'Fail to create fee mapping, selected fee receiver already exist in this fee sharing.')
-                    ->withInput($request->all());
+            if (! is_null($mapping_fee->id))
+            {
+                return ($request->ajax() || $request->isJson())
+                    ? abort(500, config('code.500'))
+                    : redirect()->back()
+                        ->with('warning', 'Fail to create fee mapping, selected fee receiver already exist in this fee sharing.')
+                        ->withInput($request->all());
+            }
+
+            $remaining = MappingCharge::findOrFail($request->input('mapping_charge_id'))->amount;
+            $existing_fee = MappingFee::where('mapping_charge_id', $request->input('mapping_charge_id'))->sum('amount');
+
+            if ($remaining - ($existing_fee + $request->input('amount')[$key]) < 0)
+            {
+                return ($request->ajax() || $request->isJson())
+                    ? abort(500, config('code.500'))
+                    : redirect()->back()
+                        ->with('warning', 'Fail to create fee mapping, overlimit fee sharing.')
+                        ->withInput($request->all());
+            }
+
+            $mapping_fee->amount = $request->input('amount')[$key];
+            $mapping_fee->save();
         }
-
-        $remaining = MappingCharge::findOrFail($request->input('mapping_charge_id'))->amount;
-        $existing_fee = MappingFee::where('mapping_charge_id', $request->input('mapping_charge_id'))->sum('amount');
-
-        if ($remaining - ($existing_fee + $request->input('amount')) < 0)
-        {
-            return ($request->ajax() || $request->isJson())
-                ? abort(500, config('code.500'))
-                : redirect()->back()
-                    ->with('warning', 'Fail to create fee mapping, overlimit fee sharing.')
-                    ->withInput($request->all());
-        }
-
-        $mapping_fee->amount = $request->input('amount');
-        $mapping_fee->save();
 
         return ($request->isJson() || $request->ajax())
             ? response()->json(compact(null), 201)

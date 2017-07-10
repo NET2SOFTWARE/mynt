@@ -195,6 +195,14 @@ class Merchant extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function product_sales()
+    {
+        return $this->hasMany(ProductSales::class);
+    }
+
+    /**
      * @return mixed
      */
     public function getAllAccountIds()

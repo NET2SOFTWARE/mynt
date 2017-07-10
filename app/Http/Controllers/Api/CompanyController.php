@@ -642,4 +642,11 @@ class CompanyController extends Controller
             ? response()->json(compact('company', 'accounts'), 200)
             : response()->view('pages.company-members', compact('company', 'accounts'), 200);
     }
+
+    public function report(Request $request)
+    {
+        $data = [];
+
+        return response()->view('pages.report-company', compact('data'), 200);
+    }
 }

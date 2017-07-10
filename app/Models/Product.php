@@ -77,8 +77,16 @@ class Product extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function mapping_product()
+    public function product_purchase()
     {
-        return $this->hasMany(MappingProduct::class);
+        return $this->hasMany(ProductPurchase::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function product_sales()
+    {
+        return $this->hasManyThrough(ProductSales::class, ProductPurchase::class);
     }
 }

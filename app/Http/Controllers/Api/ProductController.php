@@ -289,4 +289,10 @@ class ProductController extends Controller
                 ->with('success', 'product data was updated successfully.');
     }
 
+    public function report(Request $request)
+    {
+        $data = [];
+
+        return response()->view('pages.report-product', compact('data'), 200);
+    }
 }

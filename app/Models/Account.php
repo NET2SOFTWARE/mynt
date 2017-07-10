@@ -114,8 +114,8 @@ class Account extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function mapping_product()
+    public function product_fees()
     {
-        return $this->hasMany(MappingProduct::class);
+        return $this->hasMany(ProductFee::class);
     }
 }
