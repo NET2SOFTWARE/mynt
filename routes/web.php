@@ -9,7 +9,9 @@ Route::post('/login/merchant',          'Auth\LoginController@loginMerchant')->n
 Route::get('/login/company',            'Auth\LoginController@showLoginCompanyForm')->name('login.company');
 Route::post('/login/company',           'Auth\LoginController@loginCompany')->name('post.login.company');
 
+
 Route::get('/generate/token/{account}',    'Member\TokenController@requestToken')->name('generate.token');
+
 
 Route::get('/get_captcha', function (\Mews\Captcha\Captcha $captcha){return $captcha->src('default');});
 Route::get('/under_construction', function () { return view('under-construction'); })->name('construction');
@@ -20,11 +22,17 @@ Route::post('/confirmation/resend',         'EmailConfirmationController@resend'
 Route::get('/mynt-id',                      'MyntController@showForm')->middleware('confirmation')->name('mynt_id');
 Route::post('/mynt-id',                     'MyntController@store')->middleware('confirmation')->name('mynt_id.store');
 
+
+
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->middleware(['confirmation', 'mynt'])->name('home');
 
+
+
 Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
+
     Route::prefix('user/member')->group(function () {
         Route::get('/profile',                              'MemberController@profile')->name('profile');
         Route::get('/upgrade',                              'MemberController@upgrade')->name('upgrade');
@@ -62,6 +70,8 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::post('/bank',                                'Member\BankController@store')->name('bank.store');
     });
 
+
+
     Route::prefix('user/merchant')->group(function () {
         Route::get('/profile',                      'Merchant\ProfileController@profile')->name('merchant.profile');
         Route::get('/accounting',                   'Merchant\AccountingController@accounting')->name('merchant.accounting');
@@ -76,6 +86,10 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::get('/summary/transaction/purchase', 'Merchant\SummaryController@summaryPurchase')->name('merchant.summary.purchase');
         Route::get('/accessibility/notification',   'Merchant\AccessibilityController@notification')->name('merchant.accessibility.notification');
         Route::get('/accessibility/log/access',     'Merchant\AccessibilityController@log_access')->name('merchant.accessibility.log_access');
+        Route::get('/management/account',           'Merchant\ManagementController@account')->name('merchant.management.account');
+        Route::get('/management/bank',              'Merchant\ManagementController@bank')->name('merchant.management.bank');
+        Route::get('/management/bank/create',       'Merchant\ManagementController@bankCreate')->name('merchant.management.bank.create');
+        Route::post('/management/bank',             'Merchant\ManagementController@bankStore')->name('merchant.management.bank.store');
     });
 
     Route::prefix('user/company')->group(function () {
@@ -93,8 +107,16 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::post('/list/merchant',               'Company\GroupController@sortMerchant')->name('company.list.merchant.sort');
         Route::get('/accessibility/notification',   'Company\AccessibilityController@notification')->name('company.accessibility.notification');
         Route::get('/accessibility/log/access',     'Company\AccessibilityController@log')->name('company.accessibility.log');
+        Route::get('/management/account',           'Company\ManagementController@account')->name('company.management.account');
+        Route::get('/management/bank',              'Company\ManagementController@bank')->name('company.management.bank');
+        Route::get('/management/bank/create',       'Company\ManagementController@showFormRegisterBank')->name('company.management.bank.create');
+        Route::post('/management/bank',              'Company\ManagementController@storeBank')->name('company.management.bank.store');
     });
 });
+
+
+
+
 
 Route::prefix('admin')->group(function (){
     Route::get('/',         'AdminController@index')->name('admin.home');
@@ -102,7 +124,12 @@ Route::prefix('admin')->group(function (){
     Route::post('/login',   'Auth\AdminLoginController@login')->name('admin.login.submit');
 });
 
+
+
+
+
 Route::middleware(['auth:admin'])->group(function (){
+
     Route::prefix('transaction')->group(function (){
         Route::get('/',             'Api\TransactionController@index')->name('transaction.index');
         Route::get('/success',      'Api\TransactionController@success')->name('transaction.success.index');
@@ -137,6 +164,7 @@ Route::middleware(['auth:admin'])->group(function (){
     });
 
     Route::prefix('merchant')->group(function (){
+
         Route::patch('/{id}/product',           'Api\MerchantController@saveProduct')->name('merchant.save.product');
         Route::patch('/{id}/terminal',          'Api\MerchantController@saveTerminal')->name('merchant.save.terminal');
         Route::patch('/{id}/bank',              'Api\MerchantController@saveBank')->name('merchant.save.bank');
@@ -295,7 +323,6 @@ Route::middleware(['auth:admin'])->group(function (){
         Route::patch('/{id}',       'Api\IdentityController@update')->name('identity.update');
         Route::delete('/{id}',      'Api\IdentityController@destroy')->name('identity.delete');
     });
-
     Route::prefix('industry')->group(function (){
         Route::get('/',             'Api\IndustryController@index')->name('industry.index');
         Route::get('/create',       'Api\IndustryController@create')->name('industry.create');
@@ -307,7 +334,6 @@ Route::middleware(['auth:admin'])->group(function (){
         Route::patch('/{id}',       'Api\IndustryController@update')->name('industry.update');
         Route::delete('/{id}',      'Api\IndustryController@destroy')->name('industry.delete');
     });
-
     Route::prefix('partnership')->group(function (){
         Route::get('/',             'Api\PartnershipController@index')->name('partnership.index');
         Route::get('/create',       'Api\PartnershipController@create')->name('partnership.create');
@@ -319,7 +345,6 @@ Route::middleware(['auth:admin'])->group(function (){
         Route::patch('/{id}',       'Api\PartnershipController@update')->name('partnership.update');
         Route::delete('/{id}',      'Api\PartnershipController@destroy')->name('partnership.delete');
     });
-
     Route::prefix('country')->group(function (){
         Route::get('/',             'Api\CountryController@index')->name('country.index');
         Route::get('/create',       'Api\CountryController@create')->name('country.create');
@@ -331,7 +356,6 @@ Route::middleware(['auth:admin'])->group(function (){
         Route::patch('/{id}',       'Api\CountryController@update')->name('country.update');
         Route::delete('/{id}',      'Api\CountryController@destroy')->name('country.delete');
     });
-
     Route::prefix('state')->group(function (){
         Route::get('/',             'Api\StateController@index')->name('state.index');
         Route::get('/create',       'Api\StateController@create')->name('state.create');
@@ -343,7 +367,6 @@ Route::middleware(['auth:admin'])->group(function (){
         Route::patch('/{id}',       'Api\StateController@update')->name('state.update');
         Route::delete('/{id}',      'Api\StateController@destroy')->name('state.delete');
     });
-
     Route::prefix('city')->group(function (){
         Route::get('/',             'Api\CityController@index')->name('city.index');
         Route::get('/create',       'Api\CityController@create')->name('city.create');
@@ -386,6 +409,7 @@ Route::middleware(['auth:admin'])->group(function (){
             Route::delete('/fees/{id}',                         'Api\MappingFeeController@destroy')->name('mapping_fee.delete');
         });
     });
+
 
     Route::prefix('report')->group(function (){
         Route::get('/general/ledger',   'Api\GeneralPassbookController@index')->name('general.ledger.index');

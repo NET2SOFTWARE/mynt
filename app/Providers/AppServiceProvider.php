@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Contracts\AccessConfigurationInterface;
 use App\Contracts\AccountInterface;
+use App\Contracts\AreaInterface;
 use App\Contracts\BankInterface;
 use App\Contracts\ContactInterface;
+use App\Contracts\EncryptInterface;
 use App\Contracts\GlobalPassbookInterface;
 use App\Contracts\InquiryInterface;
 use App\Contracts\InvoiceInterface;
@@ -20,6 +22,7 @@ use App\Contracts\PicInterface;
 use App\Contracts\PositionInterface;
 use App\Contracts\ProfileInterface;
 use App\Contracts\RegistrationInterface;
+use App\Contracts\RemittanceInterface;
 use App\Contracts\TokenInterface;
 use App\Contracts\UserInterface;
 use App\Contracts\MemberInterface;
@@ -31,9 +34,11 @@ use App\Contracts\RoleInterface;
 use App\Contracts\CityInterface;
 use App\Services\AccessConfigurationRepository;
 use App\Services\AccountRepository;
+use App\Services\AreaRepository;
 use App\Services\BankRepository;
 use App\Services\CityRepository;
 use App\Services\ContactRepository;
+use App\Services\EncryptRepository;
 use App\Services\GlobalPassbookRepository;
 use App\Services\InquiryRepository;
 use App\Services\InvoiceRepository;
@@ -49,6 +54,7 @@ use App\Services\PicRepository;
 use App\Services\PositionRepository;
 use App\Services\ProfileRepository;
 use App\Services\RegistrationRepository;
+use App\Services\RemittanceRepository;
 use App\Services\RoleRepository;
 use App\Services\StateRepository;
 use App\Contracts\StateInterface;
@@ -138,5 +144,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(LogLoginInterface::class, LogLoginRepository::class);
         $this->app->bind(ParentAccountInterface::class, ParentAccountRepository::class);
         $this->app->bind(AccessConfigurationInterface::class, AccessConfigurationRepository::class);
+
+        $this->app->bind(AreaInterface::class, AreaRepository::class);
+        $this->app->bind(EncryptInterface::class, EncryptRepository::class);
+        $this->app->bind(RemittanceInterface::class, RemittanceRepository::class);
     }
 }

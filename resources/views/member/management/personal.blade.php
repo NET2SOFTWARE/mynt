@@ -41,6 +41,29 @@
                         </ul>
                     </section>
                     <section class="card-block">
+                        <section class="col-sm-4 col-md-4">
+                                <section class="card medium">
+                                    <section class="card-img-top text-center mt-3">
+                                        <img src="{{ asset('img/member/member.jpg') }}" alt="{{ Auth::user()->name }}" class="rounded-circle">
+                                    </section>
+                                    <section class="card-block text-center">
+                                        <section class="text-center mb-3">
+                                            <a href="#" class="btn btn-sm py-0 btn-outline-success" data-toggle="modal" data-target="#myntModal">Upload Photo</a>
+                                        </section>
+                                        <h6 class="card-title"><strong>{{ Auth::user()->name }}</strong></h6>
+                                    </section>
+                                    <ul class="list-group list-group-flush medium-small lh-1-2">
+                                        <li class="list-group-item justify-content-between">No. Acc <span class="text-muted">{{ Auth::user()->members->first()['accounts'][0]['number'] }}</span></li>
+                                        <li class="list-group-item justify-content-between">MYNT ID <span class="text-muted">{{ Auth::user()->members->first()['accounts'][0]['mynt_id'] }}</span></li>
+                                        <li class="list-group-item justify-content-between">Balance Limit <span class="text-muted">{{ Auth::user()->members->first()['accounts'][0]['limit_balance'] }}</span></li>
+                                        <li class="list-group-item justify-content-between">Transaction Limit <span class="text-muted">{{ Auth::user()->members->first()['accounts'][0]['limit_balance_transaction'] }}</span></li>
+                                        <li class="list-group-item justify-content-between border-bottom-0">Register <span class="text-muted">{{ date('d-m-Y', strtotime(Auth::user()->created_at)) }}</span></li>
+                                    </ul>
+                                    <section class="card-footer">
+                                        <small class="text-muted">Last updated {{ Auth::user()->updated_at }}</small>
+                                    </section>
+                                </section>
+                            </section>
 
                     </section>
                     <section class="card-footer">

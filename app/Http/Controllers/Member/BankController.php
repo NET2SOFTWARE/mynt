@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Member;
 
+use App\Contracts\AreaInterface;
+use App\Contracts\BankInterface;
+use App\Contracts\StateInterface;
 use App\Models\Bank;
 use App\Models\Member;
 use Illuminate\Http\Request;
@@ -12,6 +15,35 @@ use Illuminate\Support\Facades\Validator;
 class BankController extends Controller
 {
     /**
+     * @var AreaInterface
+     */
+    private $area;
+
+    /**
+     * @var BankInterface
+     */
+    private $bank;
+
+    private $state;
+
+    /**
+     * BankController constructor.
+     * @param BankInterface $bank
+     * @param AreaInterface $area
+     * @param StateInterface $state
+     */
+    public function __construct(
+        BankInterface $bank,
+        AreaInterface $area,
+        StateInterface $state
+    )
+    {
+        $this->area = $area;
+        $this->bank = $bank;
+        $this->state = $state;
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -20,12 +52,21 @@ class BankController extends Controller
     {
         $banks = Bank::all();
 
+        $regencies = $this->area->gets();
+
+        $provinces = $this->state->gets(['id', 'name']);
+
         return response()
-            ->view('member.management.bank', compact('banks'), 200);
+            ->view('member.management.bank', compact('banks', 'regencies', 'provinces'), 200);
     }
 
+    /**
+     * @param Request $request
+     * @return $this|\Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
+
         Validator::make($request->all(), [
             'bank'  => 'required|exists:banks,id',
             'bank_account_name' => 'required|numeric'

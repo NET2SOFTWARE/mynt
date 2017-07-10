@@ -94,7 +94,7 @@
                                     <p class="medium-small text-grey">No registered bank account yet.</p>
                                 @endif
                             </section>
-                            <section class="col-sm-4 col-md-4">
+                            <!-- <section class="col-sm-4 col-md-4">
                                 <section class="card medium">
                                     <section class="card-img-top text-center mt-3">
                                         <img src="{{ asset('img/member/member.jpg') }}" alt="{{ Auth::user()->name }}" class="rounded-circle">
@@ -116,7 +116,7 @@
                                         <small class="text-muted">Last updated {{ Auth::user()->updated_at }}</small>
                                     </section>
                                 </section>
-                            </section>
+                            </section> -->
                         </section>
                     </section>
                     <section class="card-footer">

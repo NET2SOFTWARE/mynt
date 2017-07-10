@@ -12,21 +12,21 @@ class SummaryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function summary()
+    public function summaryProduct()
     {
         return response()
-            ->view('merchant.summary', compact(null), 200);
+            ->view('merchant.summary-product');
     }
 
     public function summaryPayment()
     {
         return response()
-            ->view('merchant.summary-payment-product', compact(null), 200);
+            ->view('merchant.summary-payment-product');
     }
 
     public function summaryPurchase()
     {
         return response()
-            ->view('merchant.summary-purchase-product', compact(null), 200);
+            ->view('merchant.summary-purchase-product');
     }
 }

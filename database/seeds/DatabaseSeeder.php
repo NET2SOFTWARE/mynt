@@ -34,5 +34,6 @@ class DatabaseSeeder extends Seeder
         $this->call(BanksTableSeeder::class);
         $this->call(AccessConfigurationsTableSeeder::class);
         $this->call(SuperAdminRoleConfigurationsTableSeeder::class);
+        $this->call(AreasTableSeeder::class);
     }
 }
