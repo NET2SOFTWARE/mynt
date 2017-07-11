@@ -754,8 +754,15 @@ class MerchantController extends Controller
 
     public function report(Request $request)
     {
+        $merchants = Merchant::all();
+
+        return response()->view('pages.report-merchant', compact('merchants'), 200);
+    }
+
+    public function reportShow(Request $request)
+    {
         $data = [];
 
-        return response()->view('pages.report-merchant', compact('data'), 200);
+        return response()->view('pages.report-merchant-show', compact('data'), 200);
     }
 }

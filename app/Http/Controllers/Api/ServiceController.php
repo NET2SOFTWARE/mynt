@@ -241,4 +241,11 @@ class ServiceController extends Controller
 
         return response()->view('pages.report-service', compact('data'), 200);
     }
+
+    public function reportShow(Request $request)
+    {
+        $data = [];
+
+        return response()->view('pages.report-service-show', compact('data'), 200);
+    }
 }

@@ -62,7 +62,7 @@
             <nav class="nav flex-column">
                 <a class="nav-link according-sub-item {{ Request::url() == route('service.index') ? 'active' : '' }}" href="{{ route('service.index') }}">All</a>
                 <a class="nav-link according-sub-item {{ Request::url() == route('charge.index') ? 'active' : '' }}" href="{{ route('charge.index') }}">Setting Charge</a>
-                <a class="nav-link according-sub-item {{ Request::url() == route('mapping_charge.index') ? 'active' : '' }}" href="{{ route('mapping_charge.index') }}">Mapping Charge</a>
+                <a class="nav-link according-sub-item {{ Request::url() == route('mapping_charge.index') ? 'active' : '' }}" href="{{ route('mapping_charge.index') }}">Mastering Charge</a>
                 <a class="nav-link according-sub-item {{ Request::url() == route('mapping_fee.all') ? 'active' : '' }}" href="{{ route('mapping_fee.all') }}">Mapping Fee</a>
                 <a class="nav-link according-sub-item {{ Request::url() == route('service.deactivate.index') ? 'active' : '' }}" href="{{ route('service.deactivate.index') }}">Deactivate Services</a>
             </nav>

@@ -15,16 +15,33 @@
                     <section>
                         <p class="medium lh-1-5 mb-0">REPORT TRANSACTION TRACING</p>
                     </section>
-                    <section class="d-flex justify-content-between align-content-st align-items-baseline">
-                        <section class="d-flex justify-content-between align-content-start">
-                            <section class="btn-group btn-group-sm">
-                                <button type="button" class="btn btn-secondary">Print</button>
-                                <a href="{{ route('report.tracing.index') }}" class="btn btn-secondary">Refresh</a>
-                            </section>
-                        </section>
-                    </section>
                 </section>
+
+                <form method="POST" action="{{ route('report.tracing.show') }}" accept-charset="utf-8" role="form">
+                {{ csrf_field() }}
+
+                    <section class="col-md-6 offset-md-3 mt-5">
+
+                        <fieldset class="form-group">
+                            <label class="pl-2">Input transaction</label>
+                            <input type="text" name="number" class="form-control">
+                        </fieldset>
+                        <hr class="my-4">
+                        <div class="text-center">
+                            <button type="submit" role="button" class="btn btn-primary">Generate Report</button>
+                        </div>
+                    </section>
+
+                </form>
             </section>
         </section>
     </article>
+@endsection
+
+@section('script')
+<script>
+    $(document).ready(function() {
+        $('button').off('click');
+    });
+</script>
 @endsection

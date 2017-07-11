@@ -445,11 +445,19 @@ Route::middleware(['auth:admin'])->group(function (){
 
     Route::prefix('report')->group(function (){
         Route::get('/general/ledger',   'Api\GeneralPassbookController@index')->name('general.ledger.index');
+        
         Route::get('/company',          'Api\CompanyController@report')->name('report.company.index');
         Route::get('/merchant',         'Api\MerchantController@report')->name('report.merchant.index');
         Route::get('/account',          'Api\AccountController@report')->name('report.account.index');
         Route::get('/service',          'Api\ServiceController@report')->name('report.service.index');
         Route::get('/product',          'Api\ProductController@report')->name('report.product.index');
         Route::get('/tracing',          'Api\TransactionController@report')->name('report.tracing.index');
+
+        Route::post('/company/show',    'Api\CompanyController@reportShow')->name('report.company.show');
+        Route::post('/merchant/show',   'Api\MerchantController@reportShow')->name('report.merchant.show');
+        Route::post('/account/show',    'Api\AccountController@reportShow')->name('report.account.show');
+        Route::post('/service/show',    'Api\ServiceController@reportShow')->name('report.service.show');
+        Route::post('/product/show',    'Api\ProductController@reportShow')->name('report.product.show');
+        Route::post('/tracing/show',    'Api\TransactionController@reportShow')->name('report.tracing.show');
     });
 });
