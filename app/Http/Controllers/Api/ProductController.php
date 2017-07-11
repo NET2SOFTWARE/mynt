@@ -295,4 +295,11 @@ class ProductController extends Controller
 
         return response()->view('pages.report-product', compact('data'), 200);
     }
+
+    public function reportShow(Request $request)
+    {
+        $data = [];
+
+        return response()->view('pages.report-product-show', compact('data'), 200);
+    }
 }

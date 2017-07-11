@@ -13,4 +13,11 @@ class AccountController extends Controller
 
         return response()->view('pages.report-account', compact('data'), 200);
     }
+
+    public function reportShow(Request $request)
+    {
+        $data = [];
+
+        return response()->view('pages.report-account-show', compact('data'), 200);
+    }
 }

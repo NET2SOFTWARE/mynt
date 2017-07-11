@@ -645,8 +645,15 @@ class CompanyController extends Controller
 
     public function report(Request $request)
     {
+        $companies = Company::all();
+
+        return response()->view('pages.report-company', compact('companies'), 200);   
+    }
+
+    public function reportShow(Request $request)
+    {
         $data = [];
 
-        return response()->view('pages.report-company', compact('data'), 200);
+        return response()->view('pages.report-company-show', compact('data'), 200);
     }
 }

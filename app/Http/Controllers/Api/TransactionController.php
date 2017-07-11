@@ -560,4 +560,11 @@ class TransactionController extends Controller
 
         return response()->view('pages.report-tracing', compact('data'), 200);
     }
+
+    public function reportShow(Request $request)
+    {
+        $data = [];
+
+        return response()->view('pages.report-tracing-show', compact('data'), 200);
+    }
 }
