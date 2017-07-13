@@ -10,4 +10,5 @@ interface RemittanceInterface
     public function inquiry(array $data);
     public function inquiryStatus(array $data);
     public function transfer(array $data);
+    public function hash(string $data);
 }

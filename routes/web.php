@@ -58,8 +58,16 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::get('/management/personal',                  'Member\ManagementController@personal')->name('member.management');
         Route::get('/management/bank',                      'Member\BankController@index')->name('member.management.bank');
         Route::post('/management/bank',                     'Member\BankController@store')->name('member.management.bank.store');
+        Route::get('/management/bank/register',             'Member\BankController@showFormRegisterBank')->name('member.management.create');
         Route::patch('/management/bank',                    'Member\BankController@store')->name('member.management.bank.update');
         Route::get('/management/child',                     'Member\ManagementController@child')->name('member.management.child');
+
+        Route::get('/management/personal/edit/account',     'Member\ManagementController@showFormEditAccount')->name('member.management.edit.account');
+        Route::get('/management/personal/edit/password',    'Member\ManagementController@showFormEditPassword')->name('member.management.edit.password');
+        Route::get('/management/personal/edit/photo',       'Member\ManagementController@showFormEditPhoto')->name('member.management.edit.photo');
+        Route::post('/management/personal/store/account',    'Member\ManagementController@editAccount')->name('member.management.store.account');
+        Route::post('/management/personal/store/password',   'Member\ManagementController@editPassword')->name('member.management.store.password');
+        Route::post('/management/personal/store/photo',      'Member\ManagementController@editPhoto')->name('member.management.store.photo');
 
         Route::get('/token',                                'Member\TokenController@showForm')->name('member.token.form');
         Route::post('/token',                               'Member\TokenController@store')->name('member.token.store');
@@ -67,8 +75,6 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::get('/child-account',                        'Member\ChildController@index')->name('child.index');
         Route::get('/child-account/new',                    'Member\ChildController@showForm')->name('child.form');
         Route::post('/child-account',                       'Member\ChildController@createChild')->name('child.store');
-        Route::get('/bank',                                 'Member\BankController@index')->name('bank.index');
-        Route::post('/bank',                                'Member\BankController@store')->name('bank.store');
     });
 
 
@@ -91,6 +97,7 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::get('/management/bank',              'Merchant\ManagementController@bank')->name('merchant.management.bank');
         Route::get('/management/bank/create',       'Merchant\ManagementController@bankCreate')->name('merchant.management.bank.create');
         Route::post('/management/bank',             'Merchant\ManagementController@bankStore')->name('merchant.management.bank.store');
+        Route::get('/report',                       'Merchant\ReportController@index')->name('merchant.report');
     });
 
     Route::prefix('user/company')->group(function () {
@@ -112,6 +119,14 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::get('/management/bank',              'Company\ManagementController@bank')->name('company.management.bank');
         Route::get('/management/bank/create',       'Company\ManagementController@showFormRegisterBank')->name('company.management.bank.create');
         Route::post('/management/bank',              'Company\ManagementController@storeBank')->name('company.management.bank.store');
+        Route::get('/report',                       'Company\ReportController@index')->name('company.report');
+
+        Route::get('/management/account/identity/edit', 'Company\ManagementController@showEditAccountForm')->name('company.management.edit.identity');
+        Route::get('/management/account/password/edit', 'Company\ManagementController@showEditPasswordForm')->name('company.management.edit.password');
+        Route::get('/management/account/photo/edit',    'Company\ManagementController@showEditPhotoForm')->name('company.management.edit.photo');
+        Route::post('/management/account/identity',      'Company\ManagementController@editAccount')->name('company.management.store.identity');
+        Route::post('/management/account/password',      'Company\ManagementController@editPassword')->name('company.management.store.password');
+        Route::post('/management/account/photo',         'Company\ManagementController@editPhoto')->name('company.management.store.photo');
     });
 });
 

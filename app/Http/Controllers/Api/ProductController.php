@@ -71,7 +71,7 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        $product = $this->product->insert($this->product->attribute($request->only(['name', 'price', 'description'])));
+        $product = $this->product->insert($this->product->attribute($request->only(['name', 'description'])));
 
         abort_unless($product, 500);
 
@@ -132,7 +132,7 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, $id)
     {
-        $product = $this->product->update($id, $request->only(['name', 'price', 'description']));
+        $product = $this->product->update($id, $request->only(['name', 'description']));
 
         abort_unless($product, config('code.500'));
 

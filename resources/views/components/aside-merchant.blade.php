@@ -25,5 +25,6 @@
         <a href="{{ route('merchant.summary.product') }}" class="list-group-item list-group-item-action py-2{{ $active == 'summary' ? ' active' : ''}}">Summary Transaction</a>
         <a href="{{ route('merchant.accessibility.notification') }}" class="list-group-item list-group-item-action py-2{{ $active == 'accessibility' ? ' active' : ''}}">Accessibility</a>
         <a href="{{ route('merchant.management.account') }}" class="list-group-item list-group-item-action py-2{{ $active == 'management' ? ' active' : ''}}">Account Management</a>
+        <a href="{{ route('merchant.report') }}" class="list-group-item list-group-item-action py-2{{ $active == 'report' ? ' active' : ''}}">Reporting</a>
     </nav>
 </aside>

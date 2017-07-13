@@ -25,6 +25,12 @@ Route::prefix('mobile')->middleware('auth:api')->group(function () {
     Route::post('/transaction',                         'Api\TransactionController@transaction')->name('api.request.token');
     Route::post('/member/mynt/create',                  'Api\MemberController@mynt')->name('api.member.mynt');
     Route::get('/check/transaction/status/{trx_id}',    'Api\TransactionController@check_status')->name('api.transaction.check');
+
+    Route::post('/remittance/register',                 'Api\RemittanceController@register')->name('api.remittance.register');
+    Route::post('/remittance/delete/account',           'Api\RemittanceController@delete_account')->name('api.remittance.delete.account');
+    Route::post('/remittance/inquiry/status',           'Api\RemittanceController@inquiry_status')->name('api.remittance.inquiry.status');
+    Route::post('/remittance/inquiry',                  'Api\RemittanceController@inquiry')->name('api.remittance.inquiry');
+    Route::post('/remittance/transfer',                  'Api\RemittanceController@transfer')->name('api.remittance.transfer');
 });
 
 Route::prefix('transaction')->group(function (){

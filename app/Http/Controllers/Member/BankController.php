@@ -50,14 +50,19 @@ class BankController extends Controller
      */
     public function index()
     {
+        return response()
+            ->view('member.management.bank', compact('banks', 'regencies', 'provinces'), 200);
+    }
+
+    public function showFormRegisterBank()
+    {
         $banks = Bank::all();
 
         $regencies = $this->area->gets();
 
         $provinces = $this->state->gets(['id', 'name']);
 
-        return response()
-            ->view('member.management.bank', compact('banks', 'regencies', 'provinces'), 200);
+        return view('member.management.bank-create', compact('banks', 'regencies', 'provinces'));
     }
 
     /**

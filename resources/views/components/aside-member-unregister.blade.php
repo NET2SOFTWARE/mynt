@@ -38,12 +38,14 @@
         <a href="{{ route('member.management') }}" class="list-group-item list-group-item-action py-2{{ $active == 'management' ? ' active' : ''}}">Account Management</a>
     </nav>
     <section class="card">
+        <section class="card-header border-bottom-0">
+            <span class="medium">Information</span>
+        </section>
         <ul class="list-group list-group-flush medium">
-        <li class="list-group-item py-1 justify-content-between">Information<span class="text-muted"></span></li>
             <li class="list-group-item py-1 justify-content-between">Balance limit <span class="text-grey">{{ number_format(Auth::user()->members->first()['accounts'][0]['limit_balance']) }}</span></li>
             <li class="list-group-item py-1 justify-content-between border-bottom-0">Transaction limit <span class="text-grey">{{ number_format(Auth::user()->members->first()['accounts'][0]['limit_balance_transaction']) }}</span></li>
         </ul>
-        <section class="card-footer py-2">
+        <section class="card-footer">
             <small class="text-muted">{{ ucwords(Auth::user()->members->first()['companies'][0]['name']) }}</small>
         </section>
     </section>

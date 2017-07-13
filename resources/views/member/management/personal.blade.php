@@ -41,14 +41,63 @@
                         </ul>
                     </section>
                     <section class="card-block">
-                        <section class="col-sm-4 col-md-4">
+                        <section class="row">
+                            <section class="col-sm-8 col-md-8 px-md-5">
+                                <h6 class="medium d-flex justify-content-between">
+                                    <small class="text-uppercase text-warning mb-1">IDENTITY</small>
+                                    <span><a href="{{ route('member.management.edit.account') }}" class="btn btn-sm btn-outline-success py-0" data-toggle="tooltip" data-placement="top" title="Update personal data">Update</a></span>
+                                </h6>
+                                <hr class="mt-0 mb-1">
+                                <ul class="list-group list-group-flush medium-small lh-1-2 mb-5">
+                                    <li class="list-group-item justify-content-between border-top-0">
+                                        Full name
+                                        <span>{{ Auth::user()->name }}</span>
+                                    </li>
+                                    <li class="list-group-item justify-content-between">
+                                        Phone
+                                        <span>{{ Auth::user()->phone }}</span>
+                                    </li>
+                                </ul>
+                                <h6 class="medium d-flex justify-content-between align-items-baseline">
+                                    <small class="text-uppercase text-warning mb-1">CREDENTIAL</small>
+                                    <span><a href="{{ route('member.management.edit.password') }}" class="btn btn-sm btn-outline-success py-0" data-toggle="tooltip" data-placement="top" title="Update credential data">Change password</a></span>
+                                </h6>
+                                <hr class="mt-0 mb-1">
+                                <ul class="list-group list-group-flush medium-small lh-1-2 mb-5">
+                                    <li class="list-group-item justify-content-between border-top-0">
+                                        E-mail address
+                                        <span>{{ Auth::user()->email }}</span>
+                                    </li>
+                                    <li class="list-group-item justify-content-between">
+                                        Password
+                                        <span>
+                                            <strong>&#42;&#42;&#42;&#42;&#42;</strong>
+                                        </span>
+                                    </li>
+                                </ul>
+                                <h6 class="medium d-flex justify-content-between align-items-baseline lh-1-5">
+                                    <small class="text-uppercase text-warning mb-1">BANK</small>
+                                    <span><a href="{{ route('member.management.create') }}" class="btn btn-sm btn-outline-success py-0" data-toggle="tooltip" data-placement="top" title="Register new bank account">Register new bank</a></span>
+                                </h6>
+                                <hr class="mt-0">
+                                @if(count(Auth::user()->members->first()['banks']) >= 1)
+                                    <p class="mb-0 d-flex justify-content-between medium-small lh-1-2">
+                                        <span>{{ Auth::user()->members->first()['banks'][0]['bank_code'] }}</span>
+                                        <span>{{ strtoupper(Auth::user()->members->first()['banks'][0]['bank_name']) }}</span>
+                                        <span>{{ Auth::user()->members->first()['banks'][0]['pivot']['account_number'] }}</span>
+                                    </p>
+                                @else
+                                    <p class="medium-small text-grey">No registered bank account yet.</p>
+                                @endif
+                            </section>
+                            <section class="col-sm-4 col-md-4">
                                 <section class="card medium">
                                     <section class="card-img-top text-center mt-3">
                                         <img src="{{ asset('img/member/member.jpg') }}" alt="{{ Auth::user()->name }}" class="rounded-circle">
                                     </section>
                                     <section class="card-block text-center">
                                         <section class="text-center mb-3">
-                                            <a href="#" class="btn btn-sm py-0 btn-outline-success" data-toggle="modal" data-target="#myntModal">Upload Photo</a>
+                                            <a href="{{ route('member.management.edit.photo') }}" class="btn btn-sm py-0 btn-outline-success">Upload Photo</a>
                                         </section>
                                         <h6 class="card-title"><strong>{{ Auth::user()->name }}</strong></h6>
                                     </section>
@@ -64,7 +113,7 @@
                                     </section>
                                 </section>
                             </section>
-
+                        </section>
                     </section>
                     <section class="card-footer">
                         <small class="text-muted">Note : If you have a trouble, please contact our cumtumer service.</small>

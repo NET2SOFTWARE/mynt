@@ -9,31 +9,32 @@
     <article class="col">
         <section class="row">
             @component('components.aside-company', ['active' => 'accounting'])@endcomponent
-            <section class="col-md-9 py-3">
-                <h6 class="mb-4 d-flex flex-row justify-content-between align-items-baseline">Account Sheet</h6>
-                <section class="card my-3" style="min-height:540px">
+            <section class="col-md-9">
+                <section class="card mt-3" style="min-height:624px">
                     <section class="card-header">
                         <ul class="nav nav-tabs card-header-tabs medium-small">
                             <li class="nav-item"><a class="nav-link active" href="{{ route('company.accounting') }}">Account Balance</a></li>
                         </ul>
                     </section>
-                    <section class="card-block">
-                        <section class="mb-3 d-flex flex-column">
-                            <form method="POST" action="{{ route('company.sort.accounting') }}" class="form-inline align-self-end" role="form">
-                                {{ csrf_field() }}
-                                <section class="input-group input-group-sm mr-2 input-daterange">
-                                    <label for="sort-from" class="sr-only"></label>
-                                    <input id="start_date" name="start_date" type="text" class="form-control" value="{{ date('d-m-Y') }}" style="max-width:105px">
-                                    <span class="input-group-addon" id="to">To</span>
-                                    <label for="sort-to" class="sr-only"></label>
-                                    <input id="end_date" name="end_date" type="text" class="form-control" value="{{ date('d-m-Y') }}" style="max-width:105px">
-                                    <span class="input-group-btn">
+                    <section class="card-block d-flex flex-column justify-content-between">
+                        <section class="col-auto w-100 d-flex justify-content-end">
+                            <section class="mb-3 d-flex justify-content-between">
+                                <form method="POST" action="{{ route('company.sort.accounting') }}" class="form-inline" accept-charset="utf-8" role="form">
+                                    {{ csrf_field() }}
+                                    <section class="input-group input-group-sm input-daterange">
+                                        <label for="sort-from" class="sr-only"></label>
+                                        <input id="start_date" name="start_date" type="text" class="form-control" value="{{ date('d-m-Y') }}" style="max-width:105px">
+                                        <span class="input-group-addon" id="to">To</span>
+                                        <label for="sort-to" class="sr-only"></label>
+                                        <input id="end_date" name="end_date" type="text" class="form-control" value="{{ date('d-m-Y') }}" style="max-width:105px">
+                                        <span class="input-group-btn">
                                         <button type="submit" class="btn btn-sm btn-secondary">&nbsp;Find&nbsp;</button>
                                     </span>
-                                </section>
-                            </form>
+                                    </section>
+                                </form>
+                            </section>
                         </section>
-                        <section class="table-sm table-responsive">
+                        <section class="col px-0 table-sm table-responsive">
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
@@ -59,9 +60,6 @@
                                 </tbody>
                             </table>
                         </section>
-                    </section>
-                    <section class="card-footer d-flex justify-content-between">
-                        <small class="text-muted"><strong>{{ count($passbooks) }}</strong>&nbsp;&nbsp;Account sheet data.</small>
                     </section>
                 </section>
             </section>

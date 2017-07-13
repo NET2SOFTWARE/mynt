@@ -30,7 +30,6 @@ class ProductRequest extends FormRequest
                 return [
                     'name'          => 'required|string|max:40|unique:products,name',
                     'description'   => 'nullable|max:120',
-                    'price'         => 'required|numeric|min:0',
                 ];
             }
 
@@ -40,7 +39,6 @@ class ProductRequest extends FormRequest
                 return [
                     'name'          => 'required|string|max:40',
                     'description'   => 'max:120',
-                    'price'         => 'required|numeric|min:0',
                 ];
             }
 
