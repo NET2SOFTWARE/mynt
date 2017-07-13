@@ -41,23 +41,31 @@
                         </ul>
                     </section>
                     <section class="card-block">
-                        <section class="row">
-                            <section class="col-md-12 px-5">
-                                @if (session('warning'))
-                                    <section class="alert alert-success">{{ session('warning') }}</section>
-                                    <br/>
-                                @elseif(session('success'))
-                                    <section class="alert alert-success">{{ session('success') }}</section>
-                                    <br/>
-                                @endif
-                                <form class="card card-block p-4" action="{{ route('member.management.bank.store') }}" method="POST" accept-charset="utf-8" role="form">
-                                    {{ csrf_field() }}
-                                    @include('forms.bank-register')
-                                    <section class="form-group mt-4 mb-0">
-                                        <button type="submit" class="btn btn-sm btn-block btn-primary">{{ (count(Auth::user()->members->first()['banks']) >= 1) ? 'Update bank account' : 'Register my bank account' }}</button>
-                                    </section>
-                                </form>
-                            </section>
+                        <p class="d-flex medium justify-content-end mb-4">
+                            <a href="{{ route('member.management.create') }}" class="btn btn-sm btn-success">Register bank account</a>
+                        </p>
+                        <section class="table-sm table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>ACCOUNT BANK NAME</th>
+                                    <th>BANK CODE</th>
+                                    <th>BANK NAME</th>
+                                    <th>ACCOUNT BANK NUMBER</th>
+                                </tr>
+                                </thead>
+                                <tbody class="medium-small lh-1-2">
+                                {{--<tr>--}}
+                                    {{--<td>{{ date('d-m-Y H:i:s', strtotime($child->created_at)) }}</td>--}}
+                                    {{--<td>{{ $child->name }}</td>--}}
+                                    {{--<td>{{ $child->phone }}</td>--}}
+                                    {{--<td>{{ $child->email }}</td>--}}
+                                    {{--<td>{{ $child->members->first()['accounts'][0]['limit_balance'] }}</td>--}}
+                                    {{--<td>{{ $child->members->first()['accounts'][0]['limit_balance_transaction'] }}</td>--}}
+                                    {{--<td>{{ collect($child->members->first()['accounts'][0]['passbooks'])->sum('balance') }}</td>--}}
+                                {{--</tr>--}}
+                                </tbody>
+                            </table>
                         </section>
                     </section>
                     <section class="card-footer">

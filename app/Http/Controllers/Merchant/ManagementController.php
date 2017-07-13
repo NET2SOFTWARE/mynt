@@ -2,56 +2,58 @@
 
 namespace App\Http\Controllers\Merchant;
 
-use App\Contracts\CityInterface;
+use App\Contracts\AreaInterface;
+use App\Contracts\BankInterface;
+use App\Contracts\StateInterface;
 use Illuminate\Http\Request;
+use App\Contracts\CityInterface;
 use App\Http\Controllers\Controller;
 
 class ManagementController extends Controller
 {
-    /**
-     * @var CityInterface
-     */
-    private $city;
+
+    private $state;
 
     /**
-     * ManagementController constructor.
-     * @param CityInterface $city
+     * @var AreaInterface
      */
-    public function __construct(CityInterface $city)
+    private $area;
+
+    /**
+     * @var BankInterface
+     */
+    private $bank;
+
+    public function __construct(
+        StateInterface  $state,
+        AreaInterface   $area,
+        BankInterface   $bank
+    )
     {
-        $this->city = $city;
+        $this->state    = $state;
+        $this->area     = $area;
+        $this->bank     = $bank;
     }
 
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
     public function account()
     {
         return view('merchant.management-account');
     }
 
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
     public function bank()
     {
         return view('merchant.management-bank');
     }
 
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function bankCreate()
+    public function showFormRegisterBank()
     {
-        $cities = $this->city->gets(['id', 'name']);
+        $regencies  = $this->area->gets();
+        $provinces  = $this->state->gets();
+        $banks      = $this->bank->gets();
 
-        return view('merchant.management-bank-create', compact('cities'));
+        return view('merchant.management-bank-create', compact('provinces', 'regencies', 'banks'));
     }
 
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function bankStore(Request $request)
     {
         return redirect()

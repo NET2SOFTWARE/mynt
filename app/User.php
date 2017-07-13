@@ -198,7 +198,7 @@ class User extends Authenticatable
             $ids = $role->id;
         }
 
-        return $$ids;
+        return $ids;
     }
 
     /**

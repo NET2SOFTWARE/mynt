@@ -3,7 +3,7 @@
         <section class="form-group{{ $errors->has('bank') ? ' has-danger' : '' }}">
             <label for="bank">Bank</label>
             <select id="bank" name="bank" class="custom-select w-100">
-                <option selected disabled>Choose bank</option>
+                <option selected disabled>Choose one bank</option>
                 @foreach($banks as $bank)
                     <option value="{{ $bank->id }}"{{ collect(Auth::user()->members->first()['banks'])->contains('id', $bank->id) ? ' selected' : '' }}>{{ $bank->bank_code.'&nbsp;&nbsp;&nbsp;'.strtoupper($bank->bank_name) }}</option>
                 @endforeach
@@ -47,8 +47,8 @@
             <small class="form-text small text-muted d-flex justify-content-between" id="birthdateHelp">Birth date format, Eg. 1990-04-23 <span class="text-grey">Required</span></small>
             @if ($errors->has('birthdate'))<span class="form-control-feedback">{{ $errors->first('birthdate') }}</span>@endif
         </section>
-        <section class="form-group{{ $errors->has('identitynumber') ? ' has-danger' : '' }}">
-            <label for="identitynumber">Birth date</label>
+        <section class="form-group mb-0 {{ $errors->has('identitynumber') ? ' has-danger' : '' }}">
+            <label for="identitynumber">Identity number</label>
             <input id="identitynumber" type="text" name="identitynumber" class="form-control" value="{{ old('identitynumber') }}" placeholder="Identity number" aria-describedby="identityNumberHelp">
             <small class="form-text small text-muted d-flex justify-content-between" id="identityNumberHelp">Identity (KTP/PASSPORT) number. <span class="text-grey">Required</span></small>
             @if ($errors->has('identitynumber'))<span class="form-control-feedback">{{ $errors->first('identitynumber') }}</span>@endif
@@ -56,7 +56,7 @@
     </section>
     <section class="col-sm-6 col-md-6">
         <section class="form-group{{ $errors->has('occupation') ? ' has-danger' : '' }}">
-            <label for="occupation">Birth date</label>
+            <label for="occupation">Occupation</label>
             <input id="occupation" type="text" name="occupation" class="form-control" value="{{ old('occupation') }}" placeholder="Occupation" aria-describedby="occupationHelp">
             <small class="form-text small text-muted d-flex justify-content-between" id="occupationHelp">Occupation, numeric only Eg. 0101011xxxx <span class="text-grey">Required</span></small>
             @if ($errors->has('occupation'))<span class="form-control-feedback">{{ $errors->first('occupation') }}</span>@endif
@@ -70,7 +70,7 @@
         <section class="form-group{{ $errors->has('regency') ? ' has-danger' : '' }}">
             <label for="regency">Regency</label>
             <select id="regency" name="regency" class="custom-select w-100" aria-describedby="regencyHelp" required>
-                <option selected disabled>Choose regency</option>
+                <option selected disabled>Choose one regency</option>
                 @foreach($regencies as $regency)
                     <option value="{{ $regency->id }}">{{ ucwords($regency->name) }}</option>
                 @endforeach
@@ -81,7 +81,7 @@
         <section class="form-group{{ $errors->has('province') ? ' has-danger' : '' }}">
             <label for="province">Province</label>
             <select id="province" name="province" class="custom-select w-100" aria-describedby="provinceHelp" required>
-                <option selected disabled>Choose regency</option>
+                <option selected disabled>Choose one province</option>
                 @foreach($provinces as $province)
                     <option value="{{ $province->id }}">{{ ucwords($province->name) }}</option>
                 @endforeach
@@ -101,5 +101,30 @@
             <small class="form-text small text-muted d-flex justify-content-between" id="countryHelp">Please choose one of province <span class="text-grey">Required</span></small>
             @if ($errors->has('country'))<span class="form-control-feedback">{{ $errors->first('country') }}</span>@endif
         </section>
+        <section class="form-group{{ $errors->has('captcha') ? ' has-danger' : '' }}">
+            <label for="amount" class="col-form-label">Security code</label>
+            <section class="d-flex justify-content-between">
+                <figure class="col-auto mb-0">
+                    <img class="img-thumbnail" style="padding:3px!important;min-height:33px" id="img_captcha" src="{{ captcha_src('default') }}" height="44" width="158" alt="Captcha"/>
+                </figure>
+                <section class="col pr-0">
+                    <section class="input-group">
+                        <section class="input-group-btn">
+                            <a id="reload_captcha" href="javascript:void(0)" class="btn btn-sm btn-secondary d-flex px-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                    <path d="M12 6v3l4-4-4-4v3c-4.42 0-8 3.58-8 8 0 1.57.46 3.03 1.24 4.26L6.7 14.8c-.45-.83-.7-1.79-.7-2.8 0-3.31 2.69-6 6-6zm6.76 1.74L17.3 9.2c.44.84.7 1.79.7 2.8 0 3.31-2.69 6-6 6v-3l-4 4 4 4v-3c4.42 0 8-3.58 8-8 0-1.57-.46-3.03-1.24-4.26z"/>
+                                </svg>
+                            </a>
+                        </section>
+                        <input id="captcha" type="text" class="form-control" name="captcha" value="{{ old('captcha') }}" placeholder="Captcha code" aria-describedby="captchaHelp" required>
+                    </section>
+                    <small class="form-text lh-1-2 text-muted d-flex justify-content-between" id="captchaHelp">Enter security code <span class="text-grey">Required</span></small>
+                    @if ($errors->has('captcha'))<span class="form-control-feedback">{{ $errors->first('captcha') }}</span>@endif
+                </section>
+            </section>
+        </section>
     </section>
+</section>
+<section class="mt-5">
+    <button class="btn btn-block btn-primary" type="submit" role="button">Register bank account</button>
 </section>

@@ -9,16 +9,16 @@
     <article class="col">
         <section class="row">
             @component('components.aside-company', ['active' => 'accessibility'])@endcomponent
-            <section class="col-md-9 py-3">
-                <section class="card" style="min-height:620px">
+            <section class="col-md-9">
+                <section class="card mt-3" style="min-height:624px">
                     <section class="card-header">
                         <ul class="nav nav-tabs card-header-tabs medium-small">
                             <li class="nav-item"><a class="nav-link active" href="{{ route('company.accessibility.notification') }}">Notification</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('company.accessibility.log') }}">Log Access</a></li>
                         </ul>
                     </section>
-                    <section class="card-block">
-                        <section class="d-flex justify-content-end mb-3">
+                    <section class="card-block d-flex flex-column justify-content-between">
+                        <section class="col-auto d-flex justify-content-end w-100 mb-3">
                             <section class="d-flex justify-content-between">
                                 <form action="#" method="POST" accept-charset="utf-8" role="form" style="min-width:240px">
                                     <label for="search-date" class="sr-only">Search by date</label>
@@ -33,12 +33,12 @@
                                     </section>
                                 </form>
                                 <section class="btn-group btn-group-sm ml-3">
-                                    <a href="{{ $notifications->previousPageUrl() }}" class="btn btn-secondary{{ ($notifications->previousPageUrl() != null) ?: ' disabled' }}">Previous</a>
-                                    <a href="{{ $notifications->nextPageUrl() }}" class="btn btn-secondary{{ ($notifications->hasMorePages()) ?: ' disabled' }}">Next</a>
+                                    <a href="{{ $notifications->previousPageUrl() }}" class="btn btn-secondary {{ ($notifications->previousPageUrl() != null) ?: ' disabled' }}">Previous</a>
+                                    <a href="{{ $notifications->nextPageUrl() }}" class="btn btn-secondary {{ ($notifications->hasMorePages()) ?: ' disabled' }}">Next</a>
                                 </section>
                             </section>
                         </section>
-                        <section class="table-sm table-responsive">
+                        <section class="col px-0 table-sm table-responsive">
                             <table class="table table-hover">
                                 <thead>
                                 <tr>

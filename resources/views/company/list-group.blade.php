@@ -9,17 +9,16 @@
     <article class="col">
         <section class="row">
             @component('components.aside-company', ['active' => 'list_group'])@endcomponent
-            <section class="col-md-9 py-3">
-                <section class="card" style="min-height:620px">
+            <section class="col-md-9">
+                <section class="card mt-3" style="min-height:624px">
                     <section class="card-header">
                         <ul class="nav nav-tabs card-header-tabs medium-small">
                             <li class="nav-item"><a class="nav-link active" href="{{ route('company.list.member') }}">All Member</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('company.list.merchant') }}">All Merchant</a></li>
                         </ul>
                     </section>
-                    <section class="card-block">
-                        <section class="d-flex justify-content-between w-100 mb-3">
-                            <section>&nbsp;</section>
+                    <section class="card-block d-flex flex-column justify-content-between">
+                        <section class="col-auto d-flex justify-content-end w-100 mb-3">
                             <section class="d-flex justify-content-end">
                                 <form action="{{ route('company.list.member.sort') }}" method="POST" class="input-group input-group-sm ml-3" role="form">
                                     {{ csrf_field() }}
@@ -39,7 +38,7 @@
                                 </section>
                             </section>
                         </section>
-                        <section class="table-sm table-responsive">
+                        <section class="col px-0 table-sm table-responsive">
                             <table class="table table-hover table-striped">
                                 <thead>
                                 <tr>
@@ -65,9 +64,6 @@
                                 </tbody>
                             </table>
                         </section>
-                    </section>
-                    <section class="card-footer d-flex justify-content-between text-grey medium-small lh-1-2">
-                        <span>Total&nbsp;:&nbsp;{{ $members->count() }}</span>
                     </section>
                 </section>
             </section>

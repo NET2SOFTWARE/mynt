@@ -30,7 +30,7 @@ class ProductRepository extends AbstractInterface implements ProductInterface
     {
         return [
             'name'          => $attributes['name'],
-            'price'         => $attributes['price'],
+            // 'price'         => $attributes['price'],
             // 'photo'         => $attributes['photo'],
             'description'   => $attributes['description']
         ];
