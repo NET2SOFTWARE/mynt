@@ -44,7 +44,6 @@
                                 <tr class="medium">
                                     <th>NAME</th>
                                     <th>DESCRIPTION</th>
-                                    <th>DEFAULT PRICE</th>
                                     <th>CREATED DATE</th>
                                     <th></th>
                                 </tr>
@@ -54,7 +53,6 @@
                                 <tr>
                                     <td>{{ $product->name }}</td>
                                     <td>{{ $product->description }}</td>
-                                    <td>{{ sprintf('Rp %s', number_format($product->price)) }}</td>
                                     <td>{{ $product->created_at->format('j F Y') }}</td>
                                     <td class="text-right">
                                         <div class="btn-group btn-group-sm" role="group" aria-label="Tools">

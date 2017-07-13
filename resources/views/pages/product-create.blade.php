@@ -39,23 +39,13 @@
                             </small>
                         </fieldset>
                         <fieldset class="form-group">
-                            <label for="price">Default Price</label>
-                            <input id="price" name="price" class="form-control" value="{{ old('price')  }}" type="number" />
-                            @if ($errors->has('price'))
-                                <section class="form-control-feedback">{{ $errors->first('price') }}</section>
-                            @endif
-                            <small class="form-text text-muted d-flex justify-content-between">
-                                Numeric, min. 0. <span class="text-grey">Required</span>
-                            </small>
-                        </fieldset>
-                        <fieldset class="form-group">
                             <label for="description">Description</label>
                             <textarea class="form-control"
-                            	id="description"
-                            	name="description"
-                            	rows="3">
-                            	{{ old('description') }}	
-                        	</textarea>
+                                id="description"
+                                name="description"
+                                rows="3">
+                                {{ old('description') }}    
+                            </textarea>
                             @if ($errors->has('description'))
                                 <section class="form-control-feedback">{{ $errors->first('description') }}</section>
                             @endif

@@ -44,12 +44,6 @@
                                 @if ($errors->has('name'))<section class="form-control-feedback">{{ $errors->first('name') }}</section>@endif
                                 <small class="form-text text-muted d-flex justify-content-between" id="nameHelp">Full product name. Max. 40 characters. <span class="text-grey">Required</span></small>
                             </fieldset>
-                            <fieldset class="form-group{{ $errors->has('name') ? ' has-danger' : '' }}">
-                                <label for="price">Default Price</label>
-                                <input id="price" name="price" class="form-control" value="{{ $product->price }}" type="number" aria-describedby="priceHelp">
-                                @if ($errors->has('price'))<section class="form-control-feedback">{{ $errors->first('price') }}</section>@endif
-                                <small class="form-text text-muted d-flex justify-content-between" id="priceHelp">Product price. Min. 0. <span class="text-grey">Required</span></small>
-                            </fieldset>
                             <fieldset class="form-group">
                                 <label for="description">Description</label>
                                 <textarea id="description" rows="5" name="description" class="form-control" aria-describedby="descriptionHelp">{{ $product->description }}</textarea>
