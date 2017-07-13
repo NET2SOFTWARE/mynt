@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use DB;
+use SnappyPDF;
+use Lava;
+use Khill\Lavacharts\Lavacharts;
 use App\Models\Company;
 use App\Models\Bank;
 use App\Models\Product;
@@ -11,6 +14,7 @@ use App\Models\Transaction;
 use App\Models\Member;
 use App\Models\Merchant;
 use App\Models\Account;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use App\Services\Confirmation;
 use App\Contracts\UserInterface;
@@ -650,10 +654,246 @@ class CompanyController extends Controller
         return response()->view('pages.report-company', compact('companies'), 200);   
     }
 
+    // public function reportShow(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'company_id'    => 'required|numeric|exists:companies,id',
+    //         'type'          => 'required|string|in:daily,ranged,monthly',
+    //         'date'          => 'required_if:type,daily|date_format:m/d/Y|before_or_equal:' . date('m/d/Y'),
+    //         'date_from'     => 'required_if:type,ranged|date_format:m/d/Y|before:date_to',
+    //         'date_to'       => 'required_if:type,ranged|date_format:m/d/Y|before_or_equal:' . date('m/d/Y'),
+    //         'year'          => 'required_if:type,monthly|numeric|min:2017',
+    //         'month'         => 'required_if:type,monthly|numeric|between:1,12',
+    //     ]);
+
+    //     if ($validator->fails()) return redirect()->route('report.company.index')->withInput()->withErrors($validator);
+
+    //     $charts = [];
+    //     $data = [];
+
+    //     $company = Company::find($request->input('company_id'));
+    //     $services = Service::with('transaction')->get();
+
+    //     $data['count_member'] = $company->members->count();
+    //     $data['count_merchant'] = $company->merchants->count();
+    //     $data['count_account'] = $data['count_member'] + $data['count_merchant'];
+    //     $data['services'] = $services->pluck('name')->toArray();
+
+    //     for ($i=0; $i < 4; $i++) { 
+    //         $charts[] = app()->chartjs
+    //             ->name('pieChartTest'.$i)
+    //             ->type('pie')
+    //             ->size(['width' => 400, 'height' => 200])
+    //             ->labels(['Label x', 'Label y'])
+    //             ->datasets([
+    //                 [
+    //                     'backgroundColor' => ['#FF6384', '#36A2EB'],
+    //                     'hoverBackgroundColor' => ['#FF6384', '#36A2EB'],
+    //                     'data' => [69, 59]
+    //                 ]
+    //             ])
+    //             ->options([]);
+    //     }
+
+    //     $charts['accounts'] = app()->chartjs
+    //         ->name('accounts')
+    //         ->type('pie')
+    //         ->size(['width' => 400, 'height' => 200])
+    //         ->labels(['Member', 'Merchant'])
+    //         ->datasets([
+    //             [
+    //                 'backgroundColor' => ['#1976d2', '#009688'],
+    //                 'hoverBackgroundColor' => ['#82b1ff', '#4db6ac'],
+    //                 'data' => [
+    //                     null, // $data['count_merchant'],
+    //                     null, // $data['count_member'],
+    //                 ]
+    //             ]
+    //         ])
+    //         ->options([]);
+
+    //     $charts['closedAccounts'] = app()->chartjs
+    //         ->name('closedAccounts')
+    //         ->type('pie')
+    //         ->size(['width' => 400, 'height' => 200])
+    //         ->labels(['All', 'Closed'])
+    //         ->datasets([
+    //             [
+    //                 'backgroundColor' => ['#1976d2', '#f44336'],
+    //                 'hoverBackgroundColor' => ['#82b1ff', '#e57373'],
+    //                 'data' => [
+    //                     $data['count_account'],
+    //                     0,
+    //                 ]
+    //             ]
+    //         ])
+    //         ->options([]);
+
+    //     $charts['transactions'] = app()->chartjs
+    //         ->name('transactions')
+    //         ->type('pie')
+    //         ->size(['width' => 380, 'height' => 300])
+    //         ->labels($data['services'])
+    //         ->datasets([
+    //             [
+    //                 // 'backgroundColor' => [
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 // ],
+    //                 // 'hoverBackgroundColor' => [
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 //     '#000',
+    //                 // ],
+    //                 // 'backgroundColor' => ['#1976d2', '#f44336'],
+    //                 // 'hoverBackgroundColor' => ['#82b1ff', '#e57373'],
+    //                 'data' => [
+    //                     10,
+    //                     0,
+    //                     0,
+    //                     0,
+    //                     0,
+    //                     0,
+    //                     0,
+    //                     0,
+    //                     0,
+    //                     0,
+    //                 ]
+    //             ]
+    //         ])
+    //         ->options([]);
+
+    //     $charts['transactionsAmount'] = app()->chartjs
+    //         ->name('transactionsAmount')
+    //         ->type('pie')
+    //         ->size(['width' => 400, 'height' => 200])
+    //         ->labels(['All', 'Closed'])
+    //         ->datasets([
+    //             [
+    //                 'backgroundColor' => ['#1976d2', '#f44336'],
+    //                 'hoverBackgroundColor' => ['#82b1ff', '#e57373'],
+    //                 'data' => [
+    //                     $data['count_account'],
+    //                     0,
+    //                 ]
+    //             ]
+    //         ])
+    //         ->options([]);
+
+    //     return response()->view('pages.report-company-show', compact('data', 'charts'), 200);
+    // }
+
     public function reportShow(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'company_id'    => 'required|numeric|exists:companies,id',
+            'type'          => 'required|string|in:daily,ranged,monthly',
+            'date'          => 'required_if:type,daily|date_format:m/d/Y|before_or_equal:' . date('m/d/Y'),
+            'date_from'     => 'required_if:type,ranged|date_format:m/d/Y|before:date_to',
+            'date_to'       => 'required_if:type,ranged|date_format:m/d/Y|before_or_equal:' . date('m/d/Y'),
+            'year'          => 'required_if:type,monthly|numeric|min:2017',
+            'month'         => 'required_if:type,monthly|numeric|between:1,12',
+        ]);
+
+        if ($validator->fails()) return redirect()->route('report.company.index')->withInput()->withErrors($validator);
+
         $data = [];
 
-        return response()->view('pages.report-company-show', compact('data'), 200);
+        $company = Company::find($request->input('company_id'));
+        $services = Service::with('transaction')->get();
+
+        $data['company'] = $company;
+        $data['services'] = $services;
+        $data['count_member'] = $company->members->count();
+        $data['count_merchant'] = $company->merchants->count();
+        $data['count_account'] = $data['count_member'] + $data['count_merchant'];
+        $data['total_income'] = 0;
+        $data['total_income_company'] = 0;
+
+        $accounts = Lava::DataTable();
+        $accounts->addStringColumn('Type')
+            ->addNumberColumn('Counts')
+            ->addRow(['Member', $data['count_member']])
+            ->addRow(['Merchant', $data['count_merchant']]);
+            
+        Lava::PieChart('Accounts', $accounts, [
+            'title'  => 'Accounts belongs to this company',
+            // 'png' => true,
+        ]);
+
+        $closedAccounts = Lava::DataTable();
+        $closedAccounts->addStringColumn('Type')
+            ->addNumberColumn('Count')
+            ->addRow(['Active', $data['count_account']])
+            ->addRow(['Closed', 0]);
+
+        Lava::PieChart('ClosedAccounts', $closedAccounts, [
+            'title'  => 'Accounts closed that belongs to this company',
+            // 'png' => true,
+        ]);
+
+        $transactions = Lava::DataTable();
+        $transactions->addStringColumn('Service')->addNumberColumn('Count');
+
+        foreach ($services as $service) $transactions->addRow([$service->name, $service->transaction->count()]);
+
+        Lava::PieChart('Transactions', $transactions, [
+            'title'  => 'Transaction count by service',
+            // 'png' => true,
+        ]);
+
+        $transactionsAmount = Lava::DataTable();
+        $transactionsAmount->addStringColumn('Service')->addNumberColumn('Amount');
+
+        foreach ($services as $service) $transactionsAmount->addRow([$service->name, $service->transaction->sum('amount')]);
+
+        Lava::PieChart('TransactionsAmount', $transactionsAmount, [
+            'title'  => 'Transaction amount by service',
+            // 'png' => true,
+        ]);
+
+        return response()->view('pages.report-company-show', compact('request', 'data'), 200);
+    }
+
+    public function reportPrint(Request $request)
+    {
+        $charts = [];
+        $data = [];
+
+        $company = Company::find($request->input('company_id'));
+        $services = Service::with('transaction')->get();
+
+        $data['count_member'] = $company->members->count();
+        $data['count_merchant'] = $company->merchants->count();
+        $data['count_account'] = $data['count_member'] + $data['count_merchant'];
+        $data['services'] = $services->pluck('name')->toArray();
+
+        $accounts = Lava::DataTable();
+        $accounts->addStringColumn('Types')->addNumberColumn('Counts')
+            ->addRow(['Member', $data['count_member']])
+            ->addRow(['Merchant', $data['count_merchant']]);
+        Lava::PieChart('Accounts', $accounts, [
+            'title'  => 'Accounts belongs to this company',
+            'png' => true,
+        ]);
+
+        $pdf = SnappyPDF::loadView('pages.report-company-show', compact('request', 'data'));
+
+        return $pdf->download('report.pdf');
     }
 }

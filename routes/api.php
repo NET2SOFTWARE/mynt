@@ -32,6 +32,8 @@ Route::prefix('transaction')->group(function (){
     Route::post('/settle',      'Api\InquiryController@settle')->name('api.transaction.settle');
     Route::post('/inquiry',     'Api\InquiryController@store')->name('api.transaction.inquiry');
 
+    Route::get('/list',         'Api\TransactionController@list')->name('api.transaction.list');
+
     Route::get('/',             'Api\TransactionController@index')->name('api.transaction.index');
     Route::post('/',            'Api\TransactionController@transaction')->name('api.transaction');
     Route::get('/success',      'Api\TransactionController@success')->name('api.transaction.success.index');
