@@ -11,22 +11,21 @@ class EncryptRepository implements EncryptInterface
      * @param string $plainText
      * @return mixed
      */
-    public function RsaEncrypt(string $plainText)
+    public function encrypt(string $plainText)
     {
         $rsa = new RSA();
-        define('CRYPT_RSA_PKCS15_COMPAT', true);
         $rsa->loadKey(file_get_contents(storage_path('remittance-private.key')));
-        return $rsa->encrypt($plainText);
+        return bin2hex($rsa->encrypt($plainText));
     }
 
     /**
      * @param string $cipherText
      * @return mixed
      */
-    public function RsaDecrypt(string $cipherText)
+    public function decrypt(string $cipherText)
     {
         $rsa = new RSA();
         $rsa->loadKey(file_get_contents(storage_path('remittance-public.pem')));
-        return $rsa->decrypt(base64_decode($cipherText));
+        return bin2hex($rsa->decrypt($cipherText));
     }
 }

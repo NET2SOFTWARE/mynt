@@ -9,52 +9,35 @@
     <article class="col">
         <section class="row">
             @component('components.aside-company', ['active' => 'management'])@endcomponent
-            <section class="col-md-9 py-3">
-                <section class="card" style="min-height:620px">
+            <section class="col-md-9">
+                <section class="card mt-3" style="min-height:624px">
                     <section class="card-header">
                         <ul class="nav nav-tabs card-header-tabs medium-small">
-                            <li class="nav-item"><a class="nav-link" href="{{ route('company.management.account') }}">Account management</a></li>
-                            <li class="nav-item"><a class="nav-link active" href="{{ route('company.management.bank') }}">Bank management</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route('company.management.account') }}">Personal Account</a></li>
+                            <li class="nav-item"><a class="nav-link active" href="{{ route('company.management.bank') }}">Bank Account</a></li>
                         </ul>
                     </section>
-                    <section class="card-block">
-                        <section class="d-flex justify-content-end mb-3">
-                            <section class="d-flex justify-content-between">
-                                <form action="#" method="POST" accept-charset="utf-8" role="form" style="min-width:240px">
-                                    <label for="search-date" class="sr-only">Search by date</label>
-                                    <section class="input-group input-group-sm" id="search-date">
-                                        <span class="input-group-btn">
-                                            <a href="{{ route('company.accessibility.log') }}" class="btn btn-secondary">Refresh</a>
-                                        </span>
-                                        <input id="search_date" name="search_date" type="text" class="form-control" placeholder="Search by date">
-                                        <span class="input-group-btn">
-                                        <button type="submit" class="btn btn-sm btn-secondary">&nbsp;Find&nbsp;</button>
-                                    </span>
-                                    </section>
-                                </form>
-                                <section class="btn-group btn-group-sm ml-3">
-                                    <a href="{{ $logs->previousPageUrl() }}" class="btn btn-secondary{{ ($logs->previousPageUrl() != null) ?: ' disabled' }}">Previous</a>
-                                    <a href="{{ $logs->nextPageUrl() }}" class="btn btn-secondary{{ ($logs->hasMorePages()) ?: ' disabled' }}">Next</a>
-                                </section>
-                            </section>
+                    <section class="card-block d-flex flex-column justify-content-between">
+                        <section class="col-auto d-flex justify-content-end align-items-baseline">
+                            <a href="{{ route('company.management.bank.create') }}" class="btn btn-sm btn-outline-success">Register Bank Account</a>
                         </section>
-                        <section class="table-sm table-responsive">
-                            <table class="table table-hover">
+                        <section class="col px-0 mt-3 table-sm table-responsive">
+                            <table class="table table-hover table-striped">
                                 <thead>
                                 <tr>
-                                    <th>IP. ADDRESS</th>
-                                    <th>DATE</th>
-                                    <th>TIME</th>
+                                    <th>BANK ACCOUNT NAME</th>
+                                    <th>BANK ACCOUNT NUMBER</th>
+                                    <th>BANK CODE</th>
+                                    <th>BANK NAME</th>
+
                                 </tr>
                                 </thead>
                                 <tbody class="medium-small lh-1-2">
-                                {{--@foreach($logs as $log)--}}
                                     {{--<tr>--}}
-                                        {{--<td>{{ $log->ip_address }}</td>--}}
-                                        {{--<td>{{ date('d-m-Y', strtotime($log->created_at)) }}</td>--}}
-                                        {{--<td>{{ date('H:i:s', strtotime($log->created_at)) }}</td>--}}
+                                        {{--<td>-</td>--}}
+                                        {{--<td>-</td>--}}
+                                        {{--<td>-</td>--}}
                                     {{--</tr>--}}
-                                {{--@endforeach--}}
                                 </tbody>
                             </table>
                         </section>
