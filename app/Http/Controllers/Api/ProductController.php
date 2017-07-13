@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use SnappyPDF;
+use Lava;
+use Khill\Lavacharts\Lavacharts;
 use App\Models\Product;
 use App\Models\Account;
+use App\Models\Company;
 use App\Contracts\ProductInterface;
 use App\Http\Requests\ProductRequest;
 use App\Http\Controllers\Controller;
@@ -298,7 +302,46 @@ class ProductController extends Controller
 
     public function reportShow(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'type'          => 'required|string|in:daily,ranged,monthly',
+            'date'          => 'required_if:type,daily|date_format:m/d/Y|before_or_equal:' . date('m/d/Y'),
+            'date_from'     => 'required_if:type,ranged|date_format:m/d/Y|before:date_to',
+            'date_to'       => 'required_if:type,ranged|date_format:m/d/Y|before_or_equal:' . date('m/d/Y'),
+            'year'          => 'required_if:type,monthly|numeric|min:2017',
+            'month'         => 'required_if:type,monthly|numeric|between:1,12',
+        ]);
+
+        if ($validator->fails()) return redirect('report.service.index')->withInput()->withErrors($validator);
+
         $data = [];
+
+        $companies = Company::get();
+        $products = Product::get();
+
+        $data['companies'] = $companies;
+        $data['products'] = $products;
+        $data['count_product'] = $products->count();
+        $data['total_fees'] = 0;
+
+        $dataTable = Lava::DataTable();
+        $dataTable->addStringColumn('Company')->addNumberColumn('Count');
+
+        foreach ($companies as $company) $dataTable->addRow([$company->name, $company->product_purchase->count()]);
+
+        Lava::PieChart('Products', $dataTable, [
+            'title'  => 'Products provided by company',
+            // 'png' => true,
+        ]);
+
+        $dataTable = Lava::DataTable();
+        $dataTable->addStringColumn('Product')->addNumberColumn('Amount');
+
+        foreach ($products as $product) $dataTable->addRow([$product->name, 0]);
+
+        Lava::PieChart('Fees', $dataTable, [
+            'title'  => 'Fee by product',
+            // 'png' => true,
+        ]);
 
         return response()->view('pages.report-product-show', compact('data'), 200);
     }

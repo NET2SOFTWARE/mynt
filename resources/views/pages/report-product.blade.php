@@ -26,7 +26,7 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <label class="custom-control custom-radio mt-2">
-                                        <input name="type" type="radio" class="custom-control-input" required checked> 
+                                        <input name="type" type="radio" class="custom-control-input" value="daily" required checked> 
                                         <span class="custom-control-indicator"></span> 
                                         <span class="custom-control-description">
                                             <span class="badge badge-default small-caps">
@@ -36,13 +36,13 @@
                                     </label>
                                 </div>
                                 <div class="col-md-4 pr-0">
-                                    <input data-provide="datepicker" name="date" class="form-control">
+                                    <input data-provide="datepicker" name="date" class="form-control" required>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-3">
                                     <label class="custom-control custom-radio mt-2">
-                                        <input name="type" type="radio" class="custom-control-input" required> 
+                                        <input name="type" type="radio" class="custom-control-input" value="ranged" required> 
                                         <span class="custom-control-indicator"></span> 
                                         <span class="custom-control-description">
                                             <span class="badge badge-default small-caps">
@@ -53,16 +53,16 @@
                                 </div>
                                 <div class="col-md-9">
                                     <div class="input-group input-daterange">
-                                        <input type="text" class="form-control" disabled name="date_from">
+                                        <input type="text" class="form-control" disabled name="date_from" required>
                                         <div class="input-group-addon small-caps">to</div>
-                                        <input type="text" class="form-control" disabled name="date_to">
+                                        <input type="text" class="form-control" disabled name="date_to" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mt-1">
                                 <div class="col-md-3">
                                     <label class="custom-control custom-radio mt-2">
-                                        <input name="type" type="radio" class="custom-control-input" required> 
+                                        <input name="type" type="radio" class="custom-control-input" value="monthly" required> 
                                         <span class="custom-control-indicator"></span> 
                                         <span class="custom-control-description">
                                             <span class="badge badge-default small-caps">
@@ -72,16 +72,16 @@
                                     </label>
                                 </div>
                                 <div class="col-md-4">
-                                    <select class="form-control custom-select" disabled>
-                                        <option value="0" disabled selected>Choose year</option>
+                                    <select class="form-control custom-select" disabled required>
+                                        <option value="" disabled selected>Choose year</option>
                                         @for ($year = 2017; $year <= intval(Carbon\Carbon::now()->format('Y')); $year++)
                                         <option value="{{ $year }}">{{ $year }}</option>
                                         @endfor
                                     </select>
                                 </div>
                                 <div class="col-md-5 pl-0">
-                                    <select class="form-control custom-select" disabled>
-                                        <option value="0" disabled selected>Choose month</option>
+                                    <select class="form-control custom-select" disabled required>
+                                        <option value="" disabled selected>Choose month</option>
                                         <option value="1">January</option>
                                         <option value="2">February</option>
                                         <option value="3">March</option>
@@ -116,7 +116,7 @@
         $('input[type="radio"]').on('change', function (e) {
             $('form .row .form-control').prop('disabled', true);
             $('form .row input.form-control').val('');
-            $('form .row select.form-control').val(0);
+            $('form .row select.form-control').val('');
             $(this).parents('.row').first().find('.form-control').prop('disabled', false);
         });
 

@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Contracts\TransactionInterface;
 use App\Http\Requests\TransactionRequest;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 /**
  * Class TransactionController
@@ -563,8 +564,39 @@ class TransactionController extends Controller
 
     public function reportShow(Request $request)
     {
-        $data = [];
+        $validator = Validator::make($request->all(), [
+            'number'        => [
+                'required',
+                'numeric',
+                Rule::exists('accounts')->where(function($q) use ($request){
+                    $q->where('number', 'ILIKE', '%'.$request->input('number').'%')
+                        ->orWhere('mynt_id', 'ILIKE', '%'.$request->input('number').'%');
+                })
+            ]
+        ]);
+
+        if ($validator->fails()) return redirect()->route('report.tracing.index')->withInput()->withErrors($validator);
+
+        $data = Transaction::where('sender_account_number', 'ILIKE', '%'.$request->input('number').'%')
+            ->orWhere('receiver_account_number', 'ILIKE', '%'.$request->input('number').'%')
+            ->paginate(20);
 
         return response()->view('pages.report-tracing-show', compact('data'), 200);
+    }
+
+    public function list(Request $request)
+    {
+        $accounts = Account::all();
+
+        $data = [];
+
+        foreach ($accounts as $account) {
+            if (! is_null($account->number)) $data[] = $account->number;
+            if (! is_null($account->mynt_id)) $data[] = $account->mynt_id;
+        }
+
+        return ($request->ajax() || $request->isJson())
+            ? response()->json($data, 200)
+            : abort(400);
     }
 }

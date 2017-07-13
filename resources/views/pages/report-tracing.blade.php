@@ -21,10 +21,9 @@
                 {{ csrf_field() }}
 
                     <section class="col-md-6 offset-md-3 mt-5">
-
                         <fieldset class="form-group">
-                            <label class="pl-2">Input transaction</label>
-                            <input type="text" name="number" class="form-control">
+                            <label class="pl-2">Input Account Number or MYNT-ID</label>
+                            <input type="text" name="number" class="form-control typeahead" autocomplete="off" required>
                         </fieldset>
                         <hr class="my-4">
                         <div class="text-center">
@@ -42,6 +41,11 @@
 <script>
     $(document).ready(function() {
         $('button').off('click');
+        $.get('{{ route('api.transaction.list') }}', function(data){
+            $('.typeahead').typeahead({
+                source: data
+            });
+        }, 'json');
     });
 </script>
 @endsection

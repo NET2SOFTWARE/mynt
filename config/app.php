@@ -182,6 +182,12 @@ return [
 
         App\Providers\ResponseServiceProvider::class,
 
+        // Snappy
+        Barryvdh\Snappy\ServiceProvider::class,
+        // ChartJS
+        Fx3costa\LaravelChartJs\Providers\ChartjsServiceProvider::class,
+        // Lavacharts
+        Khill\Lavacharts\Laravel\LavachartsServiceProvider::class,
     ],
 
     /*
@@ -232,6 +238,9 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'Captcha' => Mews\Captcha\Facades\Captcha::class,
+        'SnappyPDF' => Barryvdh\Snappy\Facades\SnappyPdf::class,
+        'SnappyImage' => Barryvdh\Snappy\Facades\SnappyImage::class,
+        'Lava' => Khill\Lavacharts\Laravel\LavachartsFacade::class,
     ],
 
 ];

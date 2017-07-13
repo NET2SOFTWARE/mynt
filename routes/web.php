@@ -468,11 +468,18 @@ Route::middleware(['auth:admin'])->group(function (){
         Route::get('/product',          'Api\ProductController@report')->name('report.product.index');
         Route::get('/tracing',          'Api\TransactionController@report')->name('report.tracing.index');
 
-        Route::post('/company/show',    'Api\CompanyController@reportShow')->name('report.company.show');
-        Route::post('/merchant/show',   'Api\MerchantController@reportShow')->name('report.merchant.show');
-        Route::post('/account/show',    'Api\AccountController@reportShow')->name('report.account.show');
-        Route::post('/service/show',    'Api\ServiceController@reportShow')->name('report.service.show');
-        Route::post('/product/show',    'Api\ProductController@reportShow')->name('report.product.show');
-        Route::post('/tracing/show',    'Api\TransactionController@reportShow')->name('report.tracing.show');
+        Route::post('/company',         'Api\CompanyController@reportShow')->name('report.company.show');
+        Route::post('/merchant',        'Api\MerchantController@reportShow')->name('report.merchant.show');
+        Route::post('/account',         'Api\AccountController@reportShow')->name('report.account.show');
+        Route::post('/service',         'Api\ServiceController@reportShow')->name('report.service.show');
+        Route::post('/product',         'Api\ProductController@reportShow')->name('report.product.show');
+        Route::post('/tracing',         'Api\TransactionController@reportShow')->name('report.tracing.show');
+
+        Route::post('/company/print',   'Api\CompanyController@reportPrint')->name('report.company.print');
+        // Route::post('/merchant/print',   'Api\MerchantController@reportPrint')->name('report.merchant.show');
+        // Route::post('/account/print',    'Api\AccountController@reportPrint')->name('report.account.show');
+        // Route::post('/service/print',    'Api\ServiceController@reportPrint')->name('report.service.show');
+        // Route::post('/product/print',    'Api\ProductController@reportPrint')->name('report.product.show');
+        // Route::post('/tracing/print',    'Api\TransactionController@reportPrint')->name('report.tracing.show');
     });
 });

@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-
+use SnappyPDF;
+use Lava;
+use Khill\Lavacharts\Lavacharts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ServiceRequest;
 use App\Contracts\ServiceInterface;
 use App\Models\Service;
+use App\Models\Company;
+use App\Models\Merchant;
 
 /**
  * Class ServiceController
@@ -244,7 +248,59 @@ class ServiceController extends Controller
 
     public function reportShow(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'type'          => 'required|string|in:daily,ranged,monthly',
+            'date'          => 'required_if:type,daily|date_format:m/d/Y|before_or_equal:' . date('m/d/Y'),
+            'date_from'     => 'required_if:type,ranged|date_format:m/d/Y|before:date_to',
+            'date_to'       => 'required_if:type,ranged|date_format:m/d/Y|before_or_equal:' . date('m/d/Y'),
+            'year'          => 'required_if:type,monthly|numeric|min:2017',
+            'month'         => 'required_if:type,monthly|numeric|between:1,12',
+        ]);
+
+        if ($validator->fails()) return redirect('report.service.index')->withInput()->withErrors($validator);
+
         $data = [];
+
+        $services = Service::with('transaction')->get();
+        $companies = Company::get();
+        $merchants = Merchant::get();
+
+        $data['services'] = $services;
+        $data['companies'] = $companies;
+        $data['merchants'] = $merchants;
+        $data['total_income'] = 0;
+        $data['total_income_company'] = 0;
+        $data['total_income_merchant'] = 0;
+
+        $transactions = Lava::DataTable();
+        $transactions->addStringColumn('Service')->addNumberColumn('Count');
+
+        foreach ($services as $service) $transactions->addRow([$service->name, $service->transaction->count()]);
+
+        Lava::PieChart('Transactions', $transactions, [
+            'title'  => 'Transaction count by service',
+            // 'png' => true,
+        ]);
+
+        $transactionsAmount = Lava::DataTable();
+        $transactionsAmount->addStringColumn('Service')->addNumberColumn('Amount');
+
+        foreach ($services as $service) $transactionsAmount->addRow([$service->name, $service->transaction->sum('amount')]);
+
+        Lava::PieChart('TransactionsAmount', $transactionsAmount, [
+            'title'  => 'Transaction amount by service',
+            // 'png' => true,
+        ]);
+
+        $charges = Lava::DataTable();
+        $charges->addStringColumn('Service')->addNumberColumn('Charge');
+
+        foreach ($services as $service) $charges->addRow([$service->name, 0]);
+
+        Lava::PieChart('Charge', $charges, [
+            'title'  => 'Charge by service',
+            // 'png' => true,
+        ]);
 
         return response()->view('pages.report-service-show', compact('data'), 200);
     }
