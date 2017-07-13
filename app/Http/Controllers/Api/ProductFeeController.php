@@ -100,6 +100,9 @@ class ProductFeeController extends Controller
     {
         $data = ProductCharge::find($product_id);
         $accounts = Account::whereIn('account_type_id', [3, 4])
+            ->where(function($q){
+                $q->has('companies')->orHas('merchants');
+            })
             ->whereDoesntHave('product_fees', function($q) use ($product_id) {
                 $q->where('product_charge_id', $product_id);
             })

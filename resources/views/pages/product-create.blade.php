@@ -41,11 +41,11 @@
                         <fieldset class="form-group">
                             <label for="description">Description</label>
                             <textarea class="form-control"
-                            	id="description"
-                            	name="description"
-                            	rows="3">
-                            	{{ old('description') }}	
-                        	</textarea>
+                                id="description"
+                                name="description"
+                                rows="3">
+                                {{ old('description') }}    
+                            </textarea>
                             @if ($errors->has('description'))
                                 <section class="form-control-feedback">{{ $errors->first('description') }}</section>
                             @endif
