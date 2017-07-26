@@ -6,6 +6,7 @@ use App\Contracts\AreaInterface;
 use App\Contracts\BankInterface;
 use App\Contracts\StateInterface;
 use App\Models\Bank;
+use App\Models\Country;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -60,9 +61,13 @@ class BankController extends Controller
 
         $regencies = $this->area->gets();
 
-        $provinces = $this->state->gets(['id', 'name']);
+        $countries = Country::all();
 
-        return view('member.management.bank-create', compact('banks', 'regencies', 'provinces'));
+        $referral = Auth::user()->members->first()['companies'][0]['code'];
+
+        $mynt_acc_num = Auth::user()->members->first()['accounts'][0]['number'];
+
+        return view('member.management.bank-create', compact('banks', 'regencies', 'provinces', 'countries', 'mynt_acc_num', 'referral'));
     }
 
     /**

@@ -46,14 +46,14 @@
 
                                 <section class="form-group{{ $errors->has('born_place') ? ' has-danger' : '' }}">
                                     <label for="born_place">Born place</label>
-                                    <input id="born_place" name="born_place" type="text" value="{{ old('born_place') }}" class="form-control" placeholder="Born place">
+                                    <input id="born_place" name="born_place" value="{{ old('born_place') }}" class="form-control" placeholder="Born place">
                                     @if ($errors->has('born_place'))<section class="form-control-feedback">{{ $errors->first('born_place') }}</section>@endif
                                     <small class="form-text text-muted">Place of birth of members in accordance with supporting documents. E.g : Sibolga</small>
                                 </section>
                                 <section class="form-group{{ $errors->has('born_date') ? ' has-danger' : '' }}">
                                     <label for="born-of-date">Date of Birth</label>
                                     <section id="born-date">
-                                        <input id="born-of-date" name="born_date" type="text" class="form-control" value="{{ old('born_date') ? old('born_date') : date('d-m-Y') }}" placeholder="00-00-0000">
+                                        <input id="born-of-date" name="born_date" class="form-control" value="{{ old('born_date') ? old('born_date') : date('d-m-Y') }}" placeholder="00-00-0000">
                                     </section>
                                     @if ($errors->has('born_date'))<section class="form-control-feedback">{{ $errors->first('born_date') }}</section>@endif
                                     <small class="form-text text-muted">Member's birthday in accordance with supporting documents. E.g : 26-06-1994</small>
@@ -88,21 +88,21 @@
                                 </section>
                                 <section class="form-group{{ $errors->has('identity.number') ? ' has-danger' : '' }}">
                                     <label for="identity-number">Identity number</label>
-                                    <input id="born_place" name="identity[number]" type="text" value="{{ old('identity.number') }}" class="form-control" placeholder="Identity number">
+                                    <input id="born_place" name="identity[number]" value="{{ old('identity.number') }}" class="form-control" placeholder="Identity number">
                                     @if ($errors->has('identity.number'))<section class="form-control-feedback">{{ $errors->first('identity.number') }}</section>@endif
                                     <small class="form-text text-muted">Fill input with identity number of legal document data in accordance with supporting documents. Numeric character only, e.g : 100010101101xxx</small>
                                 </section>
                                 <section class="form-group{{ $errors->has('identity.date') ? ' has-danger' : '' }}">
                                     <label for="identity-date">Identity expired date</label>
                                     <section id="born-date">
-                                        <input id="identity-date" name="identity[date]" type="text" class="form-control" value="{{ old('identity.date') ? old('identity.date') : date('d-m-Y') }}" placeholder="00-00-0000">
+                                        <input id="identity-date" name="identity[date]" class="form-control" value="{{ old('identity.date') ? old('identity.date') : date('d-m-Y') }}" placeholder="00-00-0000">
                                     </section>
                                     @if ($errors->has('identity.date'))<section class="form-control-feedback">{{ $errors->first('identity.date') }}</section>@endif
                                     <small class="form-text text-muted">Fill input with expiry date of legal document data in accordance with the original. E.g : 26-06-2020</small>
                                 </section>
                                 <section class="form-group{{ $errors->has('mother_name') ? ' has-danger' : '' }}">
                                     <label for="mother-name">Mother name</label>
-                                    <input id="mother-name" name="mother_name" type="text" class="form-control" value="{{ old('mother_name') }}" placeholder="Mother name">
+                                    <input id="mother-name" name="mother_name" class="form-control" value="{{ old('mother_name') }}" placeholder="Mother name">
                                     @if ($errors->has('mother_name'))<section class="form-control-feedback">{{ $errors->first('mother_name') }}</section>@endif
                                     <small class="form-text text-muted">Fill input with your real mother's name. E.g : Yuant</small>
                                 </section>
@@ -129,7 +129,7 @@
                                                         </svg>
                                                     </a>
                                                 </section>
-                                                <input id="captcha" type="text" class="form-control" name="captcha" value="{{ old('captcha') }}" placeholder="Captcha code" aria-describedby="captchaHelp" required>
+                                                <input id="captcha" class="form-control" name="captcha" value="{{ old('captcha') }}" placeholder="Captcha code" aria-describedby="captchaHelp" required>
                                             </section>
                                             <small class="form-text lh-1-2 text-muted" id="captchaHelp">Enter security code</small>
                                             @if ($errors->has('captcha'))<span class="form-control-feedback">{{ $errors->first('captcha') }}</span>@endif

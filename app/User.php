@@ -9,6 +9,7 @@ use App\Models\Member;
 use App\Models\Merchant;
 use App\Models\Notification;
 use App\Models\ParentAccount;
+use App\Models\Remittance;
 use App\Models\Role;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Passport\HasApiTokens;
@@ -263,5 +264,11 @@ class User extends Authenticatable
     public function isChildAccount()
     {
         return count($this->parentAccounts()) >= 1 ? true : false;
+    }
+
+    public function remittances()
+    {
+        return $this->belongsToMany(Remittance::class, 'user_remittances', 'user_id', 'remittance_id')
+            ->withTimestamps();
     }
 }

@@ -46,7 +46,7 @@
                             @elseif(session('success'))
                                 <section class="alert mb-3 small alert-success lh-1-2">{{ session('success') }}</section>
                             @endif
-                            <form accept-charset="utf-8" role="form">
+                            <form action="{{ route('redeem') }}" method="post" accept-charset="utf-8" role="form">
                                 {{ csrf_field() }}
                                 @include('forms.redeem')
                             </form>

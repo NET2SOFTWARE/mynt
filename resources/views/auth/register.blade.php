@@ -36,14 +36,14 @@
                         @endif
                     </fieldset>
                     <fieldset class="form-group{{ $errors->has('phone') ? ' has-danger' : '' }}">
-                        <div class="input-group">
-                        <span class="input-group-addon medium-small lh-1-5" style="padding-top:.125rem;padding-bottom:.125rem">+62</span>
-                        <label for="phone" class="sr-only">Phone</label>
-                        <input id="phone" type="text" class="form-control" name="phone" value="{{ old('phone') }}" placeholder="Mobile number" required>
+                        <section class="input-group">
+                            <span class="input-group-addon medium-small lh-1-5" style="padding-top:.125rem;padding-bottom:.125rem">+62</span>
+                            <label for="phone" class="sr-only">Phone</label>
+                            <input id="phone" type="text" class="form-control" name="phone" value="{{ old('phone') }}" placeholder="Mobile number" required>
+                        </section>
                         @if ($errors->has('phone'))
                             <section class="form-control-feedback">{{ $errors->first('phone') }}</section>
                         @endif
-                        </div>
                     </fieldset>
                     <fieldset class="form-group{{ $errors->has('password') ? ' has-danger' : '' }}">
                         <label for="password" class="sr-only">Password</label>
@@ -84,7 +84,6 @@
                                 @if ($errors->has('captcha'))<span class="form-control-feedback">{{ $errors->first('captcha') }}</span>@endif
                             </section>
                         </section>
-                        @if ($errors->has('captcha'))<span class="form-control-feedback">{{ $errors->first('captcha') }}</span>@endif
                     </fieldset>
                     <fieldset class="form-group{{ $errors->has('term') ? ' has-danger' : '' }}">
                         <label class="custom-control custom-checkbox medium lh-1-5 mb-0">

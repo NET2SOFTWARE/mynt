@@ -91,6 +91,13 @@ class InquiryController extends Controller
             $name = $account->companies->first()['name'];
         }
 
+        $lastBalance = $this->account->getLastBalance($account->number);
+        $limitBalance = $account->limit_balance;
+        $maxAmount = (int) $limitBalance - (int) $lastBalance;
+
+		if ((int) $maxAmount > (int) $limitBalance) $maxAmount = $limitBalance;
+		elseif ((int) $maxAmount < 0) $maxAmount = 0;
+
         return response()
             ->json([
                 'status'    => 'true',
@@ -100,7 +107,7 @@ class InquiryController extends Controller
                 'data'      => [
                     'reference_id'  => $inquiry->reference_id,
                     'username'      => $name,
-                    'max_amount'    => $account->limit_balance
+                    'max_amount'    => $maxAmount
                 ]
             ]);
     }
@@ -241,6 +248,7 @@ class InquiryController extends Controller
         }
 
         $transaction->update(['status' => true]);
+        $inquiry->update(['status' => true]);
 
         return response()->json([
             'status'    => true,

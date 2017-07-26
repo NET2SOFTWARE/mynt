@@ -1,114 +1,35 @@
 <?php
 
-namespace App\Http\Controllers\Member;
+namespace App\Http\Controllers;
 
-use App\Models\Account;
-use App\Models\Bank;
-use Illuminate\Http\Request;
-use App\Contracts\OTPInterface;
-use App\Contracts\TokenInterface;
 use App\Contracts\AccountInterface;
-use App\Http\Controllers\Controller;
 use App\Contracts\PassbookInterface;
 use App\Contracts\TransactionInterface;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Account;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-/**
- * Class TransactionController
- * @package App\Http\Controllers\Member
- */
 class TransactionController extends Controller
 {
-    /**
-     * @var AccountInterface
-     */
-    protected $account;
 
-    /**
-     * @var
-     */
-    protected $recipient;
+    private $account;
 
-    /**
-     * @var
-     */
-    protected $sender;
-
-    /**
-     * @var TransactionInterface
-     */
-    private $transaction;
-
-    /**
-     * @var PassbookInterface
-     */
     private $passbook;
 
-    private $token;
+    private $transaction;
 
-    private $otp;
-
-    /**
-     * TransactionController constructor.
-     * @param AccountInterface $account
-     * @param TransactionInterface $transaction
-     * @param PassbookInterface $passbook
-     * @param TokenInterface $token
-     * @param OTPInterface $otp
-     */
     public function __construct(
-        AccountInterface        $account,
-        TransactionInterface    $transaction,
-        PassbookInterface       $passbook,
-        TokenInterface          $token,
-        OTPInterface            $otp
+        AccountInterface $account,
+        PassbookInterface $passbook,
+        TransactionInterface $transaction
     )
     {
-        $this->account      = $account;
-        $this->transaction  = $transaction;
-        $this->passbook     = $passbook;
-        $this->token        = $token;
-        $this->otp          = $otp;
+        $this->account = $account;
+        $this->passbook = $passbook;
+        $this->transaction = $transaction;
     }
 
-    public function account()
-    {
-        return response()
-            ->view('member.transaction.account', compact(null), 200);
-    }
-
-    public function bank()
-    {
-        $remittances = Auth::user()->remittances;
-
-        $banks = Bank::all();
-
-        return response()
-            ->view('member.transaction.bank', compact('banks', 'remittances'), 200);
-    }
-
-    public function remittance()
-    {
-        return response()
-            ->view('member.transaction.remittance', compact(null), 200);
-    }
-
-    public function redeem()
-    {
-        return response()
-            ->view('member.transaction.redeem', compact(null), 200);
-    }
-
-    /**
-     * @param Request $request
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    public function transferToAccount(Request $request)
+    public function toAccountAndCashOut(Request $request)
     {
         Validator::make($request->all(), [
             'sender'    => 'required|exists:accounts,number',
@@ -169,11 +90,11 @@ class TransactionController extends Controller
         }
 
         if ($amount  > $this->account->getLastBalance($no_sender)) {
-            if (!$this->recipient)
-                return redirect()
-                    ->back()
-                    ->with('warning', 'Insufficient balance')
-                    ->withInput($request->except(['captcha']));
+            return redirect()
+                ->back()
+                ->with('warning', 'Insufficient balance')
+                ->withInput($request->except(['captcha']));
+
         }
 
         if (((int) $amount + (int) $this->account->getLastBalance($recipient->number)) > (int) $recipient->limit_balance) {

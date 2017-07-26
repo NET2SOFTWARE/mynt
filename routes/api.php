@@ -15,7 +15,10 @@ Route::get('/testing',   'TestingController@testing')->name('testing');
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+
 Route::post('/mobile/member/register',                     'Api\MemberController@store')->name('api.member.store');
+Route::get('secret', 'SecretController@get')->name('secret');
 
 Route::prefix('mobile')->middleware('auth:api')->group(function () {
     Route::get('/profile',                              'Api\MemberController@profile')->name('api.profile');
@@ -26,8 +29,9 @@ Route::prefix('mobile')->middleware('auth:api')->group(function () {
     Route::post('/member/mynt/create',                  'Api\MemberController@mynt')->name('api.member.mynt');
     Route::get('/check/transaction/status/{trx_id}',    'Api\TransactionController@check_status')->name('api.transaction.check');
 
+    Route::get('/remittance/data',                      'Api\RemittanceController@get')->name('api.remittance.data');
     Route::post('/remittance/register',                 'Api\RemittanceController@register')->name('api.remittance.register');
-    Route::post('/remittance/delete/account',           'Api\RemittanceController@delete_account')->name('api.remittance.delete.account');
+    Route::get('/remittance/delete/account/{id}',       'Api\RemittanceController@delete_account')->name('api.remittance.delete.account');
     Route::post('/remittance/inquiry/status',           'Api\RemittanceController@inquiry_status')->name('api.remittance.inquiry.status');
     Route::post('/remittance/inquiry',                  'Api\RemittanceController@inquiry')->name('api.remittance.inquiry');
     Route::post('/remittance/transfer',                  'Api\RemittanceController@transfer')->name('api.remittance.transfer');

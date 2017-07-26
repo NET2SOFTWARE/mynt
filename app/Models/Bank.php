@@ -52,4 +52,12 @@ class Bank extends Model
             ->withPivot(['account_number'])
             ->withTimestamps();
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function remittance()
+    {
+        return $this->hasMany(Remittance::class);
+    }
 }

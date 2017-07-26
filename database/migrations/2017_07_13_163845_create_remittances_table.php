@@ -15,7 +15,8 @@ class CreateRemittancesTable extends Migration
     {
         Schema::create('remittances', function (Blueprint $table) {
             $table->increments('id');
-            $table->date('transdatetime');
+            $table->string('stan', 6);
+            $table->dateTime('transdatetime');
             $table->string('instid', 18);
             $table->string('accountid', 18);
             $table->string('name', 30);
@@ -31,6 +32,7 @@ class CreateRemittancesTable extends Migration
             $table->string('fundresource', 50);
 
             $table->string('instid1', 3)->nullable();
+            $table->string('accountid1', 18)->nullable();
             $table->string('name1', 30)->nullable();
             $table->string('relationship1', 30)->nullable();
             $table->string('regencycode1', 3)->nullable();
@@ -38,39 +40,11 @@ class CreateRemittancesTable extends Migration
             $table->string('provcode1', 5)->nullable();
             $table->string('idnumber1', 50)->nullable();
 
-            $table->string('instid2', 3)->nullable();
-            $table->string('name2', 30)->nullable();
-            $table->string('relationship2', 30)->nullable();
-            $table->string('regencycode2', 3)->nullable();
-            $table->string('address2', 100)->nullable();
-            $table->string('provcode2', 5)->nullable();
-            $table->string('idnumber2', 50)->nullable();
-
-            $table->string('instid3', 3)->nullable();
-            $table->string('name3', 30)->nullable();
-            $table->string('relationship3', 30)->nullable();
-            $table->string('regencycode3', 3)->nullable();
-            $table->string('address3', 100)->nullable();
-            $table->string('provcode3', 5)->nullable();
-            $table->string('idnumber3', 50)->nullable();
-
-            $table->string('instid4', 3)->nullable();
-            $table->string('name4', 30)->nullable();
-            $table->string('relationship4', 30)->nullable();
-            $table->string('regencycode4', 3)->nullable();
-            $table->string('address4', 100)->nullable();
-            $table->string('provcode4', 5)->nullable();
-            $table->string('idnumber4', 50)->nullable();
-
-            $table->string('instid5', 3)->nullable();
-            $table->string('name5', 30)->nullable();
-            $table->string('relationship5', 30)->nullable();
-            $table->string('regencycode5', 3)->nullable();
-            $table->string('address5', 100)->nullable();
-            $table->string('provcode5', 5)->nullable();
-            $table->string('idnumber5', 50)->nullable();
-
             $table->longText('sign');
+            $table->unsignedInteger('bank_id');
+            $table->foreign('bank_id')
+                ->references('id')
+                ->on('banks');
             $table->timestamps();
         });
     }

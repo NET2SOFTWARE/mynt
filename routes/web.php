@@ -31,6 +31,16 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->middleware(['confirmation', 'mynt'])->name('home');
 
 
+Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function (){
+    Route::post('/remittance/transaction',  'RemittanceController@transfer')->name('remittance');
+    Route::post('/redeem/transaction',      'RemittanceController@redeem')->name('redeem');
+    Route::post('/cash/out/transaction',    'TransactionController@toAccountAndCashOut')->name('cash.out');
+
+
+    Route::get('/delete/remittance/data/{id}',    'RemittanceController@delete')->name('delete.remittance');
+});
+
+
 
 Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
 
@@ -51,13 +61,12 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::get('/purchase',                             'Member\PurchaseController@index')->name('member.purchase');
         Route::get('/payment',                              'Member\PaymentController@index')->name('member.payment');
 
-        Route::get('/accessibility/personal',               'Member\AccessibilityController@personal')->name('member.accessibility');
         Route::get('/accessibility/notification',           'Member\AccessibilityController@notification')->name('member.accessibility.notification');
         Route::get('/accessibility/log/access',             'Member\AccessibilityController@log')->name('member.accessibility.log.access');
 
         Route::get('/management/personal',                  'Member\ManagementController@personal')->name('member.management');
         Route::get('/management/bank',                      'Member\BankController@index')->name('member.management.bank');
-        Route::post('/management/bank',                     'Member\BankController@store')->name('member.management.bank.store');
+        Route::post('/management/bank',                     'RemittanceController@register')->name('member.management.bank.store');
         Route::get('/management/bank/register',             'Member\BankController@showFormRegisterBank')->name('member.management.create');
         Route::patch('/management/bank',                    'Member\BankController@store')->name('member.management.bank.update');
         Route::get('/management/child',                     'Member\ManagementController@child')->name('member.management.child');
@@ -96,7 +105,7 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::get('/management/account',           'Merchant\ManagementController@account')->name('merchant.management.account');
         Route::get('/management/bank',              'Merchant\ManagementController@bank')->name('merchant.management.bank');
         Route::get('/management/bank/create',       'Merchant\ManagementController@bankCreate')->name('merchant.management.bank.create');
-        Route::post('/management/bank',             'Merchant\ManagementController@bankStore')->name('merchant.management.bank.store');
+        Route::post('/management/bank',             'RemittanceController@register')->name('merchant.management.bank.store');
         Route::get('/report',                       'Merchant\ReportController@index')->name('merchant.report');
     });
 
@@ -106,6 +115,7 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::post('/accounting',                  'Company\AccountingController@sort')->name('company.sort.accounting');
         Route::get('/transaction/account',          'Company\TransactionController@account')->name('company.transaction.account');
         Route::post('/transaction/account',         'Company\TransactionController@store_account')->name('company.transaction.account.store');
+        Route::post('/transaction/cash/out',        'Company\TransactionController@store_account')->name('company.transaction.cash.out.store');
         Route::get('/transaction/bank',             'Company\TransactionController@bank')->name('company.transaction.bank');
         Route::get('/transaction/remittance',       'Company\TransactionController@remittance')->name('company.transaction.remittance');
         Route::get('/transaction/redeem',           'Company\TransactionController@redeem')->name('company.transaction.redeem');
@@ -118,7 +128,7 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::get('/management/account',           'Company\ManagementController@account')->name('company.management.account');
         Route::get('/management/bank',              'Company\ManagementController@bank')->name('company.management.bank');
         Route::get('/management/bank/create',       'Company\ManagementController@showFormRegisterBank')->name('company.management.bank.create');
-        Route::post('/management/bank',              'Company\ManagementController@storeBank')->name('company.management.bank.store');
+        Route::post('/management/bank',             'RemittanceController@register')->name('company.management.bank.store');
         Route::get('/report',                       'Company\ReportController@index')->name('company.report');
 
         Route::get('/management/account/identity/edit', 'Company\ManagementController@showEditAccountForm')->name('company.management.edit.identity');

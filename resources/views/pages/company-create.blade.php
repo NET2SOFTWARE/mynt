@@ -38,8 +38,9 @@
                                             <small class="form-text text-muted d-flex justify-content-between" id="brandHelp">Describe about company here or company brand or company slogan. <span class="text-grey">Optional</span></small>
                                         </fieldset>
                                         <fieldset class="form-group{{ $errors->has('phone') ? ' has-danger' : '' }}">
-                                            <label for="email">Phone</label>
-                                            <input id="phone" name="phone" class="form-control" value="{{ old('phone')  }}" placeholder="Phone number" type="text" aria-describedby="phoneHelp">
+                                            <label for="phone" class="sr-only">Phone</label>
+                                            <span class="input-group-addon medium-small lh-1-5" style="padding-top:.125rem;padding-bottom:.125rem">+62</span>
+                                            <input id="phone" class="form-control" name="phone" value="{{ old('phone') }}" placeholder="Mobile number" required>
                                             @if ($errors->has('phone'))<section class="form-control-feedback">{{ $errors->first('phone') }}</section>@endif
                                             <small class="form-text text-muted d-flex justify-content-between" id="phoneHelp">Company contact number, numeric characters only. E.g : 021xxxxxx <span class="text-grey">Required</span></small>
                                         </fieldset>

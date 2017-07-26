@@ -59,9 +59,6 @@ class Member extends Model
         return $value;
     }
 
-    /**
-     * @param $value
-     */
     public function setPhoneAttribute($value)
     {
         //$this->attributes['phone'] = str_is('0*', $value) ? '62'. substr($value, 1) : $value;

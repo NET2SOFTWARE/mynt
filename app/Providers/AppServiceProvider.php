@@ -22,6 +22,7 @@ use App\Contracts\PicInterface;
 use App\Contracts\PositionInterface;
 use App\Contracts\ProfileInterface;
 use App\Contracts\RegistrationInterface;
+use App\Contracts\RemittanceInquiryInterface;
 use App\Contracts\RemittanceInterface;
 use App\Contracts\TokenInterface;
 use App\Contracts\UserInterface;
@@ -54,6 +55,7 @@ use App\Services\PicRepository;
 use App\Services\PositionRepository;
 use App\Services\ProfileRepository;
 use App\Services\RegistrationRepository;
+use App\Services\RemittanceInquiryRepository;
 use App\Services\RemittanceRepository;
 use App\Services\RoleRepository;
 use App\Services\StateRepository;
@@ -148,5 +150,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AreaInterface::class, AreaRepository::class);
         $this->app->bind(EncryptInterface::class, EncryptRepository::class);
         $this->app->bind(RemittanceInterface::class, RemittanceRepository::class);
+
+        $this->app->bind(RemittanceInquiryInterface::class, RemittanceInquiryRepository::class);
     }
 }

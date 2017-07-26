@@ -17,7 +17,7 @@ class CompaniesTableSeeder extends Seeder
             [
                 'code' => '000',
                 'name' => 'PT. Artajasa Pembayaran Elektronis',
-                'phone' => '02129706789',
+                'phone' => '622129706789',
                 'email' => 'info@artajasa.co.id',
                 'brand' => 'Layanan switching per-bankan di indonesia.',
                 'website' => 'https://www.artajasa.co.id',

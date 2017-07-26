@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\GlobalPassbookInterface;
 use App\Models\Account;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -48,19 +49,26 @@ class TransactionController extends Controller
     private $passbook;
 
     /**
+     * @var
+     */
+    private $global;
+
+    /**
      * TransactionController constructor.
      * @param TransactionInterface $transaction
      * @param OTPInterface $otp
      * @param TokenInterface $token
      * @param AccountInterface $account
      * @param PassbookInterface $passbook
+     * @param GlobalPassbookInterface $global
      */
     public function __construct(
         TransactionInterface    $transaction,
         OTPInterface            $otp,
         TokenInterface          $token,
         AccountInterface        $account,
-        PassbookInterface       $passbook
+        PassbookInterface       $passbook,
+        GlobalPassbookInterface $global
     )
     {
         $this->transaction  = $transaction;
@@ -68,6 +76,7 @@ class TransactionController extends Controller
         $this->token        = $token;
         $this->account      = $account;
         $this->passbook     = $passbook;
+        $this->global       = $global;
     }
 
     /**

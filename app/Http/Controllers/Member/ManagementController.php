@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Member;
 
+use App\User;
 use App\Models\Bank;
 use App\Models\Children;
-use App\User;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class ManagementController extends Controller

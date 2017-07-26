@@ -31,7 +31,6 @@
                 <section class="card my-3" style="min-height:550px">
                     <section class="card-header">
                         <ul class="nav nav-tabs card-header-tabs medium-small">
-                            <li class="nav-item"><a class="nav-link" href="{{ route('member.accessibility') }}">Personal setting</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ route('member.accessibility.notification') }}">Notification</a></li>
                             <li class="nav-item ml-auto"><a class="nav-link active" href="{{ route('member.accessibility.log.access') }}">Log access</a></li>
                         </ul>
