@@ -219,6 +219,24 @@ class Company extends Model
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function documents()
+    {
+        return $this->belongsToMany(Document::class, 'company_documents', 'company_id', 'document_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function pics()
+    {
+        return $this->belongsToMany(Pic::class, 'company_pics', 'company_id', 'pic_id')
+            ->withTimestamps();
+    }
+
+    /**
      * @return array
      */
     public function getAllUserIds()

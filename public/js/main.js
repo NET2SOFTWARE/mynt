@@ -30,4 +30,18 @@ $( document ).ready(function() {
 			$form.submit();
 		});
 	});
+
+	$('input.custom-file-input')
+	.on('change', function (e) {
+		$input = $(this);
+		$control = $input.next('span.custom-file-control');
+		file = $input[0].files[0];
+
+		if (file)
+		{
+			$control.attr('data-file-name', file.name).addClass('changed');
+		} else {
+			$control.attr('data-file-name', null).removeClass('changed');
+		}
+	});
 });

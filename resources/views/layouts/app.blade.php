@@ -36,6 +36,10 @@
         span.custom-file-control.changed::after {
             content: attr(data-file-name);
         }
+        #document_extra.custom-file-control::before{
+            height: auto;
+            line-height:1.25;
+        }
     </style>
 </head>
 <body>

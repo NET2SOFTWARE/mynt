@@ -15,6 +15,9 @@ use App\Models\Member;
 use App\Models\Merchant;
 use App\Models\Account;
 use App\Models\Service;
+use App\Models\Position;
+use App\Models\Document;
+use App\Models\Pic;
 use Illuminate\Http\Request;
 use App\Services\Confirmation;
 use App\Contracts\UserInterface;
@@ -26,6 +29,8 @@ use Intervention\Image\Facades\Image;
 use App\Http\Requests\CompanyRequest;
 use App\Contracts\PartnershipInterface;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\File;
+use Illuminate\Support\Facades\Storage;
 
 class CompanyController extends Controller
 {
@@ -168,10 +173,11 @@ class CompanyController extends Controller
     {
         $industries = $this->industry->gets(['id', 'name']);
         $partnerships = $this->partnership->gets(['id', 'name']);
+        $positions = Position::all();
 
         return ($request->ajax() || $request->isJson())
             ? abort(405, config('code.405'))
-            : response()->view('pages.company-create', compact('industries', 'partnerships'), 200);
+            : response()->view('pages.company-create', compact('industries', 'partnerships', 'positions'), 200);
     }
 
 
@@ -247,7 +253,6 @@ class CompanyController extends Controller
                 : redirect()->back()->with('warning', 'System can not create user of company, please try again later.')->withInput($request->all());
         }
 
-
         $account = $this->account->save([
             'number'                    => $company->code . date('y'),
             'account_type_id'           => 3,
@@ -273,6 +278,58 @@ class CompanyController extends Controller
         $company->users()->attach($user->id);
 
         $this->confirmation->sendConfirmationMail($user);
+
+        $documents = [];
+
+        if (sizeof($request->input('document_type')) > 0 &&
+            sizeof($request->file('document_file')) > 0)
+        {
+            foreach ($request->input('document_type') as $key => $value)
+            {
+                if ($request->file('document_file')[$key]->isValid())
+                {
+                    $path = Storage::putFile('company/documents', $request->file('document_file')[$key]);
+
+                    $document = Document::create([
+                        'type' => $request->input('document_type')[$key],
+                        'name' => $request->input('document_type')[$key] . ' - ' . $company->name,
+                        'source' => $path,
+                    ]);
+
+                    if ($document) $documents[] = $document->id;
+                }
+            }
+        }
+
+        if (sizeof($documents) > 0) $company->documents()->sync($documents);
+
+        $pics = [];
+
+        if (sizeof($request->input('pic_name')) > 0 &&
+            sizeof($request->input('pic_email')) > 0 &&
+            sizeof($request->input('pic_phone')) > 0 &&
+            sizeof($request->input('pic_position')) > 0)
+        {
+            foreach ($request->input('pic_name') as $key => $value)
+            {
+                $phone = trim($request->input('pic_phone')[$key]);
+
+                if (substr($phone, 0, 1) == '+') $phone = substr($phone, 1);
+                if (substr($phone, 0, 2) == '62') $phone = substr($phone, 2);
+                if (substr($phone, 0, 1) == '0') $phone = substr($phone, 1);
+
+                $pic = Pic::create([
+                    'name' => $request->input('pic_name')[$key],
+                    'email' => $request->input('pic_email')[$key],
+                    'phone' => $phone,
+                    'position_id' => $request->input('pic_position')[$key],
+                ]);
+
+                if ($pic) $pics[] = $pic->id;
+            }
+        }
+
+        if (sizeof($pics) > 0) $company->pics()->sync($pics);
 
         return ($request->isJson() || $request->ajax())
             ? response()->json(compact('company'), 201)
