@@ -167,8 +167,9 @@ class StateController extends Controller
                 'message' => config('code.204'),
                 'data' => null
             ], 204)
-            : redirect()->back()
-                        ->with('success', 'State data was updated successfully');
+            : redirect()
+                ->route('state.index')
+                ->with('success', 'State data was removed successfully');
     }
 
     /**

@@ -15,7 +15,7 @@
     <input id="password-confirm" type="password" class="form-control" name="password_confirmation" placeholder="Confirm password" required>
     @if ($errors->has('password_confirmation'))<section class="form-control-feedback">{{ $errors->first('password_confirmation') }}</section>@endif
 </fieldset>
-<fieldset class="form-group{{ $errors->has('captcha') ? ' has-danger' : '' }}">
+{{-- <fieldset class="form-group{{ $errors->has('captcha') ? ' has-danger' : '' }}">
     <label for="amount" class="col-form-label">Security code</label>
     <section class="d-flex justify-content-between">
         <figure class="col-auto mb-0">
@@ -36,7 +36,7 @@
             @if ($errors->has('captcha'))<span class="form-control-feedback">{{ $errors->first('captcha') }}</span>@endif
         </section>
     </section>
-</fieldset>
+</fieldset> --}}
 <fieldset class="form-group mt-5 mb-0">
     <button type="submit" class="btn btn-block btn-primary" role="button">Change password</button>
 </fieldset>

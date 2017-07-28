@@ -66,7 +66,7 @@ class IndustryController extends Controller
             ? response()->json(compact('industry'), 201)
             : redirect()->back()
                 ->with(compact('industry'))
-                ->with('success', 'Industry has added successfully.');
+                ->with('success', 'Institution has been added successfully.');
     }
 
     /**
@@ -118,7 +118,7 @@ class IndustryController extends Controller
             ? response()->json(compact('industry'), 204)
             : redirect()->back()
                 ->with(compact('industry'))
-                ->with('success', 'Industry data was updated successfully');
+                ->with('success', 'Institution data was updated successfully');
     }
 
     /**
@@ -141,8 +141,9 @@ class IndustryController extends Controller
                 'message' => config('code.204'),
                 'data' => null
             ], 204)
-            : redirect()->back()
-                ->with('success', 'Industry data was updated successfully');
+            : redirect()
+                ->route('industry.index')
+                ->with('success', 'Institution data was removed successfully');
     }
 
     /**

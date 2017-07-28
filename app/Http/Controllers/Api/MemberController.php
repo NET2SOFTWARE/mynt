@@ -17,6 +17,8 @@ use App\Http\Requests\MemberRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Class MemberController
@@ -395,14 +397,153 @@ class MemberController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(MemberRequest $request, $id)
+    public function update($id, Request $request)
     {
-        $member = $this->member->update($id, $request->all());
+        $filename = null;
 
-        abort_unless($member, config('code.500'));
+        if ($request->hasFile('photo') && $request->file('photo')->isValid())
+        {
+            ini_set('memory_limit', '-1');
+            ini_set('max_execution_time', 120);
+
+            $photo = $request->file('photo');
+
+            if (! in_array(strtolower($photo->getClientOriginalExtension()), [
+                'jpg',
+                'jpeg',
+                'png'
+            ])) {
+                return ($request->ajax() || $request->isJson())
+                    ? response()->json([
+                            'status'    => false,
+                            'code'      => 400,
+                            'message'   => config('code.400'),
+                            'text'      => 'Unsupported file image format.',
+                            'data'      => compact(null)
+                        ], 400)
+                    : redirect()->back()
+                        ->withInput()
+                        ->with('warning', 'Unsupported file image format.');
+            }
+
+            $filename  = time() . '.' . $photo->getClientOriginalExtension();
+
+            Image::make($photo->getRealPath())->resize(320, 320, function ($c) {
+                $c->aspectRatio();
+                $c->upsize();
+            })->save('img/member/'. $filename);
+        }
+
+        $data = [];
+
+        if ($filename) $data['image'] = $filename;
+
+        if ($request->has('name'))
+        {
+            $validator = Validator::make($request->all(), [
+                'name'      => 'required',
+                'phone'     => 'required',
+            ]);
+
+            if ($validator->fails())
+            {
+                return ($request->ajax() || $request->isJson())
+                    ? response()->json([
+                        'status'    => false,
+                        'code'      => 400,
+                        'message'   => config('code.400'),
+                        'text'      => 'Fail to update member data, please check invalid message below.',
+                        'data'      => compact(null),
+                        'errors'    => $validator
+                    ], 400)
+                    : redirect()->back()->withErrors($validator)->with('warning', 'Fail to update member data, please check invalid message below.')->withInput($request->all());
+            }
+
+            $data = [
+                'name'  => strtolower($request->input('name')),
+                'phone' => $request->input('phone'),
+            ];
+        } elseif ($request->has('password')) {
+            $validator = Validator::make($request->all(), [
+                'old_password'          => 'required',
+                'password'              => 'required|between:6,32|confirmed',
+                'password_confirmation' => 'required',
+            ]);
+
+            if ($validator->fails())
+            {
+                return ($request->ajax() || $request->isJson())
+                    ? response()->json([
+                        'status'    => false,
+                        'code'      => 400,
+                        'message'   => config('code.400'),
+                        'text'      => 'Fail to update member data, please check invalid message below.',
+                        'data'      => compact(null),
+                        'errors'    => $validator
+                    ], 400)
+                    : redirect()->back()->withErrors($validator)->with('warning', 'Fail to update member data, please check invalid message below.')->withInput($request->all());
+            }
+
+            $old_password = Member::find($id)->users()->first()->password;
+
+            if (! Hash::check($request->input('old_password'), $old_password))
+                return ($request->ajax() || $request->isJson())
+                    ? response()->json([
+                            'status'    => false,
+                            'code'      => 400,
+                            'message'   => config('code.400'),
+                            'text'      => 'Invalid password.',
+                            'data'      => compact(null)
+                        ], 400)
+                    : redirect()->back()
+                        ->withInput()
+                        ->with('warning', 'Invalid password.');
+
+            $data = [
+                'password'  => bcrypt($request->input('password')),
+            ];
+        }
+
+        $member = Member::find($id);
+
+        if (sizeof($data) > 0)
+        {
+            if (isset($data['password']))
+            {
+                $user_id = $member->users()->first()->id;
+                $user = User::find($user_id);
+
+                $update = User::where('id', $user_id)->update($data);
+
+                abort_unless($update, config('code.500'));
+            } elseif (isset($data['name'])) {
+                $update = Member::where('id', $id)->update($data);
+
+                abort_unless($update, config('code.500'));
+
+                $user_id = $member->users()->first()->id;
+                $user = User::find($user_id);
+
+                $update = User::where('id', $user_id)->update($data);
+
+                abort_unless($update, config('code.500'));
+            } else {
+                $update = Member::where('id', $id)->update($data);
+
+                abort_unless($update, config('code.500'));
+            }
+        }
+
+        $member = Member::find($id);
 
         return ($request->ajax() || $request->isJson())
-            ? response()->json(compact('member'), 204)
+            ? response()->json([
+                    'status'    => true,
+                    'code'      => 200,
+                    'message'   => config('code.200'),
+                    'text'      => 'Member data was updated successfully.',
+                    'data'      => compact('member')
+                ], 200)
             : redirect()->back()
                 ->with(compact('member'))
                 ->with('success', 'Member data was updated successfully');

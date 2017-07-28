@@ -1,6 +1,6 @@
 <fieldset class="form-group{{ $errors->has('name') ? ' has-danger' : '' }}">
     <label for="name" class="col-form-label">Full name</label>
-    <input id="name" type="text" name="amount" class="form-control disabled" value="{{ ucwords(Auth::user()->name) }}" placeholder="00000" aria-describedby="nameHelp">
+    <input id="name" type="text" name="name" class="form-control" value="{{ ucwords(Auth::user()->name) }}" aria-describedby="nameHelp">
     <small class="form-text small text-muted d-flex justify-content-between" id="nameHelp">Full name must be alpha characters, max. 40 <span class="text-grey">Required</span></small>
     @if ($errors->has('name'))<span class="form-control-feedback">{{ $errors->first('name') }}</span>@endif
 </fieldset>
@@ -13,7 +13,7 @@
     <small class="form-text small text-muted d-flex justify-content-between" id="phoneHelp">Phone number format 8100xxxxx <span class="text-grey">Required</span></small>
     @if ($errors->has('phone'))<span class="form-control-feedback">{{ $errors->first('phone') }}</span>@endif
 </fieldset>
-<fieldset class="form-group{{ $errors->has('captcha') ? ' has-danger' : '' }}">
+{{-- <fieldset class="form-group{{ $errors->has('captcha') ? ' has-danger' : '' }}">
     <label for="amount" class="col-form-label">Security code</label>
     <section class="d-flex justify-content-between">
         <figure class="col-auto mb-0">
@@ -34,7 +34,7 @@
             @if ($errors->has('captcha'))<span class="form-control-feedback">{{ $errors->first('captcha') }}</span>@endif
         </section>
     </section>
-</fieldset>
+</fieldset> --}}
 <fieldset class="form-group mt-5 mb-0">
     <button type="submit" class="btn btn-block btn-primary" role="button">Update identity</button>
 </fieldset>

@@ -168,8 +168,9 @@ class CityController extends Controller
                 'message' => config('code.204'),
                 'data' => null
             ], 204)
-            : redirect()->back()
-                ->with('success', 'City data was updated successfully');
+            : redirect()
+                ->route('city.index')
+                ->with('success', 'City data was removed successfully');
     }
 
     /**

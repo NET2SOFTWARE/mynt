@@ -57,9 +57,10 @@
                             <table class="table table-hover">
                                 <thead>
                                 <tr>
-                                    <th>DATE</th>
-                                    <th>NAME TRANSACTION</th>
-                                    <th class="text-center">ID-TRANSACTION</th>
+                                    <th>TRANSACTION TIME</th>
+                                    <th>TRANSACTION NAME</th>
+                                    <th class="text-center">TRANSACTION ID</th>
+                                    <th class="text-center">RELATED ACCOUNT</th>
                                     <th class="text-center">DEBIT</th>
                                     <th class="text-center">CREDIT</th>
                                     <th class="text-center" style="width:88px">BALANCE</th>
@@ -71,9 +72,16 @@
                                         <td>{{ date('d-m-Y H:i:s', strtotime($passbook->created_at)) }}</td>
                                         <td>{{ $passbook->transaction->service->name }}</td>
                                         <td class="text-center">{{ $passbook->transaction->trx_id }}</td>
-                                        <td class="text-center">{{ number_format($passbook->debit) }}</td>
-                                        <td class="text-center">{{ number_format($passbook->credit) }}</td>
-                                        <td class="text-center">{{ number_format($passbook->balance) }}</td>
+                                        <td class="text-center">
+                                            @if ($passbook->transaction->sender_account_number == $account->number)
+                                            {{ $passbook->transaction->receiver_account_number }}
+                                            @else
+                                            {{ $passbook->transaction->sender_account_number }}
+                                            @endif
+                                        </td>
+                                        <td class="text-center">{{ 'Rp ' . number_format($passbook->debit) }}</td>
+                                        <td class="text-center">{{ 'Rp ' . number_format($passbook->credit) }}</td>
+                                        <td class="text-center">{{ 'Rp ' . number_format($passbook->balance) }}</td>
                                     </tr>
                                 @endforeach
                                 </tbody>
