@@ -65,7 +65,7 @@
                                 <td>{{ ucfirst($member->type) }}</td>
                                 <td>{{ ucfirst($member->status) }}</td>
                                 <td style="width:73px">
-                                    <a class="badge badge-default" href="{{ route('member.edit', [$member->id]) }}" data-toggle="tooltip" data-placement="left" title="View" style="font-size:14px;">
+                                    <a class="badge badge-default" href="{{ route('member.show', [$member->id]) }}" data-toggle="tooltip" data-placement="left" title="View" style="font-size:14px;">
                                         <i class="fa fa-eye" aria-hidden="true"></i>
                                     </a>
                                     <a class="badge badge-default" href="{{ route('member.delete', [$member->id]) }}" onclick="event.preventDefault();document.getElementById('member-delete-{{ $member->id }}').submit();" data-toggle="tooltip" data-placement="left" title="Delete" style="font-size:14px">

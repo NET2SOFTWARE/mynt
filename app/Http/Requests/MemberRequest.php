@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class MemberRequest extends FormRequest
 {
@@ -38,10 +39,9 @@ class MemberRequest extends FormRequest
             case 'PUT':
             case 'PATCH': {
                 return [
-                    'name' => [
-                        'required', 'max:40', 'string',
-                        Rule::unique('industries')->ignore($this->get('id')),
-                    ]
+                    // 'name' => [
+                    //     'required', 'max:40', 'string',
+                    // ]
                 ];
             }
 

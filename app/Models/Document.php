@@ -46,34 +46,43 @@ class Document extends Model
     /**
      * @param $value
      */
-    public function setNameAttribute($value)
-    {
-        $this->attributes['name'] = strtolower($value);
-    }
+    // public function setNameAttribute($value)
+    // {
+    //     $this->attributes['name'] = strtolower($value);
+    // }
 
     /**
      * @param $value
      * @return string
      */
-    public function getNameAttribute($value)
-    {
-        return strtolower($value);
-    }
+    // public function getNameAttribute($value)
+    // {
+    //     return strtolower($value);
+    // }
 
     /**
      * @param $value
      */
-    public function setSourceAttribute($value)
-    {
-        $this->attributes['source'] = strtolower($value);
-    }
+    // public function setSourceAttribute($value)
+    // {
+    //     $this->attributes['source'] = strtolower($value);
+    // }
 
     /**
      * @param $value
      * @return string
      */
-    public function getSourceAttribute($value)
+    // public function getSourceAttribute($value)
+    // {
+    //     return strtolower($value);
+    // }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function companies()
     {
-        return strtolower($value);
+        return $this->belongsToMany(Company::class, 'company_documents', 'document_id', 'company_id')
+            ->withTimestamps();
     }
 }

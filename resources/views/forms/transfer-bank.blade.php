@@ -6,7 +6,6 @@
         <small class="form-text small text-muted d-flex justify-content-between" id="senderHelp">Your account number. <span class="text-grey">Required</span></small>
     </section>
 </section>
-<section class="form-group row{{ $errors->has('bank') ? ' has-danger' : '' }}">
     <label for="bank" class="col-sm-4 col-form-label">To</label>
     <section class="col-sm-8">
         <select id="bank" name="bank" class="custom-select w-100" aria-describedby="bankHelp" required>
@@ -19,6 +18,19 @@
         <small class="form-text small text-muted d-flex justify-content-between" id="bankHelp"><span>If the bank account is not yet registered, please register first.</span><span class="text-grey ml-3">Required</span></small>
     </section>
 </section>
+<section class="form-group row">
+    <label for="bank_code" class="col-sm-4 col-form-label">Bank name</label>
+    <section class="col-sm-8">
+        <select id="bank_code" name="bank_code" class="custom-select w-100" aria-describedby="bankCodeHelp">
+            <option selected disabled>Choose bank</option>
+            @foreach($banks as $bank)
+                <option value="{{ $bank->bank_code }}">{{ $bank->bank_code. '&#32;' .strtoupper($bank->bank_name) }}</option>
+            @endforeach
+        </select>
+        <small class="form-text small text-muted d-flex justify-content-between" id="bankCodeHelp"><span>Please choose one bank.</span><span class="text-grey ml-3">Required</span></small>
+    </section>
+</section>
+
 <section class="form-group row{{ $errors->has('amount') ? ' has-danger' : '' }}">
     <label for="amount" class="col-sm-4 col-form-label">Amount</label>
     <section class="col-sm-8">
@@ -27,6 +39,30 @@
         <small class="form-text small text-muted d-flex justify-content-between" id="amountHelp">Amount transfer, min. 500 <span class="text-grey">Required</span></small>
     </section>
 </section>
+
+<section class="form-group row{{ $errors->has('purposecode') ? ' has-danger' : '' }}">
+    <label for="purposecode" class="col-sm-4 col-form-label">Purpose</label>
+    <section class="col-sm-8">
+        <select id="purposecode" name="purposecode" class="custom-select w-100" aria-describedby="purposecodeHelp">
+            <option selected disabled>Choose one of purpose</option>
+            <option value="1">Business</option>
+            <option value="2">Non-Business - Education</option>
+            <option value="3">Non-Business - Other</option>
+        </select>
+        @if ($errors->has('purposecode'))<span class="form-control-feedback">{{ $errors->first('purposecode') }}</span>@endif
+        <small class="form-text text-muted d-flex justify-content-between" id="purposecodeHelp">Please choose one of purpose from the list. <span class="text-grey">Required</span></small>
+    </section>
+</section>
+
+<section class="form-group row{{ $errors->has('purposedesc') ? ' has-danger' : '' }}">
+    <label for="purposedesc" class="col-sm-4 col-form-label">Purpose description</label>
+    <section class="col-sm-8">
+        <textarea id="purposedesc" name="purposedesc" class="form-control" rows="3" placeholder="Purpose description" aria-describedby="purposedescHelp"></textarea>
+        @if ($errors->has('purposedesc'))<span class="form-control-feedback">{{ $errors->first('purposedesc') }}</span>@endif
+        <small class="form-text text-muted d-flex justify-content-between" id="purposedescHelp">Purpose description. <span class="text-grey">Required</span></small>
+    </section>
+</section>
+
 <section class="form-group row{{ $errors->has('token') ? ' has-danger' : '' }}">
     <label for="token" class="col-sm-4 col-form-label">Token</label>
     <section class="col-sm-8">
@@ -38,6 +74,7 @@
         <small class="form-text text-muted d-flex justify-content-between" id="tokenHelp">Request new transaction token first. <span class="text-grey">Required</span></small>
     </section>
 </section>
+
 <section class="form-group row{{ $errors->has('captcha') ? ' has-danger' : '' }}">
     <label for="captcha" class="col-sm-4 col-form-label">Security code</label>
     <section class="col-sm-8">

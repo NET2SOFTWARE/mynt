@@ -52,23 +52,45 @@ class ProductSalesController extends Controller
              * but with different supplier, fail this create step.
              */
             $purchase = ProductPurchase::find($request->input('product_purchase_price_id'));
-            $merchant = Merchant::whereHas('product_sales', function($q) use ($purchase) {
+            
+            // Single merchant validation
+            //
+            // $merchant = Merchant::whereHas('product_sales', function($q) use ($purchase) {
+            //     $q->where('product_purchase_price_id', '<>', $purchase->id)
+            //         ->whereHas('product_purchase', function($q) use ($purchase) {
+            //            $q->where('product_id', $purchase->products()->first()->id); 
+            //         });
+            // })->find($request->input('merchant_id'));
+
+            // if ($merchant) abort(400);
+
+            // $data = ProductSales::create($request->only([
+            //     'product_purchase_price_id',
+            //     'merchant_id',
+            //     'price',
+            // ]));
+            
+            // Many merchant assignment validation
+
+            $merchants = Merchant::whereHas('product_sales', function($q) use ($purchase) {
                 $q->where('product_purchase_price_id', '<>', $purchase->id)
                     ->whereHas('product_purchase', function($q) use ($purchase) {
                        $q->where('product_id', $purchase->products()->first()->id); 
                     });
-            })->find($request->input('merchant_id'));
+            })->whereIn('id', $request->input('merchant_id'))->get();
 
-            if ($merchant) abort(400);
+            if ($merchants->count() > 0) abort(400);
 
-            $data = ProductSales::create($request->only([
-                'product_purchase_price_id',
-                'merchant_id',
-                'price',
-            ]));
+            foreach ($request->input('merchant_id') as $merchant_id) {
+                $data = ProductSales::create([
+                    'product_purchase_price_id' => $request->input('product_purchase_price_id'),
+                    'price'                     => $request->input('price'),
+                    'merchant_id'               => $merchant_id
+                ]);
 
-            if (! $data) 
-                return redirect()->back()->withInput($request->all())->with('warning', 'Fail to add product sales price.');
+                if (! $data) 
+                    return redirect()->back()->withInput($request->all())->with('warning', 'Fail to add product sales price.');
+            }
         } catch (\Illuminate\Database\QueryException $e) {
             return redirect()->back()->withInput($request->all())->with('warning', 'Fail to add product sales price. Merchant already selling selected product.');
         } catch (\Exception $e) {

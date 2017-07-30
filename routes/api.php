@@ -24,7 +24,6 @@ Route::post('/mobile/remittance/redeem',                   'Api\RemittanceContro
 
 Route::get('/secret',                     'SecretController@get')->name('secret');
 
-
 Route::prefix('mobile')->middleware('auth:api')->group(function () {
     Route::get('/profile',                              'Api\MemberController@profile')->name('api.profile');
     Route::get('/last/balance/{accountNumber}',         'Api\MemberController@last_balance')->name('api.last.balance');
@@ -40,7 +39,6 @@ Route::prefix('mobile')->middleware('auth:api')->group(function () {
     Route::get('/remittance/delete/account/{id}',       'Api\RemittanceController@delete_account')->name('api.remittance.delete.account');
 //    Route::post('/remittance/transfer',                 'Api\RemittanceController@transfer')->name('api.remittance.transfer');
 //    Route::post('/remittance/redeem',                   'Api\RemittanceController@redeem')->name('api.remittance.transfer');
-
 });
 
 Route::prefix('transaction')->group(function (){
@@ -69,6 +67,8 @@ Route::prefix('company')->group(function (){
     Route::put('/{id}',         'Api\CompanyController@update')->name('api.company.update');
     Route::patch('/{id}',       'Api\CompanyController@update')->name('api.company.update');
     Route::delete('/{id}',      'Api\CompanyController@destroy')->name('api.company.delete');
+    Route::put('/upload/{id}',  'Api\CompanyController@uploadPhoto')->name('api.company.update.upload');
+    Route::patch('/upload/{id}','Api\CompanyController@uploadPhoto')->name('api.company.update.upload');
 });
 
 Route::prefix('merchant')->group(function (){

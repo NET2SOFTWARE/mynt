@@ -45,21 +45,21 @@
                                 {{ csrf_field() }}
 
                                 <section class="form-group{{ $errors->has('born_place') ? ' has-danger' : '' }}">
-                                    <label for="born_place">Born place</label>
+                                    <label for="born_place"><span class="text-danger">*</span> Born place</label>
                                     <input id="born_place" name="born_place" value="{{ old('born_place') }}" class="form-control" placeholder="Born place">
                                     @if ($errors->has('born_place'))<section class="form-control-feedback">{{ $errors->first('born_place') }}</section>@endif
-                                    <small class="form-text text-muted">Place of birth of members in accordance with supporting documents. E.g : Sibolga</small>
+                                    <small class="form-text text-muted d-flex justify-content-between">Place of birth of members in accordance with supporting documents. E.g : Sibolga <span class="text-grey pl-2"><span class="text-danger">*</span>Required</span></small>
                                 </section>
                                 <section class="form-group{{ $errors->has('born_date') ? ' has-danger' : '' }}">
-                                    <label for="born-of-date">Date of Birth</label>
+                                    <label for="born-of-date"><span class="text-danger">*</span> Date of Birth</label>
                                     <section id="born-date">
                                         <input id="born-of-date" name="born_date" class="form-control" value="{{ old('born_date') ? old('born_date') : date('d-m-Y') }}" placeholder="00-00-0000">
                                     </section>
                                     @if ($errors->has('born_date'))<section class="form-control-feedback">{{ $errors->first('born_date') }}</section>@endif
-                                    <small class="form-text text-muted">Member's birthday in accordance with supporting documents. E.g : 26-06-1994</small>
+                                    <small class="form-text text-muted d-flex justify-content-between">Member's birthday in accordance with supporting documents. E.g : 26-06-1994 <span class="text-grey pl-2"><span class="text-danger">*</span>Required</span></small>
                                 </section>
                                 <section class="form-group">
-                                    <label for="gender">Gender</label>
+                                    <label for="gender"><span class="text-danger">*</span> Gender</label>
                                     <section>
                                         <label class="custom-control custom-radio">
                                             <input id="male" name="gender" type="radio" value="male" class="custom-control-input" {{ (old('gender') == 'male') ? ' checked' : '' }}>
@@ -73,10 +73,10 @@
                                         </label>
                                     </section>
                                     @if ($errors->has('gender'))<section class="form-control-feedback">{{ $errors->first('gender') }}</section>@endif
-                                    <small class="form-text text-muted">The sex of the members in accordance with the supporting documents. 'Male' or 'Female'</small>
+                                    <small class="form-text text-muted d-flex justify-content-between">The sex of the members in accordance with the supporting documents. 'Male' or 'Female' <span class="text-grey pl-2"><span class="text-danger">*</span>Required</span></small>
                                 </section>
                                 <section class="form-group{{ $errors->has('identity.type') ? ' has-danger' : '' }}">
-                                    <label for="identity-type">Document identity type</label>
+                                    <label for="identity-type"><span class="text-danger">*</span> Document identity type</label>
                                     <select id="identity-type" name="identity[type]" class="custom-select w-100">
                                         <option selected disabled>Document identity</option>
                                         @foreach($identities as $identity)
@@ -84,35 +84,51 @@
                                         @endforeach
                                     </select>
                                     @if ($errors->has('identity.type'))<section class="form-control-feedback">{{ $errors->first('identity.type') }}</section>@endif
-                                    <small class="form-text text-muted">Please choose one of the legal documents that support the validity of the data.</small>
+                                    <small class="form-text text-muted d-flex justify-content-between">Please choose one of the legal documents that support the validity of the data. <span class="text-grey pl-2"><span class="text-danger">*</span>Required</span></small>
                                 </section>
                                 <section class="form-group{{ $errors->has('identity.number') ? ' has-danger' : '' }}">
-                                    <label for="identity-number">Identity number</label>
+                                    <label for="identity-number"><span class="text-danger">*</span> Identity number</label>
                                     <input id="born_place" name="identity[number]" value="{{ old('identity.number') }}" class="form-control" placeholder="Identity number">
                                     @if ($errors->has('identity.number'))<section class="form-control-feedback">{{ $errors->first('identity.number') }}</section>@endif
-                                    <small class="form-text text-muted">Fill input with identity number of legal document data in accordance with supporting documents. Numeric character only, e.g : 100010101101xxx</small>
+                                    <small class="form-text text-muted d-flex justify-content-between">Fill input with identity number of legal document data in accordance with supporting documents. Numeric character only, e.g : 100010101101xxx <span class="text-grey pl-2"><span class="text-danger">*</span>Required</span></small>
                                 </section>
                                 <section class="form-group{{ $errors->has('identity.date') ? ' has-danger' : '' }}">
-                                    <label for="identity-date">Identity expired date</label>
-                                    <section id="born-date">
-                                        <input id="identity-date" name="identity[date]" class="form-control" value="{{ old('identity.date') ? old('identity.date') : date('d-m-Y') }}" placeholder="00-00-0000">
+                                    <label for="identity-date"><span class="text-danger">*</span> Identity expired date</label>
+                                    <section id="identity-date-container">
+                                        <label class="custom-control custom-radio">
+                                            <input id="implementDate" name="identity_date_type" type="radio" value="date" class="custom-control-input" required {{ is_null(old('identity_date_type')) ? 'checked' : old('identity_date_type') == 'date' ? 'checked' : '' }}> 
+                                            <span class="custom-control-indicator"></span> 
+                                            <span class="custom-control-description d-flex">
+                                                <span class="badge badge-default small-caps" style="height: 22px; margin-top: 1px; margin-right: 8px; width: 145px;">date</span>
+                                                <input id="identity-date" name="identity[date]" class="form-control" value="{{ old('identity.date') ? old('identity.date') : date('d-m-Y') }}" placeholder="00-00-0000" style="margin-top: -5px;">
+                                            </span>
+                                        </label>
+                                        <br>
+                                        <label class="custom-control custom-radio">
+                                            <input id="implementLifetime" name="identity_date_type" type="radio" value="lifetime" class="custom-control-input" required {{ old('identity_date_type') == 'lifetime' ? 'checked' : '' }}> 
+                                            <span class="custom-control-indicator"></span> 
+                                            <span class="custom-control-description d-flex">
+                                                <span class="badge badge-default small-caps" style="height: 22px; margin-top: 1px; width: 100px;">lifetime</span>
+                                            </span>
+                                        </label>
                                     </section>
                                     @if ($errors->has('identity.date'))<section class="form-control-feedback">{{ $errors->first('identity.date') }}</section>@endif
-                                    <small class="form-text text-muted">Fill input with expiry date of legal document data in accordance with the original. E.g : 26-06-2020</small>
+                                    <small class="form-text text-muted d-flex justify-content-between">Fill input with expiry date of legal document data in accordance with the original. E.g : 26-06-2020 <span class="text-grey pl-2"><span class="text-danger">*</span>Required</span></small>
                                 </section>
                                 <section class="form-group{{ $errors->has('mother_name') ? ' has-danger' : '' }}">
-                                    <label for="mother-name">Mother name</label>
+                                    <label for="mother-name"><span class="text-danger">*</span> Mother name</label>
                                     <input id="mother-name" name="mother_name" class="form-control" value="{{ old('mother_name') }}" placeholder="Mother name">
                                     @if ($errors->has('mother_name'))<section class="form-control-feedback">{{ $errors->first('mother_name') }}</section>@endif
-                                    <small class="form-text text-muted">Fill input with your real mother's name. E.g : Yuant</small>
+                                    <small class="form-text text-muted d-flex justify-content-between">Fill input with your real mother's name. E.g : Yuant <span class="text-grey pl-2"><span class="text-danger">*</span>Required</span></small>
                                 </section>
                                 <section class="form-group{{ $errors->has('document') ? ' has-danger' : '' }}">
-                                    <label for="document">Upload your identity document</label>
+                                    <label for="document"><span class="text-danger">*</span> Upload your identity document</label>
                                     <label class="custom-file w-100">
-                                        <input id="document" name="document" type="file" class="form-control" placeholder="Identity document">
+                                        <input id="document" name="document" type="file" class="custom-file-input" placeholder="Identity document">
+                                        <span class="custom-file-control"></span>
                                     </label>
                                     @if ($errors->has('document'))<section class="form-control-feedback">{{ $errors->first('document') }}</section>@endif
-                                    <small class="form-text text-muted">Upload your legal documents with a minimum 320 x 320 pixel dimension and the file data type should be : jpg, jpeg, png, bmp, gif.</small>
+                                    <small class="form-text text-muted d-flex justify-content-between">Upload your legal documents with a minimum 320 x 320 pixel dimension and the file data type should be : jpg, jpeg, png, bmp, gif. <span class="text-grey pl-2"><span class="text-danger">*</span>Required</span></small>
                                 </section>
 
                                 <fieldset class="form-group{{ $errors->has('captcha') ? ' has-danger' : '' }}">

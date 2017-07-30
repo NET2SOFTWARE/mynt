@@ -21,7 +21,7 @@ class TestingController extends Controller
         $this->bank = $bank;
     }
 
-    public function testing()
+    public function testing(Request $request)
     {
        return (string) $this->encrypt->encrypt($this->encrypt->hashMD5('0000012017072716324500001661499305208510010010201707271632450001700000027500068800600600675000614993052085ID'));
     }

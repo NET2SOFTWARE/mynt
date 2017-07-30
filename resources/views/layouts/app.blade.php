@@ -36,6 +36,10 @@
         span.custom-file-control.changed::after {
             content: attr(data-file-name);
         }
+        #document_extra.custom-file-control::before{
+            height: auto;
+            line-height:1.25;
+        }
     </style>
 </head>
 <body>
@@ -47,6 +51,7 @@
     </main>
     <script src="{{ asset('js/tether.min.js') }}"></script>
     <script src="{{ asset('js/app.cf855400ba521f241761.js') }}"></script>
+    <script src="{{ asset('js/jquery.validate.min.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>

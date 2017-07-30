@@ -190,6 +190,12 @@ class MemberController extends Controller
         $expired_date = date('Y-m-d', strtotime($request->input('identity.date')));
         $now = date('Y-m-d', strtotime(Carbon::now()->toDateString()));
 
+        if ($request->input('identity_date_type') == 'lifetime')
+        {
+            $dob = date('Y-m-d', strtotime($request->input('born_date')));
+            $expired_date = date('Y-m-d', strtotime(date('Y-m-d', strtotime($dob)) . ' + 200 year'));
+        }
+
         if ($expired_date <= $now) {
             return redirect()->back()
                 ->withInput($request->all())
@@ -211,7 +217,7 @@ class MemberController extends Controller
             'born_date'                 => $request->input('born_date'),
             'identity_id'               => $request->input('identity.type'),
             'identity_number'           => $request->input('identity.number'),
-            'identity_expired_date'     => $request->input('identity.date'),
+            'identity_expired_date'     => $expired_date,
             'mother_name'               => $request->input('mother_name'),
             'document'                  => $filename,
             'status'                    => 'pending',

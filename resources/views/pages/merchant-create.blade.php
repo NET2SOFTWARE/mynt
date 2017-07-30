@@ -39,7 +39,10 @@
                                     </fieldset>
                                     <fieldset class="form-group{{ $errors->has('phone') ? ' has-danger' : '' }}">
                                         <label for="phone">Phone</label>
-                                        <input id="phone" name="phone" class="form-control" value="{{ old('phone')  }}" placeholder="Merchant phone" type="text" required aria-describedby="phoneHelp">
+                                        <div class="input-group">
+                                                <span class="input-group-addon medium-small lh-1-5" style="padding-top:.125rem;padding-bottom:.125rem">+62</span>
+                                                <input id="phone" class="form-control" name="phone" value="{{ old('phone') }}" placeholder="Merchant phone" required>
+                                            </div>
                                         @if ($errors->has('phone'))<section class="form-control-feedback">{{ $errors->first('phone') }}</section>@endif
                                         <small class="form-text text-muted" id="phoneHelp">Please insert field with valid contact phone.</small>
                                     </fieldset>

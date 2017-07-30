@@ -1,7 +1,6 @@
 <?php
 Route::get('/term', 'term@show');
 Route::get('/', function () {return view('welcome');});
-            Route::post('/',            'Api\ProductPurchaseController@store')->name('product.purchase.store');
 
 Route::get('/login/member/company',     'Auth\LoginController@showLoginMemberCompanyForm')->name('login.member.company');
 Route::post('/login/member/company',    'Auth\LoginController@loginMemberCompany')->name('post.login.member.company');
@@ -10,9 +9,7 @@ Route::post('/login/merchant',          'Auth\LoginController@loginMerchant')->n
 Route::get('/login/company',            'Auth\LoginController@showLoginCompanyForm')->name('login.company');
 Route::post('/login/company',           'Auth\LoginController@loginCompany')->name('post.login.company');
 
-
 Route::get('/generate/token/{account}',    'Member\TokenController@requestToken')->name('generate.token');
-
 
 Route::get('/get_captcha', function (\Mews\Captcha\Captcha $captcha){return $captcha->src('default');});
 Route::get('/under_construction', function () { return view('under-construction'); })->name('construction');
@@ -23,13 +20,9 @@ Route::post('/confirmation/resend',         'EmailConfirmationController@resend'
 Route::get('/mynt-id',                      'MyntController@showForm')->middleware('confirmation')->name('mynt_id');
 Route::post('/mynt-id',                     'MyntController@store')->middleware('confirmation')->name('mynt_id.store');
 
-
-
-
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->middleware(['confirmation', 'mynt'])->name('home');
-
 
 Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function (){
     Route::post('/remittance/transaction',  'RemittanceController@transfer')->name('remittance');
@@ -37,8 +30,6 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function (){
     Route::post('/cash/out/transaction',    'TransactionController@toAccountAndCashOut')->name('cash.out');
     Route::get('/delete/remittance/data/{id}',    'RemittanceController@delete')->name('delete.remittance');
 });
-
-
 
 Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
 
@@ -94,7 +85,7 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::get('/transaction/bank',             'Merchant\TransactionController@bank')->name('merchant.transaction.bank');
         Route::get('/transaction/remittance',       'Merchant\TransactionController@remittance')->name('merchant.transaction.remittance');
         Route::get('/transaction/redeem',           'Merchant\TransactionController@redeem')->name('merchant.transaction.redeem');
-        Route::get('/summary/transaction/product',  'Merchant\SummaryController@summary')->name('merchant.summary.product');
+        Route::get('/summary/transaction/product',  'Merchant\SummaryController@summaryProduct')->name('merchant.summary.product');
         Route::get('/summary/transaction/payment',  'Merchant\SummaryController@summaryPayment')->name('merchant.summary.payment');
         Route::get('/summary/transaction/purchase', 'Merchant\SummaryController@summaryPurchase')->name('merchant.summary.purchase');
         Route::get('/accessibility/notification',   'Merchant\AccessibilityController@notification')->name('merchant.accessibility.notification');
@@ -137,19 +128,11 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
     });
 });
 
-
-
-
-
 Route::prefix('admin')->group(function (){
     Route::get('/',         'AdminController@index')->name('admin.home');
     Route::get('/login',    'Auth\AdminLoginController@showLoginForm')->name('admin.login');
     Route::post('/login',   'Auth\AdminLoginController@login')->name('admin.login.submit');
 });
-
-
-
-
 
 Route::middleware(['auth:admin'])->group(function (){
 

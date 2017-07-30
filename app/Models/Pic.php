@@ -84,4 +84,13 @@ class Pic extends Model
         return $this->belongsToMany(Location::class, 'pic_locations', 'pic_id', 'location_id')
             ->withTimestamps();
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function companies()
+    {
+        return $this->belongsToMany(Company::class, 'company_pics', 'pic_id', 'company_id')
+            ->withTimestamps();
+    }
 }

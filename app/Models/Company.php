@@ -28,7 +28,7 @@ class Company extends Model
         'phone',
         'email',
         'website',
-        'photo',
+        'image',
         'industry_id'
     ];
 
@@ -216,6 +216,24 @@ class Company extends Model
     public function product_purchase()
     {
         return $this->hasMany(ProductPurchase::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function documents()
+    {
+        return $this->belongsToMany(Document::class, 'company_documents', 'company_id', 'document_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function pics()
+    {
+        return $this->belongsToMany(Pic::class, 'company_pics', 'company_id', 'pic_id')
+            ->withTimestamps();
     }
 
     /**

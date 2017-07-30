@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Member;
 
+use Carbon\Carbon;
 use App\Contracts\AccountInterface;
 use App\Contracts\OTPInterface;
 use App\Contracts\TokenInterface;
@@ -110,13 +111,51 @@ class TokenController extends Controller
      * @param $account
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function requestToken($account)
+    public function requestToken($account, Request $request)
     {
+        /**
+         * Freeze generate token if user attempts (in the same page) is more than 3 times
+         */
+        $key = request()->headers->get('referer');
+        
+        $attempt = $request->session()->get($key);
+
+        if (! $attempt) $attempt = 0;
+
+        $attempt++;
+        
+        $request->session()->put($key, $attempt);
+
+        if ((int) $attempt > 2 && ! $request->session()->has('freeze-' . $key . '-until'))
+        {
+            $freezeUntil = Carbon::now()->addMinute(5);
+            $request->session()->put('freeze-' . $key . '-until', $freezeUntil);
+        }
+
+        if ($request->session()->has('freeze-' . $key . '-until'))
+        {
+            $now = Carbon::now();
+            $freezeTime = $request->session()->get('freeze-' . $key . '-until');
+        
+            if ($now->gt($freezeTime))
+            {
+                $request->session()->forget($key);
+                $request->session()->forget('freeze-' . $key . '-until');
+            } else {
+                return redirect()
+                    ->back()
+                    ->withInput($request->all())
+                    ->with('warning', 'Maximum attempt (3 time) for generating token exceed. Please wait '. $now->diffForHumans($freezeTime) .' before generating new token.');
+            }
+        }
+
         $acc = $this->account->getAccountByNumber($account);
 
         if (count($account) < 1)
             return redirect()
-                ->route('member.transactions.account')
+                // ->route('member.transactions.account')
+                ->back()
+                ->withInput($request->all())
                 ->with('warning', 'Account number unknown');
 
         $reference_id = $this->otp->generate($acc->number);
@@ -124,6 +163,7 @@ class TokenController extends Controller
         if (!$reference_id) {
             return redirect()
                 ->back()
+                ->withInput($request->all())
                 ->with('warning', 'Internal system error, system can not get OTP server');
         }
 
@@ -135,11 +175,16 @@ class TokenController extends Controller
 
         if (!$token) {
             return redirect()
-                ->route('member.transactions.account')
+                // ->route('member.transactions.account')
+                ->back()
+                ->withInput($request->all())
                 ->with('warning', 'Internal system error, system can`t get OTP server');
         }
 
         return redirect()
-            ->route('member.transactions.account')->with('success', 'Success, token has been sent.');
+            // ->route('member.transactions.account')
+            ->back()
+            ->withInput($request->all())
+            ->with('success', 'Success, token has been sent.');
     }
 }
