@@ -184,8 +184,6 @@ return [
 
         // Snappy
         Barryvdh\Snappy\ServiceProvider::class,
-        // ChartJS
-        Fx3costa\LaravelChartJs\Providers\ChartjsServiceProvider::class,
         // Lavacharts
         Khill\Lavacharts\Laravel\LavachartsServiceProvider::class,
     ],

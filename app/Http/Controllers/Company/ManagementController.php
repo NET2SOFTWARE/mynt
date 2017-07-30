@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Company;
 
+use App\Models\Bank;
+use App\Models\Country;
 use Illuminate\Http\Request;
 use App\Contracts\AreaInterface;
 use App\Contracts\BankInterface;
 use App\Contracts\StateInterface;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Validator;
 
 class ManagementController extends Controller
@@ -89,7 +92,9 @@ class ManagementController extends Controller
      */
     public function bank()
     {
-        return view('company.management-bank');
+        $remittance = Auth::user()->remittances;
+
+        return view('company.management-bank', compact('remittance'));
     }
 
     /**
@@ -97,11 +102,17 @@ class ManagementController extends Controller
      */
     public function showFormRegisterBank()
     {
-        $regencies  = $this->area->gets();
-        $provinces  = $this->state->gets();
-        $banks      = $this->bank->gets();
+        $banks = Bank::all();
 
-        return view('company.management-bank-create', compact('regencies', 'provinces', 'banks'));
+        $regencies = $this->area->gets();
+
+        $countries = Country::all();
+
+        $referral = Auth::user()->companies->first()['code'];
+
+        $mynt_acc_num = Auth::user()->companies->first()['accounts'][0]['number'];
+
+        return view('company.management-bank-create', compact('banks', 'regencies', 'countries', 'referral', 'mynt_acc_num'));
     }
 
     /**

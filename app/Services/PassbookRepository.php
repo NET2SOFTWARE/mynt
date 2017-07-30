@@ -101,4 +101,15 @@ class PassbookRepository implements PassbookInterface
 
         return (count($passbooks) >= 1) ? $passbooks : false;
     }
+
+    /**
+     * @param int $id
+     * @return mixed
+     */
+    public function delete(int $id)
+    {
+        $passbook = Passbook::find($id);
+
+        return $passbook->delete();
+    }
 }

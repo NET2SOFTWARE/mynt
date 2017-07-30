@@ -34,7 +34,7 @@
         <a href="{{ route('member.transactions.account') }}" class="list-group-item list-group-item-action py-2{{ $active == 'transaction' ? ' active' : ''}}">Transaction</a>
         <a href="{{ route('member.purchase') }}" class="list-group-item list-group-item-action py-2{{ $active == 'purchase' ? ' active' : ''}}">Purchase</a>
         <a href="{{ route('member.payment') }}" class="list-group-item list-group-item-action py-2{{ $active == 'payment' ? ' active' : ''}}">Payment</a>
-        <a href="{{ route('member.accessibility') }}" class="list-group-item list-group-item-action py-2{{ $active == 'accessibility' ? ' active' : ''}}">Accessibility</a>
+        <a href="{{ route('member.accessibility.notification') }}" class="list-group-item list-group-item-action py-2{{ $active == 'accessibility' ? ' active' : ''}}">Accessibility</a>
         <a href="{{ route('member.management') }}" class="list-group-item list-group-item-action py-2{{ $active == 'management' ? ' active' : ''}}">Account Management</a>
     </nav>
     <section class="card">

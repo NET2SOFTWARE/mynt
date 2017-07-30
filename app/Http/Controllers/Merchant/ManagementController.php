@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Merchant;
 use App\Contracts\AreaInterface;
 use App\Contracts\BankInterface;
 use App\Contracts\StateInterface;
+use App\Models\Bank;
+use App\Models\Country;
 use Illuminate\Http\Request;
 use App\Contracts\CityInterface;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ManagementController extends Controller
 {
@@ -42,22 +45,23 @@ class ManagementController extends Controller
 
     public function bank()
     {
-        return view('merchant.management-bank');
+        $remittances = Auth::user()->remittances;
+
+        return view('merchant.management-bank', compact('remittances'));
     }
 
     public function showFormRegisterBank()
     {
-        $regencies  = $this->area->gets();
-        $provinces  = $this->state->gets();
-        $banks      = $this->bank->gets();
+        $banks = Bank::all();
 
-        return view('merchant.management-bank-create', compact('provinces', 'regencies', 'banks'));
-    }
+        $regencies = $this->area->gets();
 
-    public function bankStore(Request $request)
-    {
-        return redirect()
-            ->back()
-            ->with('success', 'Bank account was successfully added.');
+        $countries = Country::all();
+
+        $referral = Auth::user()->merchants->first()['companies'][0]['code'];
+
+        $mynt_acc_num = Auth::user()->merchants->first()['accounts'][0]['number'];
+
+        return view('merchant.management-bank-create', compact('banks', 'regencies', 'countries', 'referral', 'mynt_acc_num'));
     }
 }

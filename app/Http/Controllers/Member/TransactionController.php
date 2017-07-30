@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Member;
 
 use App\Models\Account;
+use App\Models\Area;
+use App\Models\Bank;
 use Illuminate\Http\Request;
 use App\Contracts\OTPInterface;
 use App\Contracts\TokenInterface;
@@ -10,6 +12,7 @@ use App\Contracts\AccountInterface;
 use App\Http\Controllers\Controller;
 use App\Contracts\PassbookInterface;
 use App\Contracts\TransactionInterface;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -78,8 +81,12 @@ class TransactionController extends Controller
 
     public function bank()
     {
+        $remittances = Auth::user()->remittances;
+
+        $areas = Area::all(['name', 'code']);
+
         return response()
-            ->view('member.transaction.bank', compact(null), 200);
+            ->view('member.transaction.bank', compact('remittances', 'areas'), 200);
     }
 
     public function remittance()
@@ -90,8 +97,10 @@ class TransactionController extends Controller
 
     public function redeem()
     {
+        $remittances = Auth::user()->remittances;
+
         return response()
-            ->view('member.transaction.redeem', compact(null), 200);
+            ->view('member.transaction.redeem', compact('remittances'), 200);
     }
 
     /**
@@ -109,28 +118,28 @@ class TransactionController extends Controller
             'recipient' => 'required',
             'amount'    => 'required|numeric|min:5000',
             'captcha'   => 'required|captcha',
-//            'token'     => 'required|numeric|digits:6'
+            'token'     => 'required|numeric|digits:6'
         ])->validate();
 
-//        $token          = $request->input('token');
+        $token          = $request->input('token');
         $no_sender      = $request->input('sender');
         $no_recipient   = $request->input('recipient');
         $amount         = $request->input('amount');
-//
-//        if (!$checkToken = $this->token->getLastUserReferenceToken($no_sender))
-//            return redirect()
-//                ->back()
-//                ->with('warning', 'Please generate new token')
-//                ->withInput($request->except(['captcha']));
-//
-//        if ( !$this->otp->validate($no_sender, $checkToken, $token) ) {
-//            return redirect()
-//                ->back()
-//                ->with('warning', 'Your token not valid, please generate new token again.')
-//                ->withInput($request->except(['captcha']));
-//        }
-//
-//        $this->token->destroy($no_sender);
+
+        if (!$checkToken = $this->token->getLastUserReferenceToken($no_sender))
+            return redirect()
+                ->back()
+                ->with('warning', 'Please generate new token')
+                ->withInput($request->except(['captcha']));
+
+        if ( !$this->otp->validate($no_sender, $checkToken, $token) ) {
+            return redirect()
+                ->back()
+                ->with('warning', 'Your token not valid, please generate new token again.')
+                ->withInput($request->except(['captcha']));
+        }
+
+        $this->token->destroy($no_sender);
 
         if (!$sender = $this->account->getAccountByNumber($no_sender)) {
             return redirect()

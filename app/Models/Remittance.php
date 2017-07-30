@@ -7,9 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Remittance extends Model
 {
+    /**
+     * @var string
+     */
     protected $table = 'remittances';
 
+    /**
+     * @var array
+     */
     protected $fillable = [
+        'stan',
         'transdatetime',
         'instid',
         'accountid',
@@ -24,55 +31,30 @@ class Remittance extends Model
         'citizenship',
         'idnumber',
         'fundresource',
-        'accountid1',
 
         'instid1',
+        'accountid1',
         'name1',
         'relationship1',
         'regencycode1',
         'address1',
         'provcode1',
         'idnumber1',
-
-        'accountid2',
-        'instid2',
-        'name2',
-        'relationship2',
-        'regencycode2',
-        'address2',
-        'provcode2',
-        'idnumber2',
-
-        'accountid3',
-        'instid3',
-        'name3',
-        'relationship3',
-        'regencycode3',
-        'address3',
-        'provcode3',
-        'idnumber3',
-
-        'accountid4',
-        'instid4',
-        'name4',
-        'relationship4',
-        'regencycode4',
-        'address4',
-        'provcode4',
-        'idnumber4',
-
-        'accountid5',
-        'instid5',
-        'name5',
-        'relationship5',
-        'regencycode5',
-        'address5',
-        'provcode5',
-        'idnumber5',
-
         'sign',
+        'bank_id'
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class, 'bank_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_remittances', 'remittance_id', 'user_id')

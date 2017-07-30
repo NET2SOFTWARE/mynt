@@ -112,14 +112,14 @@ class TokenController extends Controller
      */
     public function requestToken($account)
     {
-        $account = Account::where('number', '=', $account)->first();
+        $acc = $this->account->getAccountByNumber($account);
 
         if (count($account) < 1)
             return redirect()
                 ->route('member.transactions.account')
                 ->with('warning', 'Account number unknown');
 
-        $reference_id = $this->otp->generate($account);
+        $reference_id = $this->otp->generate($acc->number);
 
         if (!$reference_id) {
             return redirect()

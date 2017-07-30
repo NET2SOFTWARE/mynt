@@ -14,4 +14,6 @@ interface BankInterface extends AppInterface
      * @return mixed
      */
     public function attribute(array $attributes);
+
+    public function getByCode(string $bankCode);
 }

@@ -35,4 +35,17 @@ class BankRepository extends AbstractInterface implements BankInterface
             'bank_account_number'   => $attributes['bank_account_number']
         ];
     }
+
+    /**
+     * @param string $bankCode
+     * @return mixed
+     */
+    public function getByCode(string $bankCode)
+    {
+        $bank = Bank::where(function ($query) use ($bankCode) {
+            $query->where('bank_code', $bankCode);
+        })->first();
+
+        return $bank;
+    }
 }

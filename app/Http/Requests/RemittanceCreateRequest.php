@@ -24,7 +24,7 @@ class RemittanceCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'account_number'        => 'required|max:18'
         ];
     }
 }

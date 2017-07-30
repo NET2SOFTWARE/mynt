@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Contracts\GlobalPassbookInterface;
 use App\Models\Account;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -48,19 +49,26 @@ class TransactionController extends Controller
     private $passbook;
 
     /**
+     * @var
+     */
+    private $global;
+
+    /**
      * TransactionController constructor.
      * @param TransactionInterface $transaction
      * @param OTPInterface $otp
      * @param TokenInterface $token
      * @param AccountInterface $account
      * @param PassbookInterface $passbook
+     * @param GlobalPassbookInterface $global
      */
     public function __construct(
         TransactionInterface    $transaction,
         OTPInterface            $otp,
         TokenInterface          $token,
         AccountInterface        $account,
-        PassbookInterface       $passbook
+        PassbookInterface       $passbook,
+        GlobalPassbookInterface $global
     )
     {
         $this->transaction  = $transaction;
@@ -68,6 +76,7 @@ class TransactionController extends Controller
         $this->token        = $token;
         $this->account      = $account;
         $this->passbook     = $passbook;
+        $this->global       = $global;
     }
 
     /**
@@ -425,7 +434,7 @@ class TransactionController extends Controller
             'terminal_id'               => 000000001,
             'amount'                    => $request->input('amount'),
             'status'                    => false,
-            'service_id'                => 1
+            'service_id'                => 6
         ]);
 
         if (!$transaction)
@@ -598,5 +607,176 @@ class TransactionController extends Controller
         return ($request->ajax() || $request->isJson())
             ? response()->json($data, 200)
             : abort(400);
+    }
+
+    public function to_cash(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'sender'    => 'required',
+            'recipient' => 'required',
+            'amount'    => 'required',
+//            'token'     => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 400,
+                    'text'      => config('code.400'),
+                    'message'   => 'Data validation error.',
+                    'data'      => null
+                ]);
+        }
+
+
+        if ( !$sender = $this->account->checkExistingAccount($request->input('sender'))  or !$recipient = $this->account->checkExistingAccount($request->input('recipient')) )
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 404,
+                    'text'      => config('code.404'),
+                    'message'   => 'Sender unknown',
+                    'data'      => null
+                ], 404);
+
+
+//        if ( !$transactionId = $this->token->getLastUserReferenceToken($sender->number) )
+//            return response()
+//                ->json([
+//                    'status'    => false,
+//                    'code'      => 500,
+//                    'text'      => config('code.500'),
+//                    'message'   => 'Sender does not have any token yet.',
+//                    'data'      => null
+//                ], 500);
+//
+//        if ( !$this->otp->validate($sender->number, $transactionId, $request->input('token')))
+//            return response()
+//                ->json([
+//                    'status'    => false,
+//                    'code'      => 401,
+//                    'text'      => config('code.401'),
+//                    'message'   => 'Invalid token',
+//                    'data'      => null
+//                ], 401);
+
+        if ($request->input('sender') == $request->input('recipient'))
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 409,
+                    'text'      => config('code.409'),
+                    'message'   => 'Illegal action.',
+                    'data'      => null
+                ], 409);
+
+        if ( !$this->account->isBalanceEnough($sender->number, $request->input('amount')) )
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 406,
+                    'text'      => config('code.406'),
+                    'message'   => 'Insufficient balance',
+                    'data'      => null
+                ], 406);
+
+        if ( $this->account->isBalanceOverLimit($recipient->number, $request->input('amount')) )
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 406,
+                    'text'      => config('code.406'),
+                    'message'   => 'The recipient account balance exceeds the limit.',
+                    'data'      => null
+                ], 406);
+
+        if ( $this->account->isTransactionOverLimit($sender->number, $request->input('amount')) )
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 406,
+                    'text'      => config('code.406'),
+                    'message'   => 'The monthly transaction period exceeds the limit.',
+                    'data'      => null
+                ], 406);
+
+        $transaction = $this->transaction->save([
+            'sender_account_number'     => $sender->number,
+            'receiver_account_number'   => $recipient->number,
+            'terminal_id'               => 000000001,
+            'amount'                    => $request->input('amount'),
+            'status'                    => false,
+            'service_id'                => 8
+        ]);
+
+        if (!$transaction)
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 500,
+                    'text'      => config('code.500'),
+                    'message'   => 'Internal system error,  transaction could not created.',
+                    'data'      => null
+                ], 500);
+
+        $sender_passbook = $this->passbook->save([
+            'transaction_id'    => $transaction->id,
+            'credit'            => 0,
+            'debit'             => $request->input('amount'),
+            'balance'           => ((int) $this->account->getLastBalance($sender->number)) - ((int) $request->input('amount'))
+        ]);
+
+        if (!$sender_passbook)
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 500,
+                    'text'      => config('code.500'),
+                    'message'   => 'Internal system error, sender account could not created.',
+                    'data'      => null
+                ], 500);
+
+        $recipient_passbook = $this->passbook->save([
+            'transaction_id'    => $transaction->id,
+            'credit'            => $request->input('amount'),
+            'debit'             => 0,
+            'balance'           => ((int) $this->account->getLastBalance($recipient->number)) + ((int) $request->input('amount'))
+        ]);
+
+        if (!$recipient_passbook)
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 500,
+                    'text'   => config('code.500'),
+                    'message'   => 'Internal system error, recipient account could not created.',
+                    'data'      => null
+                ], 500);
+
+        if (!$transaction->update(['status' => true]))
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 500,
+                    'text'   => config('code.500'),
+                    'message'   => 'Internal system error, transaction data would not be updated.',
+                    'data'      => null
+                ], 500);
+
+        $sender->passbooks()->attach($sender_passbook->id);
+        $recipient->passbooks()->attach($recipient_passbook->id);
+
+        $sender->transactions()->attach($transaction->id);
+        $recipient->transactions()->attach($transaction->id);
+
+        return response()
+            ->json([
+                'status'    => true,
+                'code'      => 201,
+                'text'      => config('code.201'),
+                'message'   => 'Transaction success',
+                'data'      => compact('transaction')
+            ], 201);
     }
 }

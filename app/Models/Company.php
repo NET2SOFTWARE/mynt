@@ -32,6 +32,10 @@ class Company extends Model
         'industry_id'
     ];
 
+    protected $casts = [
+        'code'  => 'string'
+    ];
+
     /**
      * @var array
      */

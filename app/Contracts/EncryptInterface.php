@@ -21,4 +21,10 @@ interface EncryptInterface
      * @return mixed
      */
     public function decrypt(string $cipherText);
+
+    /**
+     * @param string $data
+     * @return mixed
+     */
+    public function hashMD5(string $data);
 }

@@ -39,15 +39,6 @@ class AccessibilityController extends Controller
     /**
      * @return \Illuminate\Http\Response
      */
-    public function personal()
-    {
-        return response()
-            ->view('member.accessibility.personal', compact(null), 200);
-    }
-
-    /**
-     * @return \Illuminate\Http\Response
-     */
     public function notification()
     {
         $notifications = $this->notification->paginateByUserId(Auth::id(), 15);

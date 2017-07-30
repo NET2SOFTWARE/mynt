@@ -51,6 +51,8 @@
                             <hr class="clearfix"/>
                         </header>
                         <section class="px-md-5">
+                            @if (session('success'))<section class="alert alert-success">{{ session('success') }}</section>@endif
+                            @if (session('warning'))<section class="alert alert-danger">{{ session('warning') }}</section>@endif
                             <form action="{{ route('member.management.bank.store') }}" method="post" accept-charset="utf-8" role="form">
                                 {{ csrf_field() }}
                                 @include('forms.bank-register')
@@ -61,4 +63,29 @@
             </section>
         </section>
     </article>
+@endsection
+
+@section('script')
+    <script type="text/javascript">
+        (function ($) {
+            'use strict';
+            $('#born-date input').each(function() {
+                $(this).datepicker({
+                    autoclose: true,
+                    format: 'dd-mm-yyyy',
+                    clearDates:true
+                });
+            });
+
+            $('#reload_captcha').on('click', function () {
+                $.ajax({
+                    method: 'GET',
+                    url: '/get_captcha',
+                }).done(function (response) {
+                    $('#img_captcha').prop('src', response);
+                });
+            });
+
+        })(jQuery);
+    </script>
 @endsection

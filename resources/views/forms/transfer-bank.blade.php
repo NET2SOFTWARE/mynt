@@ -1,44 +1,45 @@
 <section class="form-group row{{ $errors->has('sender') ? ' has-danger' : '' }}">
     <label for="sender" class="col-sm-4 col-form-label">From</label>
     <section class="col-sm-8">
-        <input id="sender" type="text" name="sender" class="form-control disabled" value="{{ Auth::user()->members->first()['accounts'][0]['number'] }}" placeholder="Sender account number" aria-describedby="senderHelp" readonly>
-        <small class="form-text small text-muted d-flex justify-content-between" id="senderHelp">Your account number. <span class="text-grey">Required</span></small>
+        <input id="sender" name="sender" class="form-control disabled" value="{{ Auth::user()->members->first()['accounts'][0]['number'] }}" placeholder="Sender account number" aria-describedby="senderHelp" readonly>
         @if ($errors->has('sender'))<span class="form-control-feedback">{{ $errors->first('sender') }}</span>@endif
+        <small class="form-text small text-muted d-flex justify-content-between" id="senderHelp">Your account number. <span class="text-grey">Required</span></small>
     </section>
 </section>
-<section class="form-group row">
-    <label for="inputHorizontalDnger" class="col-sm-4 col-form-label">Bank code</label>
+<section class="form-group row{{ $errors->has('bank') ? ' has-danger' : '' }}">
+    <label for="bank" class="col-sm-4 col-form-label">To</label>
     <section class="col-sm-8">
-        <select id="bank" name="bank" class="custom-select w-100" aria-describedby="bankHelp">
-            <option selected disabled>Bank account</option>
-            @if(count(Auth::user()->members->first()['banks']) >= 1)
-                <option value="{{ Auth::user()->members->first()['banks'][0]['pivot']['account_number'] }}" selected>{{ Auth::user()->members->first()['banks'][0]['bank_code'].'&nbsp;&nbsp;'.strtoupper(Auth::user()->members->first()['banks'][0]['bank_name']).'&nbsp;&nbsp;'.Auth::user()->members->first()['banks'][0]['pivot']['account_number'] }}</option>
-            @endif
+        <select id="bank" name="bank" class="custom-select w-100" aria-describedby="bankHelp" required>
+            <option selected disabled>Choose bank`s account</option>
+            @foreach($remittances as $index)
+                <option value="{{ $index->id }}"{{ (old('bank') == $index->id) ? ' selected' : '' }}>{{ strtoupper($index->bank->bank_name). ' - '. $index->accountid1 }}</option>
+            @endforeach
         </select>
+        @if ($errors->has('bank'))<span class="form-control-feedback">{{ $errors->first('bank') }}</span>@endif
         <small class="form-text small text-muted d-flex justify-content-between" id="bankHelp"><span>If the bank account is not yet registered, please register first.</span><span class="text-grey ml-3">Required</span></small>
     </section>
 </section>
 <section class="form-group row{{ $errors->has('amount') ? ' has-danger' : '' }}">
     <label for="amount" class="col-sm-4 col-form-label">Amount</label>
     <section class="col-sm-8">
-        <input id="amount" type="text" name="amount" class="form-control disabled" value="{{ old('amount') }}" placeholder="00000" aria-describedby="amountHelp">
-        <small class="form-text small text-muted d-flex justify-content-between" id="amountHelp">Amount transfer, min. 500 <span class="text-grey">Required</span></small>
+        <input id="amount" name="amount" class="form-control disabled" value="{{ old('amount') }}" placeholder="00000" aria-describedby="amountHelp" required>
         @if ($errors->has('amount'))<span class="form-control-feedback">{{ $errors->first('amount') }}</span>@endif
+        <small class="form-text small text-muted d-flex justify-content-between" id="amountHelp">Amount transfer, min. 500 <span class="text-grey">Required</span></small>
     </section>
 </section>
 <section class="form-group row{{ $errors->has('token') ? ' has-danger' : '' }}">
     <label for="token" class="col-sm-4 col-form-label">Token</label>
     <section class="col-sm-8">
         <section class="d-flex justify-content-between">
-            <input name="token" type="text" class="form-control" id="token" value="{{ old('token') }}" placeholder="Token transaction" aria-describedby="tokenHelp" style="display: inline-block; width: 70%;">
+            <input name="token" class="form-control" id="token" value="{{ old('token') }}" placeholder="Token transaction" aria-describedby="tokenHelp" style="display: inline-block; width: 70%;" required>
             <a class="btn btn-primary" href="{{ route('generate.token', [Auth::user()->members->first()['accounts'][0]['number']]) }}">Generate</a>
         </section>
-        @if ($errors->has('amount'))<span class="form-control-feedback">{{ $errors->first('amount') }}</span>@endif
+        @if ($errors->has('token'))<span class="form-control-feedback">{{ $errors->first('token') }}</span>@endif
         <small class="form-text text-muted d-flex justify-content-between" id="tokenHelp">Request new transaction token first. <span class="text-grey">Required</span></small>
     </section>
 </section>
 <section class="form-group row{{ $errors->has('captcha') ? ' has-danger' : '' }}">
-    <label for="amount" class="col-sm-4 col-form-label">Security code</label>
+    <label for="captcha" class="col-sm-4 col-form-label">Security code</label>
     <section class="col-sm-8">
         <section class="d-flex justify-content-between">
             <figure class="col-auto mb-0">
@@ -53,16 +54,16 @@
                             </svg>
                         </a>
                     </section>
-                    <input id="captcha" type="text" class="form-control" name="captcha" value="{{ old('captcha') }}" placeholder="Captcha code" aria-describedby="captchaHelp" required>
+                    <input id="captcha" class="form-control" name="captcha" value="{{ old('captcha') }}" placeholder="Captcha code" aria-describedby="captchaHelp" required>
                 </section>
-                <small class="form-text lh-1-2 text-muted d-flex justify-content-between" id="captchaHelp">Enter security code <span class="text-grey">Required</span></small>
                 @if ($errors->has('captcha'))<span class="form-control-feedback">{{ $errors->first('captcha') }}</span>@endif
+                <small class="form-text lh-1-2 text-muted d-flex justify-content-between" id="captchaHelp">Enter security code <span class="text-grey">Required</span></small>
             </section>
         </section>
     </section>
 </section>
 <section class="form-group row mt-4">
     <section class="col-sm-8 offset-sm-4">
-        <button class="btn btn-block btn-primary" type="submit" role="button">Process</button>
+        <button class="btn btn-block btn-primary">Process</button>
     </section>
 </section>

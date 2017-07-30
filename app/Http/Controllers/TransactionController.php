@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Company;
+namespace App\Http\Controllers;
 
 use App\Contracts\AccountInterface;
 use App\Contracts\OTPInterface;
@@ -9,154 +9,84 @@ use App\Contracts\TokenInterface;
 use App\Contracts\TransactionInterface;
 use App\Models\Account;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class TransactionController extends Controller
 {
 
+    private $account;
 
-    /**
-     * @var
-     */
-    protected $recipient;
-
-    /**
-     * @var
-     */
-    protected $sender;
-    /**
-     * @var AccountInterface
-     */
-    protected $account;
-
-    /**
-     * @var TransactionInterface
-     */
-    private $transaction;
-
-    /**
-     * @var PassbookInterface
-     */
     private $passbook;
 
-    /**
-     * @var
-     */
+    private $transaction;
+
     private $token;
 
-    /**
-     * @var OTPInterface
-     */
     private $otp;
 
-    /**
-     * TransactionController constructor.
-     * @param AccountInterface $account
-     * @param TransactionInterface $transaction
-     * @param PassbookInterface $passbook
-     * @param TokenInterface $token
-     * @param OTPInterface $otp
-     */
     public function __construct(
-        AccountInterface        $account,
-        TransactionInterface    $transaction,
-        PassbookInterface       $passbook,
-        TokenInterface          $token,
-        OTPInterface            $otp
+        AccountInterface $account,
+        PassbookInterface $passbook,
+        TransactionInterface $transaction,
+        TokenInterface $token,
+        OTPInterface $otp
     )
     {
-        $this->account      = $account;
-        $this->transaction  = $transaction;
-        $this->passbook     = $passbook;
-        $this->token        = $token;
-        $this->otp          = $otp;
+        $this->account = $account;
+        $this->passbook = $passbook;
+        $this->transaction = $transaction;
+        $this->token = $token;
+        $this->otp = $otp;
     }
 
-    /**
-     * @return \Illuminate\Http\Response
-     */
-    public function account()
-    {
-        return response()
-            ->view('company.transaction-account', compact(null), 200);
-    }
-
-    /**
-     * @return \Illuminate\Http\Response
-     */
-    public function bank()
-    {
-        $remittances = Auth::user()->remittances;
-
-        return response()
-            ->view('company.transaction-bank', compact('remittances'));
-    }
-
-    /**
-     * @return \Illuminate\Http\Response
-     */
-    public function remittance()
-    {
-        return response()
-            ->view('company.transaction-remittance', compact(null), 200);
-    }
-
-    /**
-     * @return \Illuminate\Http\Response
-     */
-    public function redeem()
-    {
-        $remittances = Auth::user()->remittances;
-
-        return response()
-            ->view('company.transaction-redeem', compact('remittances'), 200);
-    }
-
-
-    public function store_account(Request $request)
+    public function toAccountAndCashOut(Request $request)
     {
         Validator::make($request->all(), [
             'sender'    => 'required|exists:accounts,number',
             'recipient' => 'required',
-            'amount'    => 'required',
+            'amount'    => 'required|numeric|min:5000',
             'captcha'   => 'required|captcha',
             'token'     => 'required|numeric|digits:6'
         ])->validate();
 
-        $token          = $request->input('token');
+//        $token          = $request->input('token');
         $no_sender      = $request->input('sender');
         $no_recipient   = $request->input('recipient');
         $amount         = $request->input('amount');
 
+//        if (!$checkToken = $this->token->getLastUserReferenceToken($no_sender))
+//            return redirect()
+//                ->back()
+//                ->with('warning', 'Please generate new token')
+//                ->withInput($request->except(['captcha']));
+//
+//        if ( !$this->otp->validate($no_sender, $checkToken, $token) ) {
+//            return redirect()
+//                ->back()
+//                ->with('warning', 'Your token not valid, please generate new token again.')
+//                ->withInput($request->except(['captcha']));
+//        }
 
-        $checkToken = $this->token->getLastUserReferenceToken($no_sender);
-
-        if (!$checkToken)
+        if (!$sender = $this->account->getAccountByNumber($no_sender)) {
             return redirect()
                 ->back()
-                ->with('warning', 'Please generate new token')
+                ->with('warning', 'Account sender not valid.')
                 ->withInput($request->except(['captcha']));
+        }
 
+        if (!$recipient = $this->account->getAccountByMyntId($no_recipient)) {
+            if (!$recipient = $this->account->getAccountByNumber($no_recipient)) {
+                return redirect()
+                    ->back()
+                    ->with('warning', 'Account recipient not valid.')
+                    ->withInput($request->except(['captcha']));
+            }
+        }
 
-        if ( !$this->otp->validate($no_sender, $checkToken, $token) )
+        if ($sender->number == $recipient->number) {
             return redirect()
                 ->back()
-                ->with('warning', 'Your token not valid, please generate new token again.')
-                ->withInput($request->except(['captcha']));
-
-        $this->token->destroy($no_sender);
-
-
-        $sender = Account::where('number', '=', $no_sender)->first();
-
-        $senderNumber = $sender->number;
-
-        if (!$sender) {
-            return redirect()
-                ->back()
-                ->with('warning', 'Account sender not valid')
+                ->with('warning', 'Transactions can not be processed. You are trying to transfer to your own account. This is an illegal act')
                 ->withInput($request->except(['captcha']));
         }
 
@@ -168,30 +98,14 @@ class TransactionController extends Controller
         }
 
         if ($amount  > $this->account->getLastBalance($no_sender)) {
-            if (!$this->recipient)
-                return redirect()
-                    ->back()
-                    ->with('warning', 'Insufficient balance')
-                    ->withInput($request->except(['captcha']));
-        }
-
-
-        $recipient = Account::where('mynt_id', '=', $no_recipient)->first();
-
-        if (!$recipient)
-            $recipient = Account::where('number', '=', $no_recipient)->first();
-
-        $recipient_number = $recipient->number;
-        $recipient_limit = $recipient->limit_balance;
-
-        if ($senderNumber == $recipient_number) {
             return redirect()
                 ->back()
-                ->with('warning', 'Transactions can not be processed. You are trying to transfer to your own account. This is an illegal act')
+                ->with('warning', 'Insufficient balance')
                 ->withInput($request->except(['captcha']));
+
         }
 
-        if (((int) $amount + (int) $this->account->getLastBalance($recipient_number)) > (int) $recipient_limit) {
+        if (((int) $amount + (int) $this->account->getLastBalance($recipient->number)) > (int) $recipient->limit_balance) {
             return redirect()
                 ->back()
                 ->with('warning', 'Over limit recipient account`s balance')
@@ -201,10 +115,10 @@ class TransactionController extends Controller
         $transaction = $this->transaction->save([
             'sender_account_number' => $no_sender,
             'receiver_account_number' => $recipient->number,
-            'terminal_id' => null,
+            'terminal_id' => str_replace('.', '', $request->getClientIp()),
             'amount' => $amount,
             'status' => false,
-            'service_id' => 1
+            'service_id' => 6
         ]);
 
         if (!$transaction) {
@@ -230,7 +144,7 @@ class TransactionController extends Controller
                 ->withInput($request->except(['captcha']));
         }
 
-        $recipientLastBalance = $this->account->getLastBalance($recipient_number);
+        $recipientLastBalance = $this->account->getLastBalance($recipient->number);
 
         $recipient_passbook = $this->passbook->save([
             'transaction_id'    => $transaction->id,

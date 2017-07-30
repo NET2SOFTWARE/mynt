@@ -34,7 +34,7 @@
                             <li class="nav-item"><a class="nav-link" href="{{ route('member.transactions.account') }}">Transfer to Account</a></li>
                             @if(Auth::user()->members->first()->isRegistered() && !Auth::user()->members->first()->isChildAccount())
                                 <li class="nav-item"><a class="nav-link" href="{{ route('member.transactions.bank') }}">Transfer to Bank</a></li>
-                                <li class="nav-item"><a class="nav-link" href="{{ route('member.transactions.remittance') }}">Remittance</a></li>
+                                <li class="nav-item"><a class="nav-link" href="{{ route('member.transactions.remittance') }}">Remittance to Cash</a></li>
                             @endif
                             <li class="nav-item ml-auto"><a class="nav-link active" href="{{ route('member.transactions.redeem') }}">Redeem</a></li>
                         </ul>
@@ -46,7 +46,7 @@
                             @elseif(session('success'))
                                 <section class="alert mb-3 small alert-success lh-1-2">{{ session('success') }}</section>
                             @endif
-                            <form accept-charset="utf-8" role="form">
+                            <form action="{{ route('redeem') }}" method="post" accept-charset="utf-8" role="form">
                                 {{ csrf_field() }}
                                 @include('forms.redeem')
                             </form>

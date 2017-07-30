@@ -26,7 +26,7 @@
                             @elseif(session('success'))
                                 <section class="alert mb-3 small alert-success lh-1-2">{{ session('success') }}</section>
                             @endif
-                            <form action="{{ route('merchant.transaction.account.store') }}" method="POST" accept-charset="utf-8" role="form">
+                            <form action="{{ route('remittance') }}" method="POST" accept-charset="utf-8" role="form">
                                 {{ csrf_field() }}
                                 @include('forms.merchant-transfer-bank')
                             </form>

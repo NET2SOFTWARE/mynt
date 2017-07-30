@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Member;
 
+use App\Models\Area;
+use App\Models\Country;
+use App\User;
 use App\Models\Bank;
 use App\Models\Children;
-use App\User;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class ManagementController extends Controller
@@ -26,10 +28,10 @@ class ManagementController extends Controller
      */
     public function bank()
     {
-        $banks = Bank::all();
+        $remittance = Auth::user()->remittances;
 
         return response()
-            ->view('member.management.bank', compact('banks'), 200);
+            ->view('member.management.bank', compact('remittance'), 200);
     }
 
     /**
@@ -51,6 +53,22 @@ class ManagementController extends Controller
 
         return response()
             ->view('member.management.child', compact('children'), 200);
+    }
+
+
+    public function showFormRegisterBank()
+    {
+        $banks = Bank::all();
+
+        $regencies = Area::all();
+
+        $countries = Country::all();
+
+        $referral = Auth::user()->members->first()['companies'][0]['code'];
+
+        $mynt_acc_num = Auth::user()->members->first()['accounts'][0]['number'];
+
+        return view('member.management.bank-create', compact('banks', 'regencies', 'provinces', 'countries', 'mynt_acc_num', 'referral'));
     }
 
     public function showFormEditAccount()

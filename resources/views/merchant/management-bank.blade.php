@@ -18,19 +18,37 @@
                         </ul>
                     </section>
                     <section class="card-block">
-                        <section class="clearfix d-flex justify-content-end align-items-baseline">
-                            <a href="{{ route('merchant.management.bank.create') }}" class="btn btn-sm btn-outline-success">Register Bank Account</a>
-                        </section>
-                        <hr class="clearfix"/>
-                        <section class="list-group list-group-flush mt-3">
-                            {{--<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">--}}
-                                {{--<section class="d-flex w-100 justify-content-between">--}}
-                                    {{--<h6 class="mb-1">List group item heading</h6>--}}
-                                    {{--<small>3 days ago</small>--}}
-                                {{--</section>--}}
-                                {{--<p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>--}}
-                                {{--<small>Donec id elit non mi porta.</small>--}}
-                            {{--</a>--}}
+                        <p class="d-flex medium justify-content-end mb-3">
+                            <a href="{{ route('merchant.management.bank.create') }}" class="btn btn-sm btn-success">Register bank account</a>
+                        </p>
+                        <section class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>BANK NAME</th>
+                                    <th>INITIAL BANK ACCOUNT</th>
+                                    <th class="text-center">BANK CODE</th>
+                                    <th>ACCOUNT BANK NAME</th>
+                                    <th>REGISTERED AT</th>
+                                </tr>
+                                </thead>
+                                <tbody class="medium-small lh-1-2">
+                                @foreach(Auth::user()->remittances as $data)
+                                    <tr>
+                                        <td>{{ strtoupper($data->bank->bank_name)  }}</td>
+                                        <td>{{ strtoupper($data->bank->bank_name).'-'.$data->accountid1 }}</td>
+                                        <td class="text-center">{{ $data->instid1 }}</td>
+                                        <td>{{ $data->name }}</td>
+                                        <td>{{ date('Y-m-d H:i:s', strtotime($data->created_at)) }}</td>
+                                        <td style="width:32px">
+                                            <a class="badge badge-default" href="{{ route('delete.remittance', [$data->id]) }}"  data-toggle="tooltip" data-placement="left" title="Delete" style="font-size:14px;padding-top:3px;padding-bottom:3px">
+                                                <i class="fa fa-trash-o"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
                         </section>
                     </section>
                 </section>

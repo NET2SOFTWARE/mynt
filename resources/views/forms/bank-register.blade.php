@@ -1,105 +1,144 @@
 <section class="row">
     <section class="col-sm-6 col-md-6">
+        <section class="form-group{{ $errors->has('referral') ? ' has-danger' : '' }}">
+            <label for="referral" class="sr-only">Account number</label>
+            <input id="referral" name="referral" value="{{ $referral }}" class="form-control" readonly required>
+        </section>
+        <section class="form-group{{ $errors->has('mynt_account_number') ? ' has-danger' : '' }}">
+            <label for="mynt_account_number" class="sr-only">Account number</label>
+            <input id="mynt_account_number" name="mynt_account_number" value="{{ $mynt_acc_num }}" class="form-control" readonly required>
+        </section>
+        <section class="form-group{{ $errors->has('name') ? ' has-danger' : '' }}">
+            <label for="name" class="sr-only">Name</label>
+            <input id="name" name="name" class="form-control" value="{{ substr(ucwords(Auth::user()->name), 0, 30) }}" readonly required>
+        </section>
+        <section class="form-group{{ $errors->has('phone') ? ' has-danger' : '' }}">
+            <label for="phone" class="sr-only">Phone number</label>
+            <section class="input-group">
+                <span class="input-group-addon medium-small lh-1-5" style="padding-top:.125rem;padding-bottom:.125rem">+62</span>
+                <input id="phone" class="form-control" name="phone" value="{{ Auth::user()->phone }}" placeholder="Mobile number" readonly required>
+            </section>
+        </section>
+        <section class="form-group{{ $errors->has('email') ? ' has-danger' : '' }}">
+            <label for="email" class="sr-only">E-mail address</label>
+            <input id="email" name="email" class="form-control" value="{{ Auth::user()->email }}" readonly>
+        </section>
+        <section class="form-group{{ $errors->has('address') ? ' has-danger' : '' }}">
+            <label for="address">Address</label>
+            <textarea id="address" name="address" class="form-control" rows="2" placeholder="Address" aria-describedby="addressHelp" required>{{ old('address') }}</textarea>
+            @if ($errors->has('address'))<span class="form-control-feedback">{{ $errors->first('address') }}</span>@endif
+            <small class="form-text small text-muted d-flex justify-content-between" id="addressHelp">Complete address, max. 100 characters <span class="text-grey">Required</span></small>
+        </section>
+        <section class="form-group{{ $errors->has('country') ? ' has-danger' : '' }}">
+            <label for="country">Country</label>
+            <select id="country" name="country" class="custom-select w-100" aria-describedby="countryHelp" required>
+                <option selected disabled>Choose one country</option>
+                @foreach($countries as $country)
+                    <option value="{{ $country->iso }}"{{ (old('country') == $country->iso) ? ' selected' : '' }}>{{ ucwords($country->name) }}</option>
+                @endforeach
+            </select>
+            <small class="form-text small text-muted d-flex justify-content-between" id="countryHelp">Please choose one of country <span class="text-grey">Optional</span></small>
+            @if ($errors->has('country'))<span class="form-control-feedback">{{ $errors->first('country') }}</span>@endif
+        </section>
+        <section class="form-group{{ $errors->has('birthdate') ? ' has-danger' : '' }}">
+            <label for="birthdate">Birth date</label>
+            <section id="born-date">
+                <input id="birthdate" name="birthdate" class="form-control" value="{{ old('birthdate') }}" placeholder="00-00-0000" aria-describedby="birthDateHelp" required>
+            </section>
+            <small class="form-text small text-muted d-flex justify-content-between" id="birthdateHelp">Birth date format, Eg. 1990-04-23 <span class="text-grey">Required</span></small>
+            @if ($errors->has('birthdate'))<span class="form-control-feedback">{{ $errors->first('birthdate') }}</span>@endif
+        </section>
+        <section class="form-group{{ $errors->has('birthplace') ? ' has-danger' : '' }}">
+            <label for="birthplace">Birth Place</label>
+            <input id="birthplace" name="birthplace" class="form-control" value="{{ old('birthplace') }}" placeholder="Birth place" aria-describedby="birthPlaceHelp" required>
+            <small class="form-text small text-muted d-flex justify-content-between" id="birthplaceHelp">Birth place, Eg. Sibolga <span class="text-grey">Optional</span></small>
+            @if ($errors->has('birthplace'))<span class="form-control-feedback">{{ $errors->first('birthplace') }}</span>@endif
+        </section>
+        <section class="form-group{{ $errors->has('occupation') ? ' has-danger' : '' }}">
+            <label for="occupation">Occupation</label>
+            <select id="occupation" name="occupation" class="custom-select w-100" aria-describedby="occupationHelp" required>
+                <option selected disabled>Choose one occupation</option>
+                <option value="businessman"{{ (old('occupation') == 'businessman') ? ' selected' : '' }}>Businessman</option>
+                <option value="employee"{{ (old('occupation') == 'employee') ? ' selected' : '' }}>Employee</option>
+                <option value="supervisor"{{ (old('occupation') == 'supervisor') ? ' selected' : '' }}>Supervisor</option>
+                <option value="manager"{{ (old('occupation') == 'manager') ? ' selected' : '' }}>Manager</option>
+                <option value="director"{{ (old('occupation') == 'director') ? ' selected' : '' }}>Director</option>
+            </select>
+            <small class="form-text small text-muted d-flex justify-content-between" id="occupationHelp">Please choose one occupation <span class="text-grey">Required</span></small>
+            @if ($errors->has('occupation'))<span class="form-control-feedback">{{ $errors->first('occupation') }}</span>@endif
+        </section>
+        <section class="form-group{{ $errors->has('citizenship') ? ' has-danger' : '' }}">
+            <label for="birthplace">Citizenship</label>
+            <input id="citizenship" name="citizenship" class="form-control" value="{{ old('citizenship') }}" placeholder="Citizenship" aria-describedby="citizenshipHelp" required>
+            <small class="form-text small text-muted d-flex justify-content-between" id="citizenshipHelp">Eg. Indonesia <span class="text-grey">Required</span></small>
+            @if ($errors->has('citizenship'))<span class="form-control-feedback">{{ $errors->first('citizenship') }}</span>@endif
+        </section>
+        <section class="form-group{{ $errors->has('idnumber') ? ' has-danger' : '' }}">
+            <label for="idnumber">Identity I.D Number</label>
+            <input id="idnumber" name="idnumber" class="form-control" value="{{ old('idnumber') }}" placeholder="Identity I.D number" aria-describedby="idnumberHelp" required>
+            <small class="form-text small text-muted d-flex justify-content-between" id="idnumberHelp">KTP | Passport number <span class="text-grey">Required</span></small>
+            @if ($errors->has('idnumber'))<span class="form-control-feedback">{{ $errors->first('idnumber') }}</span>@endif
+        </section>
+    </section>
+
+    <section class="col-sm-6 col-md-6">
         <section class="form-group{{ $errors->has('bank') ? ' has-danger' : '' }}">
             <label for="bank">Bank</label>
-            <select id="bank" name="bank" class="custom-select w-100">
-                <option selected disabled>Choose one bank</option>
+            <select id="bank" name="bank" class="custom-select w-100" required aria-describedby="bankHelp" required>
+                <option selected disabled>Choose bank</option>
                 @foreach($banks as $bank)
-                    <option value="{{ $bank->id }}"{{ collect(Auth::user()->members->first()['banks'])->contains('id', $bank->id) ? ' selected' : '' }}>{{ $bank->bank_code.'&nbsp;&nbsp;&nbsp;'.strtoupper($bank->bank_name) }}</option>
+                    <option value="{{ $bank->bank_code }}"{{ (old('bank') == $bank->id) ? ' selected' : '' }}>{{ $bank->bank_code.'&nbsp;&nbsp;&nbsp;'.strtoupper($bank->bank_name) }}</option>
                 @endforeach
             </select>
             <small class="form-text small text-muted d-flex justify-content-between" id="bankHelp">Please choose one bank. <span class="text-grey">Required</span></small>
             @if ($errors->has('bank'))<span class="form-control-feedback">{{ $errors->first('bank') }}</span>@endif
         </section>
-        <section class="form-group{{ $errors->has('account_number') ? ' has-danger' : '' }}">
-            <label for="account_number">Bank account number</label>
-            <input id="account_number" type="text" name="account_number" class="form-control" placeholder="000000000000" aria-describedby="accountNumberHelp">
-            <small class="form-text small text-muted d-flex justify-content-between" id="accountNumberHelp">Please entry your bank account number. Numeric only <span class="text-grey">Required</span></small>
+        <section class="form-group{{ $errors->has('bank_account_name') ? ' has-danger' : '' }}">
+            <label for="bank_account_name">Bank account name</label>
+            <input id="bank_account_name" name="bank_account_name" class="form-control" value="{{ old('bank_account_name') }}" placeholder="Bank account name" aria-describedby="bankAccountNameHelp" required>
+            <small class="form-text small text-muted d-flex justify-content-between" id="bankAccountNameHelp">Please entry your valid bank account name <span class="text-grey">Required</span></small>
             @if ($errors->has('bank_account_name'))<span class="form-control-feedback">{{ $errors->first('bank_account_name') }}</span>@endif
         </section>
-        <section class="form-group{{ $errors->has('name') ? ' has-danger' : '' }}">
-            <label for="name">Bank account name</label>
-            <input id="name" type="text" name="name" class="form-control" value="{{ old('name') }}" placeholder="Bank account name" aria-describedby="nameHelp">
-            <small class="form-text small text-muted d-flex justify-content-between" id="nameHelp">Please entry your bank account name. Max: 40 <span class="text-grey">Required</span></small>
-            @if ($errors->has('name'))<span class="form-control-feedback">{{ $errors->first('name') }}</span>@endif
+        <section class="form-group{{ $errors->has('account_number') ? ' has-danger' : '' }}">
+            <label for="account_number">Bank account number</label>
+            <input id="account_number" name="account_number" class="form-control" value="{{ old('account_number') }}" placeholder="000000000000" aria-describedby="bankAccountNumberHelp" required>
+            <small class="form-text small text-muted d-flex justify-content-between" id="accountNumberHelp">Please entry your bank account number. Numeric only <span class="text-grey">Required</span></small>
+            @if ($errors->has('account_number'))<span class="form-control-feedback">{{ $errors->first('account_number') }}</span>@endif
         </section>
-        <section class="form-group{{ $errors->has('phone') ? ' has-danger' : '' }}">
-            <label for="phone">Phone number</label>
-            <input id="phone" type="text" name="phone" class="form-control" value="{{ old('phone') }}" placeholder="Phone number" aria-describedby="phoneHelp">
-            <small class="form-text small text-muted d-flex justify-content-between" id="phoneHelp">Valid phone number format, Eg. 62081xxxxx <span class="text-grey">Required</span></small>
-            @if ($errors->has('phone'))<span class="form-control-feedback">{{ $errors->first('phone') }}</span>@endif
-        </section>
-        <section class="form-group{{ $errors->has('email') ? ' has-danger' : '' }}">
-            <label for="email">E-mail address</label>
-            <input id="email" type="text" name="email" class="form-control" value="{{ old('email') }}" placeholder="E-mail address" aria-describedby="emailHelp">
-            <small class="form-text small text-muted d-flex justify-content-between" id="emailHelp">Email address format, Eg. example&amp;email.com <span class="text-grey">Required</span></small>
-            @if ($errors->has('email'))<span class="form-control-feedback">{{ $errors->first('email') }}</span>@endif
-        </section>
-        <section class="form-group{{ $errors->has('birthplace') ? ' has-danger' : '' }}">
-            <label for="birthplace">Birthplace</label>
-            <input id="birthplace" type="text" name="birthplace" class="form-control" value="{{ old('birthplace') }}" placeholder="Birth place" aria-describedby="birthplaceHelp">
-            <small class="form-text small text-muted d-flex justify-content-between" id="birthplaceHelp">Birth place, Eg. Sibolga <span class="text-grey">Required</span></small>
-            @if ($errors->has('birthplace'))<span class="form-control-feedback">{{ $errors->first('birthplace') }}</span>@endif
-        </section>
-        <section class="form-group{{ $errors->has('birthdate') ? ' has-danger' : '' }}">
-            <label for="birthdate">Birth date</label>
-            <input id="birthdate" type="text" name="birthdate" class="form-control" value="{{ old('birthdate') }}" placeholder="0000-00-00" aria-describedby="birthplaceHelp">
-            <small class="form-text small text-muted d-flex justify-content-between" id="birthdateHelp">Birth date format, Eg. 1990-04-23 <span class="text-grey">Required</span></small>
-            @if ($errors->has('birthdate'))<span class="form-control-feedback">{{ $errors->first('birthdate') }}</span>@endif
-        </section>
-        <section class="form-group mb-0 {{ $errors->has('identitynumber') ? ' has-danger' : '' }}">
-            <label for="identitynumber">Identity number</label>
-            <input id="identitynumber" type="text" name="identitynumber" class="form-control" value="{{ old('identitynumber') }}" placeholder="Identity number" aria-describedby="identityNumberHelp">
-            <small class="form-text small text-muted d-flex justify-content-between" id="identityNumberHelp">Identity (KTP/PASSPORT) number. <span class="text-grey">Required</span></small>
-            @if ($errors->has('identitynumber'))<span class="form-control-feedback">{{ $errors->first('identitynumber') }}</span>@endif
-        </section>
-    </section>
-    <section class="col-sm-6 col-md-6">
-        <section class="form-group{{ $errors->has('occupation') ? ' has-danger' : '' }}">
-            <label for="occupation">Occupation</label>
-            <input id="occupation" type="text" name="occupation" class="form-control" value="{{ old('occupation') }}" placeholder="Occupation" aria-describedby="occupationHelp">
-            <small class="form-text small text-muted d-flex justify-content-between" id="occupationHelp">Occupation, numeric only Eg. 0101011xxxx <span class="text-grey">Required</span></small>
-            @if ($errors->has('occupation'))<span class="form-control-feedback">{{ $errors->first('occupation') }}</span>@endif
-        </section>
-        <section class="form-group{{ $errors->has('address') ? ' has-danger' : '' }}">
-            <label for="address">Address street</label>
-            <textarea id="address" name="address" rows="3" class="form-control" placeholder="Address street" aria-describedby="addressHelp" required>{{ old('address') }}</textarea>
-            <small class="form-text small text-muted d-flex justify-content-between" id="addressHelp">Valid address street <span class="text-grey">Required</span></small>
-            @if ($errors->has('address'))<span class="form-control-feedback">{{ $errors->first('address') }}</span>@endif
+        <section class="form-group{{ $errors->has('relationship') ? ' has-danger' : '' }}">
+            <label for="relationship">What is your relationship with the owner of this bank account ?</label>
+            <select id="relationship" name="relationship" class="custom-select w-100" aria-describedby="relationshipHelp" required>
+                <option selected disabled>Choose relationship</option>
+                <option value="owner"{{ (old('relationship') == 'owner') ? ' selected' : '' }}>Owner</option>
+                <option value="family"{{ (old('relationship') == 'family') ? ' selected' : '' }}>Family</option>
+                <option value="business partner"{{ (old('relationship') == 'business partner') ? ' selected' : '' }}>Business partner</option>
+                <option value="other partner"{{ (old('relationship') == 'other partner') ? ' selected' : '' }}>Other partner</option>
+            </select>
+            <small class="form-text small text-muted d-flex justify-content-between" id="relationshipHelp">Please choose one of partnership <span class="text-grey">Required</span></small>
+            @if ($errors->has('relationship'))<span class="form-control-feedback">{{ $errors->first('relationship') }}</span>@endif
         </section>
         <section class="form-group{{ $errors->has('regency') ? ' has-danger' : '' }}">
-            <label for="regency">Regency</label>
+            <label for="regency">Regency of the bank where the account is registered.</label>
             <select id="regency" name="regency" class="custom-select w-100" aria-describedby="regencyHelp" required>
                 <option selected disabled>Choose one regency</option>
-                @foreach($regencies as $regency)
-                    <option value="{{ $regency->id }}">{{ ucwords($regency->name) }}</option>
-                @endforeach
+                <option value="tna"{{ (old('regency') == 'tna') ? ' selected' : '' }}>Kota ADM Jakarta Pusat</option>
+                <option value="tjp"{{ (old('regency') == 'tjp') ? ' selected' : '' }}>Kota ADM Jakarta Utara</option>
+                <option value="ggp"{{ (old('regency') == 'ggp') ? ' selected' : '' }}>Kota ADM Jakarta Barat</option>
+                <option value="kyb"{{ (old('regency') == 'kyb') ? ' selected' : '' }}>Kota ADM Jakarta Selatan</option>
+                <option value="ckg"{{ (old('regency') == 'ckg') ? ' selected' : '' }}>Kota ADM Jakarta Timur</option>
+                <option value="cbi"{{ (old('regency') == 'cbi') ? ' selected' : '' }}>Kab. Bogor</option>
+                <option value="ckr"{{ (old('regency') == 'ckr') ? ' selected' : '' }}>Kab. Bekasi</option>
+                <option value="tgr"{{ (old('regency') == 'tgr') ? ' selected' : '' }}>Kab. Tangerang</option>
+                <option value="dpk"{{ (old('regency') == 'dpk') ? ' selected' : '' }}>Kota Depok</option>
             </select>
             <small class="form-text small text-muted d-flex justify-content-between" id="regencyHelp">Please choose one of regency <span class="text-grey">Required</span></small>
             @if ($errors->has('regency'))<span class="form-control-feedback">{{ $errors->first('regency') }}</span>@endif
         </section>
-        <section class="form-group{{ $errors->has('province') ? ' has-danger' : '' }}">
-            <label for="province">Province</label>
-            <select id="province" name="province" class="custom-select w-100" aria-describedby="provinceHelp" required>
-                <option selected disabled>Choose one province</option>
-                @foreach($provinces as $province)
-                    <option value="{{ $province->id }}">{{ ucwords($province->name) }}</option>
-                @endforeach
-            </select>
-            <small class="form-text small text-muted d-flex justify-content-between" id="provinceHelp">Please choose one of province <span class="text-grey">Required</span></small>
-            @if ($errors->has('province'))<span class="form-control-feedback">{{ $errors->first('province') }}</span>@endif
-        </section>
-        <section class="form-group{{ $errors->has('country') ? ' has-danger' : '' }}">
-            <label for="country">Country</label>
-            <input id="country" type="text" name="country" class="form-control" value="{{ old('country') }}" placeholder="Country code" aria-describedby="countryHelp">
-            <small class="form-text small text-muted d-flex justify-content-between" id="countryHelp">Please choose one of province <span class="text-grey">Required</span></small>
-            @if ($errors->has('country'))<span class="form-control-feedback">{{ $errors->first('country') }}</span>@endif
-        </section>
         <section class="form-group{{ $errors->has('fundresource') ? ' has-danger' : '' }}">
-            <label for="fundresource">Country</label>
-            <textarea id="fundresource" name="fundresource" class="form-control" rows="3" placeholder="Fund resource">{{ old('fundresource') }}</textarea>
-            <small class="form-text small text-muted d-flex justify-content-between" id="countryHelp">Please choose one of province <span class="text-grey">Required</span></small>
-            @if ($errors->has('country'))<span class="form-control-feedback">{{ $errors->first('country') }}</span>@endif
+            <label for="fundresource">Fund resource</label>
+            <textarea id="fundresource" name="fundresource" class="form-control" rows="4" placeholder="Fund resource" aria-describedby="fundresourceHelp" required></textarea>
+            @if ($errors->has('fundresource'))<span class="form-control-feedback">{{ $errors->first('fundresource') }}</span>@endif
+            <small class="form-text small text-muted d-flex justify-content-between" id="fundresourceHelp">Fund resource description, max. 50 characters <span class="text-grey">Required</span></small>
         </section>
         <section class="form-group{{ $errors->has('captcha') ? ' has-danger' : '' }}">
             <label for="amount" class="col-form-label">Security code</label>
@@ -116,7 +155,7 @@
                                 </svg>
                             </a>
                         </section>
-                        <input id="captcha" type="text" class="form-control" name="captcha" value="{{ old('captcha') }}" placeholder="Captcha code" aria-describedby="captchaHelp" required>
+                        <input id="captcha" class="form-control" name="captcha" value="{{ old('captcha') }}" placeholder="Captcha code" aria-describedby="captchaHelp" required>
                     </section>
                     <small class="form-text lh-1-2 text-muted d-flex justify-content-between" id="captchaHelp">Enter security code <span class="text-grey">Required</span></small>
                     @if ($errors->has('captcha'))<span class="form-control-feedback">{{ $errors->first('captcha') }}</span>@endif
@@ -125,6 +164,7 @@
         </section>
     </section>
 </section>
+<hr/>
 <section class="mt-5">
-    <button class="btn btn-block btn-primary" type="submit" role="button">Register bank account</button>
+    <button class="btn btn-block btn-primary">Register bank account</button>
 </section>
