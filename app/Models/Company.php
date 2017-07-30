@@ -28,7 +28,7 @@ class Company extends Model
         'phone',
         'email',
         'website',
-        'photo',
+        'image',
         'industry_id'
     ];
 

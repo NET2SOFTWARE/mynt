@@ -67,8 +67,7 @@
 
                         <fieldset class="form-group">
                             <label for="merchant_id">Merchant</label>
-                            <select id="merchant_id" name="merchant_id" class="custom-select w-100" value="{{ old('merchant_id') }}">
-                                <option selected disabled>Choose one merchant</option>
+                            <select id="merchant_id" name="merchant_id[]" class="custom-select w-100" multiple="multiple">
                                 @foreach($merchants as $merchant)
                                     <option value="{{ $merchant->id }}" {{ (old('merchant_id') == $merchant->id) ? 'selected' : '' }}>{{ $merchant->name }}</option>
                                 @endforeach
@@ -117,6 +116,7 @@
             },
             @endforeach
         };
+        var $selectMerchant = $('#merchant_id');
 
         if ($product.val())
         {
@@ -129,6 +129,12 @@
             $supplier.val(data[$this.val()].supplier);
             $purchase_price.val(data[$this.val()].purchase_price);
         });
+
+        @if(! is_null(old('merchant_id')))
+            @if(count(old('merchant_id')) > 0)
+                $selectMerchant.multiselect('select', {!! json_encode(old('merchant_id')) !!});
+            @endif
+        @endif
     });
 </script>
 @endsection

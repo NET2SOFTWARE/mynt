@@ -63,6 +63,8 @@ Route::prefix('company')->group(function (){
     Route::put('/{id}',         'Api\CompanyController@update')->name('api.company.update');
     Route::patch('/{id}',       'Api\CompanyController@update')->name('api.company.update');
     Route::delete('/{id}',      'Api\CompanyController@destroy')->name('api.company.delete');
+    Route::put('/upload/{id}',  'Api\CompanyController@uploadPhoto')->name('api.company.update.upload');
+    Route::patch('/upload/{id}','Api\CompanyController@uploadPhoto')->name('api.company.update.upload');
 });
 
 Route::prefix('merchant')->group(function (){

@@ -711,150 +711,6 @@ class CompanyController extends Controller
         return response()->view('pages.report-company', compact('companies'), 200);   
     }
 
-    // public function reportShow(Request $request)
-    // {
-    //     $validator = Validator::make($request->all(), [
-    //         'company_id'    => 'required|numeric|exists:companies,id',
-    //         'type'          => 'required|string|in:daily,ranged,monthly',
-    //         'date'          => 'required_if:type,daily|date_format:m/d/Y|before_or_equal:' . date('m/d/Y'),
-    //         'date_from'     => 'required_if:type,ranged|date_format:m/d/Y|before:date_to',
-    //         'date_to'       => 'required_if:type,ranged|date_format:m/d/Y|before_or_equal:' . date('m/d/Y'),
-    //         'year'          => 'required_if:type,monthly|numeric|min:2017',
-    //         'month'         => 'required_if:type,monthly|numeric|between:1,12',
-    //     ]);
-
-    //     if ($validator->fails()) return redirect()->route('report.company.index')->withInput()->withErrors($validator);
-
-    //     $charts = [];
-    //     $data = [];
-
-    //     $company = Company::find($request->input('company_id'));
-    //     $services = Service::with('transaction')->get();
-
-    //     $data['count_member'] = $company->members->count();
-    //     $data['count_merchant'] = $company->merchants->count();
-    //     $data['count_account'] = $data['count_member'] + $data['count_merchant'];
-    //     $data['services'] = $services->pluck('name')->toArray();
-
-    //     for ($i=0; $i < 4; $i++) { 
-    //         $charts[] = app()->chartjs
-    //             ->name('pieChartTest'.$i)
-    //             ->type('pie')
-    //             ->size(['width' => 400, 'height' => 200])
-    //             ->labels(['Label x', 'Label y'])
-    //             ->datasets([
-    //                 [
-    //                     'backgroundColor' => ['#FF6384', '#36A2EB'],
-    //                     'hoverBackgroundColor' => ['#FF6384', '#36A2EB'],
-    //                     'data' => [69, 59]
-    //                 ]
-    //             ])
-    //             ->options([]);
-    //     }
-
-    //     $charts['accounts'] = app()->chartjs
-    //         ->name('accounts')
-    //         ->type('pie')
-    //         ->size(['width' => 400, 'height' => 200])
-    //         ->labels(['Member', 'Merchant'])
-    //         ->datasets([
-    //             [
-    //                 'backgroundColor' => ['#1976d2', '#009688'],
-    //                 'hoverBackgroundColor' => ['#82b1ff', '#4db6ac'],
-    //                 'data' => [
-    //                     null, // $data['count_merchant'],
-    //                     null, // $data['count_member'],
-    //                 ]
-    //             ]
-    //         ])
-    //         ->options([]);
-
-    //     $charts['closedAccounts'] = app()->chartjs
-    //         ->name('closedAccounts')
-    //         ->type('pie')
-    //         ->size(['width' => 400, 'height' => 200])
-    //         ->labels(['All', 'Closed'])
-    //         ->datasets([
-    //             [
-    //                 'backgroundColor' => ['#1976d2', '#f44336'],
-    //                 'hoverBackgroundColor' => ['#82b1ff', '#e57373'],
-    //                 'data' => [
-    //                     $data['count_account'],
-    //                     0,
-    //                 ]
-    //             ]
-    //         ])
-    //         ->options([]);
-
-    //     $charts['transactions'] = app()->chartjs
-    //         ->name('transactions')
-    //         ->type('pie')
-    //         ->size(['width' => 380, 'height' => 300])
-    //         ->labels($data['services'])
-    //         ->datasets([
-    //             [
-    //                 // 'backgroundColor' => [
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 // ],
-    //                 // 'hoverBackgroundColor' => [
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 //     '#000',
-    //                 // ],
-    //                 // 'backgroundColor' => ['#1976d2', '#f44336'],
-    //                 // 'hoverBackgroundColor' => ['#82b1ff', '#e57373'],
-    //                 'data' => [
-    //                     10,
-    //                     0,
-    //                     0,
-    //                     0,
-    //                     0,
-    //                     0,
-    //                     0,
-    //                     0,
-    //                     0,
-    //                     0,
-    //                 ]
-    //             ]
-    //         ])
-    //         ->options([]);
-
-    //     $charts['transactionsAmount'] = app()->chartjs
-    //         ->name('transactionsAmount')
-    //         ->type('pie')
-    //         ->size(['width' => 400, 'height' => 200])
-    //         ->labels(['All', 'Closed'])
-    //         ->datasets([
-    //             [
-    //                 'backgroundColor' => ['#1976d2', '#f44336'],
-    //                 'hoverBackgroundColor' => ['#82b1ff', '#e57373'],
-    //                 'data' => [
-    //                     $data['count_account'],
-    //                     0,
-    //                 ]
-    //             ]
-    //         ])
-    //         ->options([]);
-
-    //     return response()->view('pages.report-company-show', compact('data', 'charts'), 200);
-    // }
-
     public function reportShow(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -952,5 +808,65 @@ class CompanyController extends Controller
         $pdf = SnappyPDF::loadView('pages.report-company-show', compact('request', 'data'));
 
         return $pdf->download('report.pdf');
+    }
+
+    public function uploadPhoto(int $id, Request $request)
+    {
+        $company = Company::findOrFail($id, ['*']);
+
+        $filename = null;
+
+        if ($request->hasFile('photo') && $request->file('photo')->isValid())
+        {
+            ini_set('memory_limit', '-1');
+            ini_set('max_execution_time', 120);
+
+            $photo = $request->file('photo');
+
+            if (! in_array(strtolower($photo->getClientOriginalExtension()), [
+                'jpg',
+                'jpeg',
+                'png'
+            ])) {
+                return ($request->ajax() || $request->isJson())
+                    ? response()->json([
+                            'status'    => false,
+                            'code'      => 400,
+                            'message'   => config('code.400'),
+                            'text'      => 'Unsupported file image format.',
+                            'data'      => compact(null)
+                        ], 400)
+                    : redirect()->back()
+                        ->withInput()
+                        ->with('warning', 'Unsupported file image format.');
+            }
+
+            $filename  = time() . '.' . $photo->getClientOriginalExtension();
+
+            Image::make($photo->getRealPath())->resize(320, 320, function ($c) {
+                $c->aspectRatio();
+                $c->upsize();
+            })->save('img/company/'. $filename);
+        }
+
+        // return $filename;
+
+        $company->update([
+            'image' => $filename
+        ]);
+
+        abort_unless($company, config('code.500'));
+
+        return ($request->ajax() || $request->isJson())
+            ? response()->json([
+                    'status'    => true,
+                    'code'      => 200,
+                    'message'   => config('code.200'),
+                    'text'      => 'Company image has been uploaded successfully.',
+                    'data'      => compact('company')
+                ], 200)
+            : redirect()->back()
+                ->with(compact('company'))
+                ->with('success', 'Company image has been uploaded successfully.');
     }
 }

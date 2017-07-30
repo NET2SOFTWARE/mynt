@@ -1,7 +1,6 @@
 <?php
 
 Route::get('/', function () {return view('welcome');});
-            Route::post('/',            'Api\ProductPurchaseController@store')->name('product.purchase.store');
 
 Route::get('/login/member/company',     'Auth\LoginController@showLoginMemberCompanyForm')->name('login.member.company');
 Route::post('/login/member/company',    'Auth\LoginController@loginMemberCompany')->name('post.login.member.company');
@@ -97,7 +96,7 @@ Route::group(['middleware' => ['auth', 'confirmation', 'mynt']], function () {
         Route::get('/transaction/bank',             'Merchant\TransactionController@bank')->name('merchant.transaction.bank');
         Route::get('/transaction/remittance',       'Merchant\TransactionController@remittance')->name('merchant.transaction.remittance');
         Route::get('/transaction/redeem',           'Merchant\TransactionController@redeem')->name('merchant.transaction.redeem');
-        Route::get('/summary/transaction/product',  'Merchant\SummaryController@summary')->name('merchant.summary.product');
+        Route::get('/summary/transaction/product',  'Merchant\SummaryController@summaryProduct')->name('merchant.summary.product');
         Route::get('/summary/transaction/payment',  'Merchant\SummaryController@summaryPayment')->name('merchant.summary.payment');
         Route::get('/summary/transaction/purchase', 'Merchant\SummaryController@summaryPurchase')->name('merchant.summary.purchase');
         Route::get('/accessibility/notification',   'Merchant\AccessibilityController@notification')->name('merchant.accessibility.notification');
