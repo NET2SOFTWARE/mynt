@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Carbon\Carbon;
 use DB;
 use App\User;
 use App\Models\Account;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Hash;
+use App\Mail\UpgradeNotification;
 
 /**
  * Class MemberController
@@ -966,5 +968,91 @@ class MemberController extends Controller
         return ($request->ajax() || $request->isJson())
             ? response()->json(compact('member', 'transactions'), 200)
             : response()->view('pages.member-detail-transactions', compact('member', 'transactions'), 200);
+    }
+
+    public function upgrade(Request $request)
+    {
+        $user = Auth::user()->members->first();
+
+        $member = $this->member->get($user->id);
+
+        if (!$member)
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 400,
+                    'message'   => config('code.400'),
+                    'text'      => 'Your identity is not recognized by the system.',
+                    'data'      => compact(null)
+                ], 400);
+
+        $filename = 'document.jpg';
+
+        if ($request->hasFile('document'))
+        {
+            ini_set('memory_limit', '-1');
+            ini_set('max_execution_time', 120);
+
+            $document = $request->file('document');
+            $filename  = time() . '.' . $document->getClientOriginalExtension();
+
+            Image::make($document->getRealPath())->resize(320, 320, function ($c) {
+                $c->aspectRatio();
+                $c->upsize();
+            })->save('img/documents/'. $filename);
+        }
+
+        $expired_date = date('Y-m-d', strtotime($request->input('identity.date')));
+        $now = date('Y-m-d', strtotime(Carbon::now()->toDateString()));
+
+        if ($request->input('identity_date_type') == 'lifetime')
+        {
+            $dob = date('Y-m-d', strtotime($request->input('born_date')));
+            $expired_date = date('Y-m-d', strtotime(date('Y-m-d', strtotime($dob)) . ' + 200 year'));
+        }
+
+        if ($expired_date <= $now) {
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 400,
+                    'message'   => config('code.400'),
+                    'text'      => 'Your identity document date has expired. We are unable to process your request to upgrade your account.',
+                    'data'      => compact(null)
+                ], 400);
+        }
+
+        $profile = $this->member->upgrade($member->id, [
+            'gender'                    => $request->input('gender'),
+            'born_place'                => $request->input('born_place'),
+            'born_date'                 => $request->input('born_date'),
+            'identity_id'               => $request->input('identity_type'),
+            'identity_number'           => $request->input('identity_number'),
+            'identity_expired_date'     => $expired_date,
+            'mother_name'               => $request->input('mother_name'),
+            'document'                  => $filename,
+            'status'                    => 'pending',
+        ]);
+
+        if (!$profile)
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 400,
+                    'message'   => config('code.400'),
+                    'text'      => 'Process failed, our server is very busy, please try again later.',
+                    'data'      => compact(null)
+                ], 400);
+
+        Mail::to($user->email)->send(new UpgradeNotification(Auth::user()));
+
+        return response()
+            ->json([
+                'status'    => true,
+                'code'      => 200,
+                'message'   => config('code.200'),
+                'text'      => 'We will review your input data to validate the identity validity. Your account will be systematically upgraded if your documents and data have been processed. This process will take up to 24 hours. Please check back. Thank you.',
+                'data'      => compact('member')
+            ], 200);
     }
 }

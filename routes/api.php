@@ -27,6 +27,7 @@ Route::get('/secret',                     'SecretController@get')->name('secret'
 Route::prefix('mobile')->middleware('auth:api')->group(function () {
     Route::get('/profile',                              'Api\MemberController@profile')->name('api.profile');
     Route::get('/last/balance/{accountNumber}',         'Api\MemberController@last_balance')->name('api.last.balance');
+    Route::post('/upgrade',                             'Api\MemberController@upgrade')->name('api.upgrade');
     Route::get('/history/transaction/{accountNumber}',  'Api\TransactionController@history')->name('api.history.transaction');
     Route::post('/request/token',                       'Api\TransactionController@request_token')->name('api.request.token');
     Route::post('/transaction',                         'Api\TransactionController@transaction')->name('api.transaction');
