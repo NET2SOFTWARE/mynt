@@ -32,6 +32,9 @@ class RemittanceInquiry extends Model
         'regencycode',
         'purposecode',
         'purposedesc',
-        'sign'
+        'sign',
+
+        # New one, need migration!
+        'aj_name'
     ];
 }

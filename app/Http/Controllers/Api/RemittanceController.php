@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Contracts\RemittanceInterface;
 use Illuminate\Support\Facades\Validator;
 use App\Contracts\RemittanceInquiryInterface;
+use App\Contracts\OTPInterface;
+use App\Contracts\TokenInterface;
 
 class RemittanceController extends Controller
 {
@@ -49,6 +51,10 @@ class RemittanceController extends Controller
 
     private $passbook;
 
+    private $token;
+
+    private $otp;
+
     /**
      * RemittanceController constructor.
      * @param RemittanceInterface $remittance
@@ -68,7 +74,9 @@ class RemittanceController extends Controller
         AccountInterface $account,
         TransactionInterface $transaction,
         RemittanceInquiryInterface $inquiry,
-        PassbookInterface $passbook
+        PassbookInterface $passbook,
+        TokenInterface $token,
+        OTPInterface $otp
     )
     {
         $this->remittance = $remittance;
@@ -78,6 +86,8 @@ class RemittanceController extends Controller
         $this->account = $account;
         $this->transaction = $transaction;
         $this->passbook = $passbook;
+        $this->token = $token;
+        $this->otp = $otp;
     }
 
     /**
@@ -89,10 +99,10 @@ class RemittanceController extends Controller
 
         return response()
             ->json([
-                'status'    => false,
+                'status'    => true,
                 'code'      => 200,
                 'message'   => config('code.200'),
-                'text'      => 'Bank registration successfully.',
+                'text'      => 'List of registered bank accounts.',
                 'data'      => compact('remittances')
             ]);
     }
@@ -103,6 +113,40 @@ class RemittanceController extends Controller
      */
     public function register(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'mynt_account_number' => 'required',
+            'name' => 'required',
+            'address' => 'required',
+            'country' => 'required',
+            'birthdate' => 'required',
+            'birthplace' => 'required',
+            'email' => 'required',
+            'occupation' => 'required',
+            'citizenship' => 'required',
+            'idnumber' => 'required',
+            'fundresource' => 'required',
+            'account_number' => 'required',
+            'bank' => 'required',
+            'bank_account_name' => 'required',
+            'relationship' => 'required',
+            'regency' => 'required',
+            'phone' => 'required'
+        ]);
+
+        if ($validator->fails())
+        {
+            $errors = $validator->errors();
+
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 500,
+                    'message'   => config('code.500'),
+                    'text'      => 'Invalid parameter. ' . implode(' ', $errors->all()),
+                    'data'      => compact(null)
+                ], 200);
+        }
+
         if (!$bank = $this->bank->getByCode((string) $request->input('bank'))) {
             return response()
                 ->json([
@@ -126,7 +170,7 @@ class RemittanceController extends Controller
             strtolower($request->input('name')).
             strtolower($request->input('address')).
             $phone.
-            $request->input('identitynumber').
+            $request->input('idnumber').
             $request->input('account_number').
             $request->input('bank');
 
@@ -236,7 +280,7 @@ class RemittanceController extends Controller
         Validator::make($request->all(), [
             'sender' => 'required',
             'bank'  => 'required',
-//            'token' => 'required'
+            'token' => 'required'
         ])->validate();
 
         if ($this->account->isBalanceNull($request->input('sender'))) {
@@ -249,20 +293,40 @@ class RemittanceController extends Controller
                     'data'      => null
                 ]);
         }
-//
-//        if (!$checkToken = $this->token->getLastUserReferenceToken($request->input('sender'))) {
-//            return redirect()
-//                ->back()
-//                ->withInput($request->all())
-//                ->with('warning', 'Please generate new token');
-//        }
-//
-//        if (!$this->otp->validate($request->input('sender'), $checkToken, $request->input('token'))) {
-//            return redirect()
-//                ->back()
-//                ->withInput($request->all())
-//                ->with('warning', 'Your token not valid, please generate new token again.');
-//        }
+
+        if (!$checkToken = $this->token->getLastUserReferenceToken($request->input('sender'))) {
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 500,
+                    'message'   => config('code.500'),
+                    'text'      => 'Please generate new token.',
+                    'data'      => null
+                ]);
+        }
+
+        if (!$this->otp->validate($request->input('sender'), $checkToken, $request->input('token'))) {
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 500,
+                    'message'   => config('code.500'),
+                    'text'      => 'Your token not valid, please generate new token again.',
+                    'data'      => null
+                ]);
+        }
+
+        $this->token->destroy($request->input('sender'));
+
+        // if (!$request->ajax() || !$request->isJson())
+        // {
+        //     /**
+        //      * Reset max. generate token attempt session, if OTP valid
+        //      */
+        //     $key = request()->headers->get('referer');
+        //     $request->session()->forget($key);
+        //     $request->session()->forget('freeze-' . $key . '-until');
+        // }
 
         $amount = $this->account->getLastBalance($request->input('sender'));
 
@@ -283,8 +347,26 @@ class RemittanceController extends Controller
 
         $inq = $this->remittanceInquiry->get((int) $id);
 
+        $stan = $this->remittance->getNewId();
+
+        $hash = $stan.
+                $inq->transdatetime.
+                $inq->instid.
+                $inq->refnumber.
+                $inq->terminalid.
+                $inq->localdatetime.
+                $inq->accountid.
+                $inq->amount.
+                $inq->instid2.
+                $inq->accountid2.
+                $inq->amount2.
+                $inq->custrefnumber.
+                $inq->countrycode;
+
+        $sign = $this->encrypt->encrypt($this->encrypt->hashMD5($hash));
+
         $transferData = [
-            'stan' => $inq->stan,
+            'stan' => $stan,
             'transdatetime' => $inq->transdatetime,
             'instid' => $inq->instid,
             'proccode' => $inq->proccode,
@@ -308,7 +390,7 @@ class RemittanceController extends Controller
             'regencycode' => $inq->regencycode,
             'purposecode' => $inq->purposecode,
             'purposedesc' => $inq->purposedesc,
-            'sign' => $inq->sign,
+            'sign' => $sign,
         ];
 
         if (!$sender = $this->account->checkExistingAccount($inq->accountid)) {
@@ -411,7 +493,7 @@ class RemittanceController extends Controller
                 ]);
         }
 
-        if (!$this->inquiry_status($inq->id)) {
+        if (!$this->inquiry_status($inq->id, $stan)) {
             return response()
                 ->json([
                     'status'    => false,
@@ -442,7 +524,7 @@ class RemittanceController extends Controller
             'sender' => 'required',
             'bank'  => 'required',
             'amount' => 'required|numeric|min:500',
-//            'token' => 'required',
+            'token' => 'required',
         ])->validate();
 
         if ($this->account->isBalanceNull($request->input('sender'))) {
@@ -477,20 +559,40 @@ class RemittanceController extends Controller
                     'data'      => null
                 ]);
         }
-//
-//        if (!$checkToken = $this->token->getLastUserReferenceToken($request->input('sender'))) {
-//            return redirect()
-//                ->back()
-//                ->withInput($request->all())
-//                ->with('warning', 'Please generate new token');
-//        }
-//
-//        if (!$this->otp->validate($request->input('sender'), $checkToken, $request->input('token'))) {
-//            return redirect()
-//                ->back()
-//                ->withInput($request->all())
-//                ->with('warning', 'Your token not valid, please generate new token again.');
-//        }
+
+        if (!$checkToken = $this->token->getLastUserReferenceToken($request->input('sender'))) {
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 500,
+                    'message'   => config('code.500'),
+                    'text'      => 'Please generate new token.',
+                    'data'      => null
+                ]);
+        }
+
+        if (!$this->otp->validate($request->input('sender'), $checkToken, $request->input('token'))) {
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 500,
+                    'message'   => config('code.500'),
+                    'text'      => 'Your token not valid, please generate new token again.',
+                    'data'      => null
+                ]);
+        }
+
+        $this->token->destroy($request->input('sender'));
+
+        // if (!$request->ajax() || !$request->isJson())
+        // {
+        //     /**
+        //      * Reset max. generate token attempt session, if OTP valid
+        //      */
+        //     $key = request()->headers->get('referer');
+        //     $request->session()->forget($key);
+        //     $request->session()->forget('freeze-' . $key . '-until');
+        // }
 
         if (!$id = $this->inquiry($request->only(['sender', 'bank', 'amount']))) {
             return response()
@@ -505,8 +607,26 @@ class RemittanceController extends Controller
 
         $inq = $this->remittanceInquiry->get((int) $id);
 
+        $stan = $this->remittance->getNewId();
+
+        $hash = $stan.
+                $inq->transdatetime.
+                $inq->instid.
+                $inq->refnumber.
+                $inq->terminalid.
+                $inq->localdatetime.
+                $inq->accountid.
+                $inq->amount.
+                $inq->instid2.
+                $inq->accountid2.
+                $inq->amount2.
+                $inq->custrefnumber.
+                $inq->countrycode;
+
+        $sign = $this->encrypt->encrypt($this->encrypt->hashMD5($hash));
+
         $transferData = [
-            'stan' => $inq->stan,
+            'stan' => $stan,
             'transdatetime' => $inq->transdatetime,
             'instid' => $inq->instid,
             'proccode' => $inq->proccode,
@@ -530,7 +650,7 @@ class RemittanceController extends Controller
             'regencycode' => $inq->regencycode,
             'purposecode' => $inq->purposecode,
             'purposedesc' => $inq->purposedesc,
-            'sign' => $inq->sign,
+            'sign' => $sign,
         ];
 
         if (!$sender = $this->account->checkExistingAccount($inq->accountid)) {
@@ -633,7 +753,7 @@ class RemittanceController extends Controller
                 ]);
         }
 
-        if (!$this->inquiry_status($inq->id)) {
+        if (!$this->inquiry_status($inq->id, $stan)) {
             return response()
                 ->json([
                     'status'    => false,
@@ -662,7 +782,8 @@ class RemittanceController extends Controller
     {
         $remittance = $this->remittance->get($request['bank']);
 
-        $stan = $this->remittanceInquiry->getLastKey();
+        // $stan = $this->remittanceInquiry->getLastKey();
+        $stan = $this->remittance->getNewId();
         $refNumber = random_int(100000000000, 999999999999);
         $transDate = date('YmdHis', strtotime(Carbon::now()->toDateTimeString()));
         $amount = $request['amount'];
@@ -727,28 +848,39 @@ class RemittanceController extends Controller
      * @param $id
      * @return bool
      */
-    public function inquiry_status($id)
+    public function inquiry_status($id, $transferSTAN = null)
     {
         $inq = $this->remittanceInquiry->get((int) $id);
 
-        $sign = $inq->stan.
-            $inq->transdatetime.
-            $inq->instid.
-            $inq->localdatetime.
-            $inq->stan.
-            $inq->transdatetime;
+        $stan1 = $this->remittance->getNewId();
 
-        $signData = $this->encrypt->encrypt($this->encrypt->hashMD5($sign));
+        $stan2 = $transferSTAN;
+
+        if (!$transferSTAN)
+        {
+            $stan2 = (int) $inq->stan;
+            $stan2 = $stan2 + 1;
+            $stan2 = str_pad($stan2, 6, '0', STR_PAD_LEFT);
+        }
+
+        $hash = $stan1.
+                $inq->transdatetime.
+                $inq->instid.
+                $inq->localdatetime.
+                $stan2.
+                $inq->transdatetime;
+
+        $sign = $this->encrypt->encrypt($this->encrypt->hashMD5($hash));
 
         $data = [
-            'stan' => $inq->stan,
+            'stan' => $stan1,
             'transdatetime' => $inq->transdatetime,
             'instid' => $inq->instid,
             'countrycode' => $inq->countrycode,
             'localdatetime' => $inq->localdatetime,
-            'stan2' => $inq->stan,
+            'stan2' => $stan2,
             'transdatetime2' => $inq->transdatetime,
-            'sign' => $signData
+            'sign' => $sign
         ];
 
         if (!$this->remittance->inquiryStatus($data)) {

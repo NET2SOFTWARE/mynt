@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use App\Mail\UpgradeNotification;
 
 /**
@@ -100,6 +101,7 @@ class MemberController extends Controller
     public function index(Request $request)
     {
         $members = $this->member->getsPaginate();
+
         $members->map(function($member){
             $member['type'] = count($member->profiles) > 0 ? 'registered' : 'unregistered';
             if ($member['type'] == 'unregistered')
@@ -461,9 +463,16 @@ class MemberController extends Controller
                     : redirect()->back()->withErrors($validator)->with('warning', 'Fail to update member data, please check invalid message below.')->withInput($request->all());
             }
 
+            $number = trim($request->input('phone'));
+
+            if ('+' == substr($number, 0, 1))    $number = substr($number, 1);
+            if ('6208' == substr($number, 0, 4)) $number = '62' . substr($number, 3);
+            if ('08' == substr($number, 0, 2))   $number = '62' . substr($number, 1);
+            if ('8' == substr($number, 0, 1))    $number = '62' . $number;
+
             $data = [
                 'name'  => strtolower($request->input('name')),
-                'phone' => $request->input('phone'),
+                'phone' => $number,
             ];
         } elseif ($request->has('password')) {
             $validator = Validator::make($request->all(), [
@@ -1002,7 +1011,7 @@ class MemberController extends Controller
             })->save('img/documents/'. $filename);
         }
 
-        $expired_date = date('Y-m-d', strtotime($request->input('identity.date')));
+        $expired_date = date('Y-m-d', strtotime($request->input('identity_date')));
         $now = date('Y-m-d', strtotime(Carbon::now()->toDateString()));
 
         if ($request->input('identity_date_type') == 'lifetime')

@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\AccountInterface;
 use App\Contracts\BankInterface;
 use App\Contracts\EncryptInterface;
-use App\Contracts\OTPInterface;
+use App\Contracts\GlobalPassbookInterface;
+use App\Contracts\PassbookInterface;
+use App\Contracts\RemittanceInterface;
 use App\Contracts\RemittanceInquiryInterface;
+use App\Contracts\TransactionInterface;
 use App\Contracts\TokenInterface;
+use App\Contracts\OTPInterface;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Contracts\AccountInterface;
-use App\Contracts\PassbookInterface;
 use Illuminate\Support\Facades\Auth;
-use App\Contracts\RemittanceInterface;
-use App\Contracts\TransactionInterface;
-use App\Contracts\GlobalPassbookInterface;
 use Illuminate\Support\Facades\Validator;
 
 class RemittanceController extends Controller
@@ -189,8 +189,11 @@ class RemittanceController extends Controller
         $res = $this->remittance->create($data);
 
         if ($res['Response']['Code'] != '00' or $res['Response']['Description'] != 'success') {
-            return response()
-                ->json(compact('res'));
+            return redirect()
+                ->back()
+                ->with('warning', ucfirst($res['Response']['Description']));
+            // return response()
+            //     ->json(compact('res'));
         }
 
         $db = array_add($data, 'bank_id', $bank->id);
@@ -216,9 +219,26 @@ class RemittanceController extends Controller
     {
         $remittance = $this->remittance->get($id);
 
+        $stan = $this->remittance->getNewId();
+        $date = Carbon::now()->toDateTimeString();
+        $dateTime = date('YmdHis', strtotime($date));
+
+        $hash = $stan.
+                $dateTime.
+                $remittance->instid.
+                $remittance->accountid.
+                $remittance->name.
+                $remittance->address.
+                $remittance->phonenumber.
+                $remittance->idnumber.
+                $remittance->accountid1.
+                $remittance->instid1;
+
+        $sign = $this->encrypt->encrypt($this->encrypt->hashMD5($hash));
+
         $data = (array) [
-            'stan'          => $remittance->stan,
-            'transdatetime' => date('YmdHis',strtotime( Carbon::now()->toDateString())),
+            'stan'          => $stan,
+            'transdatetime' => $dateTime,
             'instid'        => $remittance->instid,
             'accountid'     => $remittance->accountid,
             'name'          => $remittance->name,
@@ -240,7 +260,7 @@ class RemittanceController extends Controller
             'address1'      => $remittance->address1,
             'provcode1'     => $remittance->provcode1,
             'idnumber1'     => $remittance->idnumber1,
-            'sign'          => $remittance->sign
+            'sign'          => $sign
         ];
 
         $this->remittance->delete((array) $data);
@@ -261,11 +281,17 @@ class RemittanceController extends Controller
      */
     public function transfer(Request $request)
     {
+        /**
+         * UAT Remittance Inquiry Status
+         */
+        
+        // return dd($this->inquiryStatus(31, '000062'));
+
         Validator::make($request->all(), [
             'sender' => 'required',
             'bank'  => 'required',
             'amount' => 'required|numeric|min:500',
-//            'token' => 'required',
+            'token' => 'required',
             'captcha' => 'required|captcha'
         ])->validate();
 
@@ -289,31 +315,78 @@ class RemittanceController extends Controller
                 ->withInput($request->all())
                 ->with('warning', 'Your transaction nominal amount exceeds the maximum limit.');
         }
-//
-//        if (!$checkToken = $this->token->getLastUserReferenceToken($request->input('sender'))) {
-//            return redirect()
-//                ->back()
-//                ->withInput($request->all())
-//                ->with('warning', 'Please generate new token');
-//        }
-//
-//        if (!$this->otp->validate($request->input('sender'), $checkToken, $request->input('token'))) {
-//            return redirect()
-//                ->back()
-//                ->withInput($request->all())
-//                ->with('warning', 'Your token not valid, please generate new token again.');
-//        }
 
-        if (!$id = $this->inquiry($request->only(['sender', 'bank', 'amount']))) {
+        if (!$checkToken = $this->token->getLastUserReferenceToken($request->input('sender'))) {
+            return redirect()
+                ->back()
+                ->withInput($request->all())
+                ->with('warning', 'Please generate new token');
+        }
+
+        if (!$this->otp->validate($request->input('sender'), $checkToken, $request->input('token'))) {
+            return redirect()
+                ->back()
+                ->withInput($request->all())
+                ->with('warning', 'Your token not valid, please generate new token again.');
+        }
+
+        // $this->token->destroy($request->input('sender'));
+
+        /**
+         * Reset max. generate token attempt session, if OTP valid
+         */
+        $key = request()->headers->get('referer');
+        $request->session()->forget($key);
+        $request->session()->forget('freeze-' . $key . '-until');
+
+        /**
+         * UAT Remittance Inquiry Testing
+         */
+        
+        $id = $this->inquiry($request->only(['sender', 'bank', 'amount']));
+
+        if (is_array($id)) {
+            return redirect()
+                ->back()
+                ->with('warning', ucfirst($id['message']));
+        }
+
+        if (!$id) {
             return redirect()
                 ->back()
                 ->with('warning', 'The inquiry process not clear.');
         }
 
         $inq = $this->remittanceInquiry->get((int) $id);
+        
+        // return dd($inq);
+
+        /**
+         * UAT Remittance Transfer Testing
+         */
+
+        // $inq = $this->remittanceInquiry->get(33);
+
+        $stan = $this->remittance->getNewId();
+
+        $sign = $stan.
+                $inq->transdatetime.
+                $inq->instid.
+                $inq->refnumber.
+                $inq->terminalid.
+                $inq->localdatetime.
+                $inq->accountid.
+                $inq->amount.
+                $inq->instid2.
+                $inq->accountid2.
+                $inq->amount2.
+                $inq->custrefnumber.
+                $inq->countrycode;
+
+        $signData = $this->encrypt->encrypt($this->encrypt->hashMD5($sign));
 
         $transferData = [
-            'stan' => $inq->stan,
+            'stan' => $stan,
             'transdatetime' => $inq->transdatetime,
             'instid' => $inq->instid,
             'proccode' => $inq->proccode,
@@ -333,11 +406,11 @@ class RemittanceController extends Controller
             'currcode2' => $inq->currcode2,
             'amount2' => $inq->amount2,
             'custrefnumber' => $inq->custrefnumber,
-            'name2' => 'YUSAK TIADA TARA',
+            'name2' => $inq->aj_name,
             'regencycode' => $inq->regencycode,
             'purposecode' => $inq->purposecode,
             'purposedesc' => $inq->purposedesc,
-            'sign' => $inq->sign,
+            'sign' => $signData,
         ];
 
         if (!$sender = $this->account->checkExistingAccount($inq->accountid)) {
@@ -351,7 +424,8 @@ class RemittanceController extends Controller
         if ($transferRes['Response']['Code'] != '00') {
             return redirect()
                 ->back()
-                ->with('warning', 'Internal system error, Remittance transfer process error.');
+                ->with('warning', ucfirst($transferRes['Response']['Description']));
+                // ->with('warning', 'Internal system error, Remittance transfer process error.');
         }
 
         if ( !$transaction = $this->transaction->save([
@@ -410,10 +484,17 @@ class RemittanceController extends Controller
                 ->with('warning', 'Internal system error, recipient passbook could not created.');
         }
 
-        if (!$this->inquiryStatus($inq->id)) {
+        /**
+         * UAT Remittance, skip Inquiry Status
+         */
+
+        $inqStatus = $this->inquiryStatus($inq->id, $stan);
+
+        if (is_array($inqStatus)) {
             return redirect()
                 ->back()
-                ->with('warning', 'Internal system error, please check your account bank to validate this proses.');
+                ->with('warning', ucfirst($inqStatus['message']));
+                // ->with('warning', 'Internal system error, please check your account bank to validate this proses.');
         }
 
         return redirect()
@@ -431,7 +512,7 @@ class RemittanceController extends Controller
         Validator::make($request->all(), [
             'sender' => 'required',
             'bank'  => 'required',
-//            'token' => 'required',
+            'token' => 'required',
             'captcha' => 'required|captcha'
         ])->validate();
 
@@ -441,20 +522,29 @@ class RemittanceController extends Controller
                 ->withInput($request->all())
                 ->withErrors(['amount', 'Your balance amount is 0, you can not do this process.']);
         }
-//
-//        if (!$checkToken = $this->token->getLastUserReferenceToken($request->input('sender'))) {
-//            return redirect()
-//                ->back()
-//                ->withInput($request->all())
-//                ->with('warning', 'Please generate new token');
-//        }
-//
-//        if (!$this->otp->validate($request->input('sender'), $checkToken, $request->input('token'))) {
-//            return redirect()
-//                ->back()
-//                ->withInput($request->all())
-//                ->with('warning', 'Your token not valid, please generate new token again.');
-//        }
+
+        if (!$checkToken = $this->token->getLastUserReferenceToken($request->input('sender'))) {
+           return redirect()
+               ->back()
+               ->withInput($request->all())
+               ->with('warning', 'Please generate new token');
+        }
+
+        if (!$this->otp->validate($request->input('sender'), $checkToken, $request->input('token'))) {
+           return redirect()
+               ->back()
+               ->withInput($request->all())
+               ->with('warning', 'Your token not valid, please generate new token again.');
+        }
+
+        $this->token->destroy($request->input('sender'));
+
+        /**
+         * Reset max. generate token attempt session, if OTP valid
+         */
+        $key = request()->headers->get('referer');
+        $request->session()->forget($key);
+        $request->session()->forget('freeze-' . $key . '-until');
 
         $amount = $this->account->getLastBalance($request->input('sender'));
 
@@ -462,7 +552,15 @@ class RemittanceController extends Controller
 
         $dataSend = array_add($params, 'amount', $amount);
 
-        if (!$id = $this->inquiry($dataSend)) {
+        $id = $this->inquiry($dataSend);
+
+        if (is_array($id)) {
+            return redirect()
+                ->back()
+                ->with('warning', ucfirst($id['message']));
+        }
+
+        if (!$id) {
             return redirect()
                 ->back()
                 ->with('warning', 'The inquiry process not clear.');
@@ -470,8 +568,26 @@ class RemittanceController extends Controller
 
         $inq = $this->remittanceInquiry->get((int) $id);
 
+        $stan = $this->remittance->getNewId();
+
+        $sign = $stan.
+                $inq->transdatetime.
+                $inq->instid.
+                $inq->refnumber.
+                $inq->terminalid.
+                $inq->localdatetime.
+                $inq->accountid.
+                $inq->amount.
+                $inq->instid2.
+                $inq->accountid2.
+                $inq->amount2.
+                $inq->custrefnumber.
+                $inq->countrycode;
+
+        $signData = $this->encrypt->encrypt($this->encrypt->hashMD5($sign));
+
         $transferData = [
-            'stan' => $inq->stan,
+            'stan' => $stan,
             'transdatetime' => $inq->transdatetime,
             'instid' => $inq->instid,
             'proccode' => $inq->proccode,
@@ -491,11 +607,11 @@ class RemittanceController extends Controller
             'currcode2' => $inq->currcode2,
             'amount2' => $inq->amount2,
             'custrefnumber' => $inq->custrefnumber,
-            'name2' => 'YUSAK TIADA TARA',
+            'name2' => $inq->name1,
             'regencycode' => $inq->regencycode,
             'purposecode' => $inq->purposecode,
             'purposedesc' => $inq->purposedesc,
-            'sign' => $inq->sign,
+            'sign' => $signData,
         ];
 
         if (!$sender = $this->account->checkExistingAccount($inq->accountid)) {
@@ -509,7 +625,8 @@ class RemittanceController extends Controller
         if ($transferRes['Response']['Code'] != '00') {
             return redirect()
                 ->back()
-                ->with('warning', 'Internal system error, Remittance transfer process error.');
+                ->with('warning', ucfirst($transferRes['Response']['Description']));
+                // ->with('warning', 'Internal system error, Remittance transfer process error.');
         }
 
         if ( !$transaction = $this->transaction->save([
@@ -568,10 +685,13 @@ class RemittanceController extends Controller
                 ->with('warning', 'Internal system error, recipient passbook could not created.');
         }
 
-        if (!$this->inquiryStatus($inq->id)) {
+        $inqStatus = $this->inquiryStatus($inq->id, $stan);
+
+        if (is_array($inqStatus)) {
             return redirect()
                 ->back()
-                ->with('warning', 'Internal system error, please check your account bank to validate this proses.');
+                ->with('warning', ucfirst($inqStatus['message']));
+                // ->with('warning', 'Internal system error, please check your account bank to validate this proses.');
         }
 
         return redirect()
@@ -584,32 +704,48 @@ class RemittanceController extends Controller
      * @param $id
      * @return bool
      */
-    private function inquiryStatus($id)
+    private function inquiryStatus($id, $transferSTAN = null)
     {
         $inq = $this->remittanceInquiry->get((int) $id);
 
-        $sign = $inq->stan.
+        $stan1 = $this->remittance->getNewId();
+
+        $stan2 = $transferSTAN;
+
+        if (!$transferSTAN)
+        {
+            $stan2 = (int) $inq->stan;
+            $stan2 = $stan2 + 1;
+            $stan2 = str_pad($stan2, 6, '0', STR_PAD_LEFT);
+        }
+
+        $sign = $stan1.
                 $inq->transdatetime.
                 $inq->instid.
                 $inq->localdatetime.
-                $inq->stan.
+                $stan2.
                 $inq->transdatetime;
 
         $signData = $this->encrypt->encrypt($this->encrypt->hashMD5($sign));
 
         $data = [
-            'stan' => $inq->stan,
+            'stan' => $stan1,
             'transdatetime' => $inq->transdatetime,
             'instid' => $inq->instid,
             'countrycode' => $inq->countrycode,
             'localdatetime' => $inq->localdatetime,
-            'stan2' => $inq->stan,
+            'stan2' => $stan2,
             'transdatetime2' => $inq->transdatetime,
             'sign' => $signData
         ];
 
-        if (!$this->remittance->inquiryStatus($data)) {
-            return false;
+        // return $this->remittance->inquiryStatus($data);
+
+        $res = $this->remittance->inquiryStatus($data);
+
+        if ($res['Response']['Code'] != '00') {
+            return ['status' => false, 'message' => ucfirst($res['Response']['Description'])];
+            // return false;
         }
 
         return true;
@@ -621,26 +757,30 @@ class RemittanceController extends Controller
      */
     private function inquiry(array $request)
     {
+        $reRegister = $this->reRegister($request['bank']);
+
+        if (is_array($reRegister)) return ['message' => ucfirst($reRegister['message'])];
+
         $remittance = $this->remittance->get($request['bank']);
 
-        $stan = $this->remittanceInquiry->getLastKey();
+        $stan = $this->remittance->getNewId();
         $refNumber = random_int(100000000000, 999999999999);
         $transDate = date('YmdHis', strtotime(Carbon::now()->toDateTimeString()));
         $amount = $request['amount'];
 
         $encrypt = $stan.
-                    $transDate.
-                    '000016'.
-                    $refNumber.
-                    '10010010'.
-                    $transDate.
-                    $remittance->accountid.
-                    $amount.
-                    $remittance->instid1.
-                    $remittance->accountid1.
-                    $amount.
-                    $refNumber.
-                    'ID';
+            $transDate.
+            '000016'.
+            $refNumber.
+            '10010010'.
+            $transDate.
+            $remittance->accountid.
+            $amount.
+            $remittance->instid1.
+            $remittance->accountid1.
+            $amount.
+            $refNumber.
+            'ID';
 
         $sign = $this->encrypt->encrypt($this->encrypt->hashMD5($encrypt));
 
@@ -674,13 +814,84 @@ class RemittanceController extends Controller
         $res = $this->remittance->inquiry($data);
 
         if ($res['Response']['Code'] != '00') {
-            return false;
+            return ['message' => ucfirst($res['Response']['Description'])];
+            // return false;
         }
+
+        $data['aj_name'] = $res['BeneficiaryData']['Name'];
 
         if ( !$inquiry = $this->remittanceInquiry->save($data) ){
             return false;
         }
 
         return $inquiry->id;
+    }
+
+    public function reRegister(int $remittanceId)
+    {
+        $remittance = $this->remittance->get($remittanceId);
+
+        $stan = $this->remittance->getNewId();
+        $date = Carbon::now()->toDateTimeString();
+        $dateTime = date('YmdHis', strtotime($date));
+
+        $hash = $stan.
+                $dateTime.
+                $remittance->instid.
+                $remittance->accountid.
+                strtolower($remittance->name).
+                strtolower($remittance->address).
+                $remittance->phonenumber.
+                $remittance->idnumber.
+                $remittance->accountid1.
+                $remittance->instid1;
+
+        $sign = $this->encrypt->encrypt($this->encrypt->hashMD5($hash));
+
+        $data = [
+            'stan'              => $stan,
+            'transdatetime'     => $dateTime,
+            'instid'            => $remittance->instid,
+            'accountid'         => $remittance->accountid,
+            'name'              => strtolower($remittance->name),
+            'address'           => strtolower($remittance->address),
+            'countrycode'       => strtoupper($remittance->countrycode),
+            'birthdate'         => $remittance->birthdate,
+            'birthplace'        => strtolower($remittance->birthplace),
+            'phonenumber'       => $remittance->phonenumber,
+            'email'             => strtolower($remittance->email),
+            'occupation'        => strtolower($remittance->occupation),
+            'citizenship'       => strtolower($remittance->citizenship),
+            'idnumber'          => $remittance->idnumber,
+            'fundresource'      => strtolower($remittance->fundresource),
+            'accountid1'        => $remittance->accountid1,
+            'instid1'           => $remittance->instid1,
+            'name1'             => strtolower($remittance->name1),
+            'relationship1'     => strtolower($remittance->relationship1),
+            'regencycode1'      => strtoupper($remittance->regencycode1),
+            'address1'          => '',
+            'provcode1'         => '',
+            'idnumber1'         => '',
+            'sign'              => $sign,
+        ];
+
+        $res = $this->remittance->create($data);
+
+        if ($res['Response']['Code'] != '00' or $res['Response']['Description'] != 'success')
+        {
+            return ['message' => ucfirst($res['Response']['Description'])];
+        }
+
+        $remittance->stan = $stan;
+        $remittance->transdatetime = $dateTime;
+        $remittance->sign = $sign;
+        $remittance->updated_at = Carbon::now();
+
+        if (!$remittance->save())
+        {
+            return ['message' => 'Internal server error, system could not update remittance data to database.'];
+        }
+
+        return true;
     }
 }

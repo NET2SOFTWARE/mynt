@@ -1,7 +1,7 @@
 <aside class="col-md-3 py-3">
     <figure class="media mb-3">
         <section class="media-left">
-            <img class="d-flex" src="{{ asset('img/img.jpg') }}" width="80" height="80" alt="{{ Auth::user()->name }}">
+            <img class="d-flex" src="{{ asset('img/merchant/' . Auth::user()->merchants()->first()['photo']) }}" width="80" height="80" alt="{{ Auth::user()->name }}">
         </section>
         <figcaption class="media-body pl-3">
             <h6 class="mt-0"><strong>{{ Auth::user()->name }}</strong></h6>

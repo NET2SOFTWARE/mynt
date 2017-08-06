@@ -80,6 +80,8 @@ Route::prefix('merchant')->group(function (){
     Route::put('/{id}',         'Api\MerchantController@update')->name('api.merchant.update');
     Route::patch('/{id}',       'Api\MerchantController@update')->name('api.merchant.update');
     Route::delete('/{id}',      'Api\MerchantController@destroy')->name('api.merchant.delete');
+    Route::put('/upload/{id}',  'Api\MerchantController@uploadPhoto')->name('api.merchant.update.upload');
+    Route::patch('/upload/{id}','Api\MerchantController@uploadPhoto')->name('api.merchant.update.upload');
 });
 
 Route::prefix('member')->group(function (){

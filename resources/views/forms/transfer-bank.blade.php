@@ -6,6 +6,8 @@
         <small class="form-text small text-muted d-flex justify-content-between" id="senderHelp">Your account number. <span class="text-grey">Required</span></small>
     </section>
 </section>
+
+<section class="form-group row">
     <label for="bank" class="col-sm-4 col-form-label">To</label>
     <section class="col-sm-8">
         <select id="bank" name="bank" class="custom-select w-100" aria-describedby="bankHelp" required>
@@ -16,18 +18,6 @@
         </select>
         @if ($errors->has('bank'))<span class="form-control-feedback">{{ $errors->first('bank') }}</span>@endif
         <small class="form-text small text-muted d-flex justify-content-between" id="bankHelp"><span>If the bank account is not yet registered, please register first.</span><span class="text-grey ml-3">Required</span></small>
-    </section>
-</section>
-<section class="form-group row">
-    <label for="bank_code" class="col-sm-4 col-form-label">Bank name</label>
-    <section class="col-sm-8">
-        <select id="bank_code" name="bank_code" class="custom-select w-100" aria-describedby="bankCodeHelp">
-            <option selected disabled>Choose bank</option>
-            @foreach($banks as $bank)
-                <option value="{{ $bank->bank_code }}">{{ $bank->bank_code. '&#32;' .strtoupper($bank->bank_name) }}</option>
-            @endforeach
-        </select>
-        <small class="form-text small text-muted d-flex justify-content-between" id="bankCodeHelp"><span>Please choose one bank.</span><span class="text-grey ml-3">Required</span></small>
     </section>
 </section>
 

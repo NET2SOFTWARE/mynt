@@ -29,7 +29,7 @@ class AccountingController extends Controller
         })->paginate((int) 15);
 
         return response()
-            ->view('merchant.accounting', compact('passbooks'), 200);
+            ->view('merchant.accounting', compact('passbooks', 'account'), 200);
     }
 
     public function sort_accounting(Request $request)

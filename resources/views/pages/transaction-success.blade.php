@@ -49,7 +49,7 @@
                                     <th>SENDER ACCOUNT</th>
                                     <th>RECEIVER ACCOUNT</th>
                                     <th class="text-center">TRANS. TIME</th>
-                                    <th></th>
+                                    {{-- <th></th> --}}
                                 </tr>
                             </thead>
                             <tbody>
@@ -61,11 +61,11 @@
                                     <td>{{ $transaction->sender_account_number }}</td>
                                     <td>{{ $transaction->receiver_account_number }}</td>
                                     <td>{{ $transaction->created_at->format('j F Y H:i:s') }}</td>
-                                    <td class="text-right">
+                                    {{-- <td class="text-right">
                                         <div class="btn-group btn-group-sm" role="group" aria-label="Tools">
                                             <a href="#" class="btn btn-secondary py-0 small-caps">details</a>
                                         </div>
-                                    </td>
+                                    </td> --}}
                                 </tr>
                             @endforeach
                             </tbody>

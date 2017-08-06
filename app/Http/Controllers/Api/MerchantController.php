@@ -288,7 +288,7 @@ class MerchantController extends Controller
      */
     public function update(MerchantRequest $request, $id)
     {
-        $merchant = Merchant::withTrashed()::find($id);
+        $merchant = Merchant::withTrashed()->find($id);
 
         $merchant->update(
             [
@@ -818,5 +818,63 @@ class MerchantController extends Controller
         ]);
 
         return response()->view('pages.report-merchant-show', compact('request', 'data'), 200);
+    }
+
+    public function uploadPhoto(int $id, Request $request)
+    {
+        $merchant = Merchant::findOrFail($id, ['*']);
+
+        $filename = null;
+
+        if ($request->hasFile('photo') && $request->file('photo')->isValid())
+        {
+            ini_set('memory_limit', '-1');
+            ini_set('max_execution_time', 120);
+
+            $photo = $request->file('photo');
+
+            if (! in_array(strtolower($photo->getClientOriginalExtension()), [
+                'jpg',
+                'jpeg',
+                'png'
+            ])) {
+                return ($request->ajax() || $request->isJson())
+                    ? response()->json([
+                            'status'    => false,
+                            'code'      => 400,
+                            'message'   => config('code.400'),
+                            'text'      => 'Unsupported file image format.',
+                            'data'      => compact(null)
+                        ], 400)
+                    : redirect()->back()
+                        ->withInput()
+                        ->with('warning', 'Unsupported file image format.');
+            }
+
+            $filename  = time() . '.' . $photo->getClientOriginalExtension();
+
+            Image::make($photo->getRealPath())->resize(320, 320, function ($c) {
+                $c->aspectRatio();
+                $c->upsize();
+            })->save('img/merchant/'. $filename);
+        }
+
+        $merchant->update([
+            'photo' => $filename
+        ]);
+
+        abort_unless($merchant, config('code.500'));
+
+        return ($request->ajax() || $request->isJson())
+            ? response()->json([
+                    'status'    => true,
+                    'code'      => 200,
+                    'message'   => config('code.200'),
+                    'text'      => 'Merchant image has been uploaded successfully.',
+                    'data'      => compact('merchant')
+                ], 200)
+            : redirect()->back()
+                ->with(compact('merchant'))
+                ->with('success', 'Merchant image has been uploaded successfully.');
     }
 }

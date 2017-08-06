@@ -141,6 +141,13 @@ class TransactionController extends Controller
 
         $this->token->destroy($no_sender);
 
+        /**
+         * Reset max. generate token attempt session, if OTP valid
+         */
+        $key = request()->headers->get('referer');
+        $request->session()->forget($key);
+        $request->session()->forget('freeze-' . $key . '-until');
+
         if (!$sender = $this->account->getAccountByNumber($no_sender)) {
             return redirect()
                 ->back()

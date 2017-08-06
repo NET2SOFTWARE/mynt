@@ -359,17 +359,28 @@ class TransactionController extends Controller
                     'status'    => false,
                     'code'      => 400,
                     'message'   => config('code.400'),
+                    'text'      => 'Invalid parameters.',
                     'data'      => null
                 ]);
         }
 
-
-        if ( !$sender = $this->account->checkExistingAccount($request->input('sender'))  or !$recipient = $this->account->checkExistingAccount($request->input('recipient')) )
+        if (!$sender = $this->account->checkExistingAccount($request->input('sender')))
             return response()
                 ->json([
                     'status'    => false,
                     'code'      => 404,
                     'message'   => config('code.404'),
+                    'text'      => 'Invalid sender account.',
+                    'data'      => null
+                ], 404);
+
+        if (!$recipient = $this->account->checkExistingAccount($request->input('recipient')))
+            return response()
+                ->json([
+                    'status'    => false,
+                    'code'      => 404,
+                    'message'   => config('code.404'),
+                    'text'      => 'Invalid recipient account.',
                     'data'      => null
                 ], 404);
 
@@ -380,6 +391,7 @@ class TransactionController extends Controller
                     'status'    => false,
                     'code'      => 500,
                     'message'   => config('code.500'),
+                    'text'      => 'Please generate new token.',
                     'data'      => null
                 ], 500);
 
@@ -389,8 +401,21 @@ class TransactionController extends Controller
                     'status'    => false,
                     'code'      => 401,
                     'message'   => config('code.401'),
+                    'text'      => 'Invalid token.',
                     'data'      => null
                 ], 401);
+
+        $this->token->destroy($request->input('sender'));
+
+        // if (!$request->ajax() || !$request->isJson())
+        // {
+        //     /**
+        //      * Reset max. generate token attempt session, if OTP valid
+        //      */
+        //     $key = request()->headers->get('referer');
+        //     $request->session()->forget($key);
+        //     $request->session()->forget('freeze-' . $key . '-until');
+        // }
 
         if ($request->input('sender') == $request->input('recipient'))
             return response()
@@ -398,6 +423,7 @@ class TransactionController extends Controller
                     'status'    => false,
                     'code'      => 409,
                     'message'   => config('code.409'),
+                    'text'      => 'Sender account cannot be recipient account.',
                     'data'      => null
                 ], 409);
 

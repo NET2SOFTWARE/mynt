@@ -90,7 +90,8 @@ class CompanyController extends Controller
      */
     public function index(Request $request, $param = NULL)
     {
-        $companies = Company::paginate(20, ['*']);
+        $companies = Company::orderBy('code', 'asc')
+            ->paginate(20, ['*']);
 
         switch ($param) {
             case 'document' :
@@ -628,6 +629,7 @@ class CompanyController extends Controller
             ->orWhereHas('partnerships', function ($query) use ($request) {
                 $query->where('name', 'ILIKE', '%'.$request->input('search').'%');
             })
+            ->orderBy('code', 'asc')
             ->paginate(20);
 
         return ($request->ajax() || $request->isJson())
@@ -848,8 +850,6 @@ class CompanyController extends Controller
                 $c->upsize();
             })->save('img/company/'. $filename);
         }
-
-        // return $filename;
 
         $company->update([
             'image' => $filename

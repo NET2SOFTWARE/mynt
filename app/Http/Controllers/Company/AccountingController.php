@@ -28,7 +28,7 @@ class AccountingController extends Controller
         })->paginate((int) 15);
 
         return response()
-            ->view('company.accounting', compact('passbooks'), 200);
+            ->view('company.accounting', compact('passbooks', 'account'), 200);
     }
 
     /**

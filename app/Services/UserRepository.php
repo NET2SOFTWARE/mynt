@@ -94,13 +94,20 @@ class UserRepository implements UserInterface
 
     public function serializePhone(string $phone)
     {
-        if (starts_with($phone, '620')) {
-            $number = '62'. substr($phone, 3);
-        } elseif (starts_with($phone, '0')) {
-            $number = '62'. substr($phone, 1);
-        } else {
-            $number = $phone;
-        }
+        // if (starts_with($phone, '620')) {
+        //     $number = '62'. substr($phone, 3);
+        // } elseif (starts_with($phone, '0')) {
+        //     $number = '62'. substr($phone, 1);
+        // } else {
+        //     $number = $phone;
+        // }
+
+        $number = trim($phone);
+
+        if ('+' == substr($number, 0, 1))    $number = substr($number, 1);
+        if ('6208' == substr($number, 0, 4)) $number = '62' . substr($number, 3);
+        if ('08' == substr($number, 0, 2))   $number = '62' . substr($number, 1);
+        if ('8' == substr($number, 0, 1))    $number = '62' . $number;
 
         return $number;
     }

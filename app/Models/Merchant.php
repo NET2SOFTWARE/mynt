@@ -27,7 +27,7 @@ class Merchant extends Model
         'email',
         'website',
         'phone',
-        'image',
+        'photo',
         'account_type'
     ];
 
@@ -109,7 +109,15 @@ class Merchant extends Model
      */
     public function setPhoneAttribute($value)
     {
-        $this->attributes['phone'] = str_is('0*', $value) ? '62'. substr($value, 1) : $value;
+        $number = trim($value);
+
+        if ('+' == substr($number, 0, 1))    $number = substr($number, 1);
+        if ('6208' == substr($number, 0, 4)) $number = '62' . substr($number, 3);
+        if ('08' == substr($number, 0, 2))   $number = '62' . substr($number, 1);
+        if ('8' == substr($number, 0, 1))    $number = '62' . $number;
+
+        $this->attributes['phone'] = $number;
+        // $this->attributes['phone'] = str_is('0*', $value) ? '62'. substr($value, 1) : $value;
     }
 
     /**

@@ -49,23 +49,32 @@ class TransactionController extends Controller
             'token'     => 'required|numeric|digits:6'
         ])->validate();
 
-//        $token          = $request->input('token');
+        $token          = $request->input('token');
         $no_sender      = $request->input('sender');
         $no_recipient   = $request->input('recipient');
         $amount         = $request->input('amount');
 
-//        if (!$checkToken = $this->token->getLastUserReferenceToken($no_sender))
-//            return redirect()
-//                ->back()
-//                ->with('warning', 'Please generate new token')
-//                ->withInput($request->except(['captcha']));
-//
-//        if ( !$this->otp->validate($no_sender, $checkToken, $token) ) {
-//            return redirect()
-//                ->back()
-//                ->with('warning', 'Your token not valid, please generate new token again.')
-//                ->withInput($request->except(['captcha']));
-//        }
+        if (!$checkToken = $this->token->getLastUserReferenceToken($no_sender))
+           return redirect()
+               ->back()
+               ->with('warning', 'Please generate new token')
+               ->withInput($request->except(['captcha']));
+
+        if ( !$this->otp->validate($no_sender, $checkToken, $token) ) {
+           return redirect()
+               ->back()
+               ->with('warning', 'Your token not valid, please generate new token again.')
+               ->withInput($request->except(['captcha']));
+        }
+
+        $this->token->destroy($no_sender);
+
+        /**
+         * Reset max. generate token attempt session, if OTP valid
+         */
+        $key = request()->headers->get('referer');
+        $request->session()->forget($key);
+        $request->session()->forget('freeze-' . $key . '-until');
 
         if (!$sender = $this->account->getAccountByNumber($no_sender)) {
             return redirect()

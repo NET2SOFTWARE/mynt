@@ -55,8 +55,8 @@
                         <tbody>
                         @foreach($members as $member)
                             <tr>
-                                <td>{{ $member->accounts->first()['number'] }}</td>
-                                <td>{{ $member->accounts->first()['mynt_id'] }}</td>
+                                <td class="{{ $member->accounts()->count() }}">{{ $member->accounts()->first()['number'] }}</td>
+                                <td>{{ $member->accounts()->first()['mynt_id'] }}</td>
                                 <td>{{ $member->created_at->format('Y-m-d H:i:s') }}</td>
                                 <td>{{ $member->name }}</td>
                                 <td>{{ $member->phone }}</td>

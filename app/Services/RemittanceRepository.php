@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use App\Models\Remittance;
+use App\Models\RemittanceLog;
 use App\Contracts\RemittanceInterface;
 
 
@@ -23,6 +24,12 @@ class RemittanceRepository implements RemittanceInterface
             'form_params' => $data
         ]);
 
+        RemittanceLog::create([
+            'method' => 'create_account',
+            'request' => json_encode($data),
+            'response' => (string) $res->getBody(),
+        ]);
+
         return json_decode((string) $res->getBody(), true);
     }
 
@@ -36,6 +43,12 @@ class RemittanceRepository implements RemittanceInterface
 
         $res = $client->request('POST', 'dev.net2mart.com/testingaj/aj/remitdelete', [
             'form_params' => $data
+        ]);
+
+        RemittanceLog::create([
+            'method' => 'delete_account',
+            'request' => json_encode($data),
+            'response' => (string) $res->getBody(),
         ]);
 
         return json_decode((string) $res->getBody(), true);
@@ -53,6 +66,12 @@ class RemittanceRepository implements RemittanceInterface
             'form_params' => $data
         ]);
 
+        RemittanceLog::create([
+            'method' => 'inquiry',
+            'request' => json_encode($data),
+            'response' => (string) $res->getBody(),
+        ]);
+
         return json_decode((string) $res->getBody(), true);
     }
 
@@ -66,6 +85,12 @@ class RemittanceRepository implements RemittanceInterface
 
         $res = $client->request('POST', 'dev.net2mart.com/testingaj/aj/remitstat', [
             'form_params' => $data
+        ]);
+
+        RemittanceLog::create([
+            'method' => 'inquiry_status',
+            'request' => json_encode($data),
+            'response' => (string) $res->getBody(),
         ]);
 
         return json_decode((string) $res->getBody(), true);
@@ -83,6 +108,12 @@ class RemittanceRepository implements RemittanceInterface
             'form_params' => $data
         ]);
 
+        RemittanceLog::create([
+            'method' => 'transfer',
+            'request' => json_encode($data),
+            'response' => (string) $res->getBody(),
+        ]);
+
         return json_decode((string) $res->getBody(), true);
     }
 
@@ -91,9 +122,25 @@ class RemittanceRepository implements RemittanceInterface
      */
     public function getNewId()
     {
-        return (string) $this->getNewStan();
+        // return (string) $this->getNewStan();
+        return (string) $this->getNewStanFromLog();
     }
 
+    /**
+     * @return string
+     */
+    public function getNewStanFromLog()
+    {
+        $log = RemittanceLog::orderBy('id', 'desc')->first();
+
+        $last_id = 0;
+
+        if ($log) $last_id = (int) $log->id;
+
+        $last_id++;
+
+        return (string) str_pad($last_id, 6, '0', STR_PAD_LEFT);
+    }
 
     /**
      * @return string

@@ -148,7 +148,8 @@ class IdentityController extends Controller
                 'message' => config('code.204'),
                 'data' => null
             ], 204)
-            : redirect()->back()
+            : redirect()
+                ->route('identity.index')
                 ->with('success', 'Identity data was updated successfully');
     }
 

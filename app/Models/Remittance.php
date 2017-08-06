@@ -41,7 +41,10 @@ class Remittance extends Model
         'provcode1',
         'idnumber1',
         'sign',
-        'bank_id'
+        'bank_id',
+
+        # New one, need migration!
+        'aj_name'
     ];
 
     /**

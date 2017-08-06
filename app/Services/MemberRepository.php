@@ -473,10 +473,11 @@ class MemberRepository extends AbstractInterface implements MemberInterface
      */
     public function sortAllUser(string $search, int $limit)
     {
-        $member = Member::where('name', 'LIKE', '%'.$search.'%')
-                            ->orWhere('email', 'LIKE', '%'.$search.'%')
-                            ->orWhere('phone', 'LIKE', '%'.$search.'%')
-                            ->paginate($limit);
+        $member = Member::with(['accounts' => function($q){ $q->orderBy('number', 'desc'); }])
+            ->where('name', 'LIKE', '%'.$search.'%')
+            ->orWhere('email', 'LIKE', '%'.$search.'%')
+            ->orWhere('phone', 'LIKE', '%'.$search.'%')
+            ->paginate($limit);
 
         return $member;
     }

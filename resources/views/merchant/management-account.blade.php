@@ -76,11 +76,11 @@
                                 <section class="col-sm-4 col-md-4">
                                     <section class="card medium">
                                         <section class="card-img-top text-center mt-3">
-                                            <img src="{{ asset('img/member/member.jpg') }}" alt="{{ Auth::user()->name }}" class="rounded-circle">
+                                            <img src="{{ asset('img/merchant/' . Auth::user()->merchants->first()->photo) }}" alt="{{ Auth::user()->name }}" class="rounded-circle" id="avatar" style="max-width: 80%; max-height: 230px;">
                                         </section>
                                         <section class="card-block text-center">
                                             <section class="text-center mb-3">
-                                                <a href="#" class="btn btn-sm py-0 btn-outline-success" data-toggle="modal" data-target="#myntModal">Upload Photo</a>
+                                                <a href="#" class="btn btn-sm py-0 btn-outline-success" data-toggle="modal" data-target="#modalUploadPhoto">Upload Photo</a>
                                             </section>
                                             <h6 class="card-title"><strong>{{ Auth::user()->name }}</strong></h6>
                                         </section>
@@ -102,4 +102,77 @@
                 </section>
         </section>
     </article>
+
+    <!-- Modal : #modalUploadPhoto -->
+    <div class="modal fade" id="modalUploadPhoto" tabindex="-1" role="dialog" aria-labelledby="modalUploadPhotoLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form method="post" action="{{ route('api.merchant.update.upload', [Auth::user()->merchants->first()['id']]) }}" accept-charset="utf-8" enctype="multipart/form-data" role="form" id="formUploadPhoto">
+            {{ csrf_field() }}
+            {{ method_field('put') }}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalUploadPhotoLabel">Upload photo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <fieldset class="form-group mb-0">
+                        <section class="clearfix">
+                            <label class="custom-file w-100">
+                                <input type="file" id="photo" name="photo" class="custom-file-input" aria-describedby="photoHelp" required>
+                                <span class="custom-file-control"></span>
+                            </label>
+                        </section>
+                        <section class="form-control-feedback" style="display: none;" id="photoError">
+                            <p></p>
+                        </section>
+                        <small class="form-text text-muted d-flex justify-content-between" id="photoHelp">
+                            Please upload your photo <span class="text-grey">Required</span>
+                        </small>
+                    </fieldset>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button role="button" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button role="button" type="submit" class="btn btn-primary" id="btnUploadPhoto">Save changes</button>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+@endsection
+
+@section('script')
+<script>
+$(function(){
+    var $formUploadPhoto = $('#formUploadPhoto');
+    var $modalUploadPhoto = $('#modalUploadPhoto');
+    var $avatar = $('#avatar');
+    var $leftAvatar = $('section.media-left img');
+
+    $formUploadPhoto.on('submit', function (e) {
+        e.preventDefault();
+
+        $(this).validate();
+
+        if ($(this).valid())
+        {
+            $.ajax({
+                async   : false,
+                cache   : false,
+                contentType : false,
+                processData : false,
+                type    : $(this).attr('method'),
+                url     : $(this).attr('action'),
+                data    : new FormData(this),
+                success : function(data, textStatus, jqXhr) {
+                    $avatar.attr('src', '{{ asset('img/merchant') }}/' + data.data.merchant.photo);
+                    $leftAvatar.attr('src', '{{ asset('img/merchant') }}/' + data.data.merchant.photo);
+                    $modalUploadPhoto.modal('hide');
+                }
+            });
+        }
+    });
+});
+</script>
 @endsection

@@ -28,7 +28,7 @@ class AccountingController extends Controller
         })->paginate((int) 15);
 
         return response()
-            ->view('member.accounting.index', compact('passbooks'), 200);
+            ->view('member.accounting.index', compact('passbooks', 'account'), 200);
     }
 
     public function show($id)

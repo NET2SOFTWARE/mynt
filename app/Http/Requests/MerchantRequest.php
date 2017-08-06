@@ -23,27 +23,42 @@ class MerchantRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'name'                  => 'required|string|max:20',
-            'brand'                 => 'nullable|string|max:100',
-            'email'                 => 'required|email|max:40',
-            'website'               => 'nullable|max:40',
-            'merchant.type'         => 'required',
-            'merchant.company'      => 'nullable|max:40',
-            'photo'                 => 'nullable|image|mimes:jpeg,jpg,bmp,png,gif|dimensions:min_width=160,min_height=160',
-            'password'              => 'required|string|min:6|confirmed',
+        switch($this->method()) {
+            case 'POST':
+            {
+                return [
+                    'name'                  => 'required|string|max:20',
+                    'brand'                 => 'nullable|string|max:100',
+                    'email'                 => 'required|email|max:40',
+                    'website'               => 'nullable|max:40',
+                    'merchant.type'         => 'required',
+                    'merchant.company'      => 'nullable|max:40',
+                    'photo'                 => 'nullable|image|mimes:jpeg,jpg,bmp,png,gif|dimensions:min_width=160,min_height=160',
+                    'password'              => 'required|string|min:6|confirmed',
 
-            'location.street'       => 'nullable|max:100',
-            'location.city'         => 'required_with:location.street|required_with:location.postal_code',
-            'location.postal_code'  => 'nullable|numeric',
+                    'location.street'       => 'nullable|max:100',
+                    'location.city'         => 'required_with:location.street|required_with:location.postal_code',
+                    'location.postal_code'  => 'nullable|numeric',
 
-            'pic.name'              => 'nullable|string|max:40',
-            'pic.email'             => 'nullable|email',
-            'pic.phone'             => 'nullable',
-            'pic.position'          => 'required_with:pic.name',
-            'pic.location.street'   => 'required_with:pic.location.city',
-            'pic.location.city'     => 'required_with:pic.location.street',
-            'pic.location.postal_code'  => 'required_with_all:pic.location.street,pic.location.city',
-        ];
+                    'pic.name'              => 'nullable|string|max:40',
+                    'pic.email'             => 'nullable|email',
+                    'pic.phone'             => 'nullable',
+                    'pic.position'          => 'required_with:pic.name',
+                    'pic.location.street'   => 'required_with:pic.location.city',
+                    'pic.location.city'     => 'required_with:pic.location.street',
+                    'pic.location.postal_code'  => 'required_with_all:pic.location.street,pic.location.city',
+                ];
+            }
+
+            case 'PUT':
+            case 'PATCH':
+            {
+                return [
+                    'photo'                 => 'nullable|image|mimes:jpeg,jpg,bmp,png,gif|dimensions:min_width=160,min_height=160',
+                ];
+            }
+
+            default:break;
+        }
     }
 }

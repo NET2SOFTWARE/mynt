@@ -42,7 +42,7 @@
                     <section class="card-block d-flex justify-content-center align-items-center align-content-center">
                         <section class="w-75">
                             @if (session('warning'))
-                                <section class="alert mb-3 small alert-success lh-1-2">{{ session('warning') }}</section>
+                                <section class="alert mb-3 small alert-danger lh-1-2">{{ session('warning') }}</section>
                             @elseif(session('success'))
                                 <section class="alert mb-3 small alert-success lh-1-2">{{ session('success') }}</section>
                             @endif

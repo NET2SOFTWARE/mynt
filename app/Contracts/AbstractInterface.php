@@ -61,6 +61,7 @@ abstract class AbstractInterface
     public function getsPaginate(int $limit = 20, array $column = ['*'])
     {
         return $this->model
+                    ->orderBy('id', 'asc')
                     ->paginate($limit, $column);
     }
 
